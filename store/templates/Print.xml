@@ -1,0 +1,316 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<DTE version="1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.afip.com.ar/fe">
+	<Documento Id="DTE9109bd24e45346bca9c8bc5ad905b59a">
+		<Encabezado>
+			<IdDoc>
+				<NroTmte>1</NroTmte>
+				<Tipo/>
+				<TipoExpo/>
+				<Serie/>
+				<Numero/>
+				<Estado>ORIGINAL</Estado>
+				<NroInt/>
+				<FechaEmis/>
+				<IndServ>0</IndServ>
+				<FchServIni>2000-01-01</FchServIni>
+				<FchServFin>2000-01-01</FchServFin>
+				<FormaPago/>
+				<FechaVenc>2000-01-01</FechaVenc>
+				<FechaPago>2000-01-01</FechaPago>
+				<WSRegimen/>
+				<Incoterms/>
+				<IncotermDs/>
+				<Lang/>
+				<Destino/>
+				<Permiso/>
+			</IdDoc>
+			<Emisor>
+				<CUITEmi/>
+				<NmbEmi/>
+				<TpoRespIVA>0</TpoRespIVA>
+				<FechaIniAct>2000-01-01</FechaIniAct>
+				<DirEmi>
+					<Calle/>
+					<Localidad/>
+					<Municipio/>
+					<Provincia/>
+					<Pais/>
+					<CP/>
+				</DirEmi>
+			</Emisor>
+			<Receptor>
+				<DIRcp/>
+				<TpoDIRcp/>
+				<NmbRcp/>
+				<TpoRespIVA>0</TpoRespIVA>
+				<FechaIniAct>2000-01-01</FechaIniAct>
+				<Sucursal/>
+				<EmailCont/>
+				<DirRcp>
+					<Calle/>
+					<Localidad/>
+					<Referencia/>
+					<Municipio/>
+					<Provincia/>
+					<Pais/>
+					<CP/>
+				</DirRcp>
+				<CuitPaisCliente>0</CuitPaisCliente>
+				<IdImpositivo>0</IdImpositivo>
+			</Receptor>
+			<Totales>
+				<Moneda/>
+				<FctConv/>
+				<ImpteNeto>0</ImpteNeto>
+				<ImpteExe>0</ImpteExe>
+				<ImpteNetoNG>0</ImpteNetoNG>
+				<ImpteDcto>0</ImpteDcto>
+				<ImpteIVA>0</ImpteIVA>
+				<ImpteTotal>0</ImpteTotal>
+				<VlrPagar>0</VlrPagar>
+				<ImpteTributos>0</ImpteTributos>		
+				<PagoMismaMoneda/>
+			</Totales>
+			<Impuestos>
+				<TipoImp/>
+				<TasaImp>0</TasaImp>
+				<CodTipoTrib>0</CodTipoTrib>
+				<BaseImp>0</BaseImp>
+				<ImpteImp>0</ImpteImp>
+				<CodJurisImp/>
+				<Descripcion/>
+			</Impuestos>
+			<Impuestos>
+				<TipoImp>IVA</TipoImp>
+				<TasaImp>0</TasaImp>
+				<CodTipoIVA>0</CodTipoIVA>
+				<BaseImp>0</BaseImp>
+				<ImpteImp>0</ImpteImp>
+				<CodJurisImp/>
+				<Descripcion/>
+			</Impuestos>
+		</Encabezado>
+		<Detalle>
+			<NroLinDet>1</NroLinDet>
+			<CodItem>
+				<TpoCodigo/>
+				<VlrCodigo/>
+			</CodItem>
+			<DscLang/>
+			<DscItem/>
+			<QtyItem>0</QtyItem>
+			<UnidMed/>
+			<PrcBruto>0</PrcBruto>
+			<PrcNeto>0</PrcNeto>
+			<PctDcto>0</PctDcto>
+			<ImpteDcto>0</ImpteDcto>
+			<SubImpDet>
+				<TipoImp/>
+				<ImpteImp>0</ImpteImp>
+			</SubImpDet>
+			<ImpteBruto>0</ImpteBruto>
+			<ImpteNeto>0</ImpteNeto>
+			<ImpteTotal>0</ImpteTotal>
+		</Detalle>
+		<Referencia>
+			<NroLinRef>1</NroLinRef>
+			<TpoDoc>0</TpoDoc>
+			<SerieDoc>0</SerieDoc>
+			<NroDoc>0</NroDoc>
+			<CUIT>0</CUIT>
+			<FechaDoc>1900-01-01</FechaDoc>
+		</Referencia>
+		<TimeStamp>2025-06-25T08:45:37</TimeStamp>
+	</Documento>
+	<Extensions>
+		<Extension dteId="DTE9109bd24e45346bca9c8bc5ad905b59a">
+			<NumericField name="Bruto">0</NumericField>
+			<NumericField name="CostoOperativo">0</NumericField>
+			<NumericField name="Descuento">0</NumericField>
+			<NumericField name="Flete">0</NumericField>
+			<NumericField name="Impuesto1">0</NumericField>
+			<NumericField name="Impuesto10">0</NumericField>
+			<NumericField name="Impuesto11">0</NumericField>
+			<NumericField name="Impuesto12">0</NumericField>
+			<NumericField name="Impuesto13">0</NumericField>
+			<NumericField name="Impuesto14">0</NumericField>
+			<NumericField name="Impuesto15">0</NumericField>
+			<NumericField name="Impuesto16">0</NumericField>
+			<NumericField name="Impuesto17">0</NumericField>
+			<NumericField name="Impuesto18">0</NumericField>
+			<NumericField name="Impuesto19">0</NumericField>
+			<NumericField name="Impuesto2">0</NumericField>
+			<NumericField name="Impuesto20">0</NumericField>
+			<NumericField name="Impuesto21">0</NumericField>
+			<NumericField name="Impuesto22">0</NumericField>
+			<NumericField name="Impuesto23">0</NumericField>
+			<NumericField name="Impuesto24">0</NumericField>
+			<NumericField name="Impuesto25">0</NumericField>
+			<NumericField name="Impuesto3">0</NumericField>
+			<NumericField name="Impuesto4">0</NumericField>
+			<NumericField name="Impuesto5">0</NumericField>
+			<NumericField name="Impuesto6">0</NumericField>
+			<NumericField name="Impuesto7">0</NumericField>
+			<NumericField name="Impuesto8">0</NumericField>
+			<NumericField name="Impuesto9">0</NumericField>
+			<NumericField name="IVA1">0</NumericField>
+			<NumericField name="IVA1=2">0</NumericField>
+			<NumericField name="IVA3">0</NumericField>
+			<NumericField name="IVA4">0</NumericField>
+			<NumericField name="IVA5">0</NumericField>
+			<NumericField name="Seguro">0</NumericField>
+			<NumericField name="Subtotal">0</NumericField>
+			<NumericField name="TasaImpuesto1">0</NumericField>
+			<NumericField name="TasaImpuesto10">0</NumericField>
+			<NumericField name="TasaImpuesto11">0</NumericField>
+			<NumericField name="TasaImpuesto12">0</NumericField>
+			<NumericField name="TasaImpuesto13">0</NumericField>
+			<NumericField name="TasaImpuesto14">0</NumericField>
+			<NumericField name="TasaImpuesto15">0</NumericField>
+			<NumericField name="TasaImpuesto16">0</NumericField>
+			<NumericField name="TasaImpuesto17">0</NumericField>
+			<NumericField name="TasaImpuesto18">0</NumericField>
+			<NumericField name="TasaImpuesto19">0</NumericField>
+			<NumericField name="TasaImpuesto2">0</NumericField>
+			<NumericField name="TasaImpuesto20">0</NumericField>
+			<NumericField name="TasaImpuesto21">0</NumericField>
+			<NumericField name="TasaImpuesto22">0</NumericField>
+			<NumericField name="TasaImpuesto23">0</NumericField>
+			<NumericField name="TasaImpuesto24">0</NumericField>
+			<NumericField name="TasaImpuesto25">0</NumericField>
+			<NumericField name="TasaImpuesto3">0</NumericField>
+			<NumericField name="TasaImpuesto4">0</NumericField>
+			<NumericField name="TasaImpuesto5">0</NumericField>
+			<NumericField name="TasaImpuesto6">0</NumericField>
+			<NumericField name="TasaImpuesto7">0</NumericField>
+			<NumericField name="TasaImpuesto8">0</NumericField>
+			<NumericField name="TasaImpuesto9">0</NumericField>
+			<NumericField name="TasaIVA1">0</NumericField>
+			<NumericField name="TasaIVA2">0</NumericField>
+			<NumericField name="TasaIVA3">0</NumericField>
+			<NumericField name="TasaIVA4">0</NumericField>
+			<NumericField name="TasaIVA5">0</NumericField>
+			<StringField name="CalleRcp"/>
+			<StringField name="CalleRpt"/>
+			<StringField name="CalleRes"/>
+			<StringField name="Carga"/>
+			<StringField name="Comentario"/>
+			<StringField name="CPRcp"/>
+			<StringField name="CPRpt"/>
+			<StringField name="CPRes"/>
+			<StringField name="Deposito"/>
+			<StringField name="DeptoRpt"/>
+			<StringField name="DescRespRecep"/>
+			<StringField name="Descuento"/>
+			<StringField name="Distribuye"/>
+			<StringField name="EntregarEn1"/>
+			<StringField name="EntregarEn2"/>
+			<StringField name="FechaCarga"/>
+			<StringField name="FechaImpresion"/>
+			<StringField name="ID1"/>
+			<StringField name="ID2"/>
+			<StringField name="ID3"/>
+			<StringField name="ID4"/>
+			<StringField name="ID5"/>
+			<StringField name="ID6"/>
+			<StringField name="ID7"/>
+			<StringField name="IIBBEmi"/>
+			<StringField name="IIBBRcp"/>
+			<StringField name="IIBBRec"/>
+			<StringField name="ImportePalabras"/>
+			<StringField name="Imprime"/>
+			<StringField name="Inco"/>
+			<StringField name="IncoDes"/>
+			<StringField name="Letra"/>
+			<StringField name="LocalidadRcp"/>
+			<StringField name="LocalidadRes"/>
+			<StringField name="LocalidadRpt"/>
+			<StringField name="Lugar"/>
+			<StringField name="LugarImpresion"/>
+			<StringField name="Mes"/>
+			<StringField name="MontoPalabras"/>
+			<StringField name="NroRef"/>
+			<StringField name="NumeroRpt"/>
+			<StringField name="OrdenCompra"/>
+			<StringField name="OrdenVenta"/>
+			<StringField name="Origen"/>
+			<StringField name="OV"/>
+			<StringField name="PaisRcp"/>
+			<StringField name="PaisRes"/>
+			<StringField name="PaisRpt"/>
+			<StringField name="Pedido"/>
+			<StringField name="PisoRpt"/>
+			<StringField name="ProvinciaEmi"/>
+			<StringField name="ProvinciaRcp"/>
+			<StringField name="ProvinciaRpt"/>
+			<StringField name="ProvinciaRes"/>
+			<StringField name="Remito"/>
+			<StringField name="Rubro"/>
+			<StringField name="SerieRef"/>
+			<StringField name="SIGEXT_MOTIVO"/>
+			<StringField name="Texto1"/>
+			<StringField name="Texto2"/>
+			<StringField name="TextoCabecera"/>
+			<StringField name="TextoCabecera1"/>
+			<StringField name="TextoCabecera2"/>
+			<StringField name="TextoCabecera3"/>
+			<StringField name="TextoCabecera4"/>
+			<StringField name="TextoCabecera5"/>
+			<StringField name="TextoCabecera6"/>
+			<StringField name="TextoCabecera7"/>
+			<StringField name="TextoCabecera8"/>
+			<StringField name="TextoCabecera9"/>
+			<StringField name="TextoImpuesto"/>
+			<StringField name="TextoSub"/>
+			<StringField name="TextoTot"/>
+			<StringField name="TextoTotal"/>
+			<StringField name="TipoRef"/>
+			<StringField name="TipoRespEmi"/>
+			<StringField name="TipoRespRec"/>
+			<StringField name="TitImpuesto1"/>
+			<StringField name="TitImpuesto10"/>
+			<StringField name="TitImpuesto11"/>
+			<StringField name="TitImpuesto12"/>
+			<StringField name="TitImpuesto13"/>
+			<StringField name="TitImpuesto14"/>
+			<StringField name="TitImpuesto15"/>
+			<StringField name="TitImpuesto16"/>
+			<StringField name="TitImpuesto17"/>
+			<StringField name="TitImpuesto18"/>
+			<StringField name="TitImpuesto19"/>
+			<StringField name="TitImpuesto2"/>
+			<StringField name="TitImpuesto20"/>
+			<StringField name="TitImpuesto21"/>
+			<StringField name="TitImpuesto22"/>
+			<StringField name="TitImpuesto23"/>
+			<StringField name="TitImpuesto24"/>
+			<StringField name="TitImpuesto25"/>
+			<StringField name="TitImpuesto3"/>
+			<StringField name="TitImpuesto4"/>
+			<StringField name="TitImpuesto5"/>
+			<StringField name="TitImpuesto6"/>
+			<StringField name="TitImpuesto7"/>
+			<StringField name="TitImpuesto8"/>
+			<StringField name="TitImpuesto9"/>
+			<StringField name="Unidades"/>
+			<StringField name="ValorID1"/>
+			<StringField name="ValorID2"/>
+			<StringField name="ValorID3"/>
+			<StringField name="ValorID4"/>
+			<StringField name="ValorID5"/>
+			<StringField name="ValorID6"/>
+			<StringField name="ValorID7"/>
+			<DetailExtension>
+				<DetExtNroItem>1</DetExtNroItem>
+				<DetExtAFN_01/>
+				<DetExtAFN_02/>
+				<DetExtAFN_03/>
+				<DetExtAFN_04/>
+				<DetExtAFN_05/>
+				<DetExtAFN_06/>
+				<DetExtFEC_01>1900-01-01</DetExtFEC_01>
+				<DetExtNUD_01>0</DetExtNUD_01>
+			</DetailExtension>
+		</Extension>
+	</Extensions>
+</DTE>

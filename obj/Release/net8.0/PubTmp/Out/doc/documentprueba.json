@@ -1,0 +1,66 @@
+[
+  {
+    "CuitEmisor": 30710061447,
+    "TipoDocReceptor": 80,
+    "NroDocReceptor": 30710901380,
+    "TipoResponsable": 1,
+    "PuntoVenta": 1,
+    "Tipo": 1,
+    "Numero": 3,
+    "Concepto": 1,
+    "FechaEmision": "20240129",
+    "FechaServicioDesde": "20240101",
+    "FechaServicioHasta": "20240130",
+    "FechaVtoPago": "20240228",
+    "ImporteTotal": 12100,
+    "ImporteGravado": 100,
+    "ImporteNoGravado": 0,
+    "ImporteExento": 0,
+    "ImporteOtrosTributos": 0,
+    "ImporteIva": 21,
+    "Moneda": "PES",
+    "Cotizacion": 0,
+    "RazonSocial": "Applet SRL",
+    "CondicionPago": "30 Dias",
+    "Observaciones": "",
+    "CorreoElectronico": "pepe@ppp.com",
+    "Domicilio": {
+      "Calle": "Suipacha",
+      "Nro": "875",
+      "Piso": "5",
+      "Depto": "A",
+      "Cuidad": "C.A.B.A.",
+      "Pcia": 0,
+      "Pais": "Argentina"
+    },
+    "Ws": "wsfe",
+    "Asociados": [
+    ],
+    "OtrosTributos": [
+    ],
+    "Ivas": [
+      {
+        "Tipo": 5,
+        "BaseImponible": 100
+      }
+    ],
+    "Opcionales": [
+    ],
+    "Adicionales": [
+    ],
+    "Compradores": [
+    ],
+    "Items": [
+      {
+        "Descripcion": "itemp1",
+        "ivdblCantidad": 1,
+        "ivdblPrecioUnitario": 100,
+        "ivdblImporteTotal": 100,
+        "ivnroTipoIVA": 5,
+        "ivdblImporteIVA": 21
+      }
+    ],
+    "ItemsCT": [
+    ]
+  }
+]
