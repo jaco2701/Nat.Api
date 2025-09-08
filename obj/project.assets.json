@@ -5386,11 +5386,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Jaco2701\\Documents\\Visual Studio Projects\\Nat\\Nat.API\\Nat.Api.csproj",
-      "projectName": "Nat.Api",
-      "projectPath": "C:\\Users\\Jaco2701\\Documents\\Visual Studio Projects\\Nat\\Nat.API\\Nat.Api.csproj",
+      "projectUniqueName": "C:\\Users\\Jaco2701\\Documents\\Visual Studio Projects\\Nat\\Nat.Api\\Nat.API.csproj",
+      "projectName": "Nat.API",
+      "projectPath": "C:\\Users\\Jaco2701\\Documents\\Visual Studio Projects\\Nat\\Nat.Api\\Nat.API.csproj",
       "packagesPath": "C:\\Users\\Jaco2701\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Jaco2701\\Documents\\Visual Studio Projects\\Nat\\Nat.API\\obj\\",
+      "outputPath": "C:\\Users\\Jaco2701\\Documents\\Visual Studio Projects\\Nat\\Nat.Api\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

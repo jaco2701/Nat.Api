@@ -150,7 +150,7 @@ namespace Applet.Nat.Api.Br.Models
                 try
                 {
                     LogHelper.writeinfo(
-                       $"Request: Auth:{JsonConvert.SerializeObject(lioAutRequest)}, Moneda: {vivstrMoneda}, Fecha:{vivdtm.ToString(lioAfipService.ivstrDateformat)}",
+                       $"FEXGetPARAM_CtzAsync: Url:{lioAfipService.ivstrUrl}  Auth:{JsonConvert.SerializeObject(lioAutRequest)}, Moneda: {vivstrMoneda}, Fecha:{vivdtm.ToString(lioAfipService.ivstrDateformat)}",
                        ListHelper.GetValue("FORMAT", "VERBOSE", mioContext) == "1"
                     );
                     lioFEXResponse_Ctz = await lioService.FEXGetPARAM_CtzAsync(lioAutRequest, vivstrMoneda, vivdtm.ToString("yyyy-MM-dd"));
