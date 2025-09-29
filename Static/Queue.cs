@@ -48,6 +48,7 @@ namespace Applet.Nat.Api.Static
             }
             lcoTasks.Add(BuildTaskDocs(lcvlngDocsToTask, vioConfiguration));
             lcoTasks.Add(BuildTaskUpLoad(vioConfiguration));
+            //lcoTasks.Add(BuildTaskExtract(vioConfiguration));
             foreach (var lioTasks in lcoTasks)
                 await lioTasks;
         }
@@ -172,7 +173,6 @@ namespace Applet.Nat.Api.Static
                 LogHelper.write(lioE);
             }
         }
-
         private static async Task BuildTaskUpLoad(IConfiguration vioConfiguration)
         {
             try
@@ -192,6 +192,62 @@ namespace Applet.Nat.Api.Static
                         {
                             foreach (string livstrFile in Directory.GetFiles(lioCuit.ioCnfg.ivstrInFolder).Where(file => !file.EndsWith(".log", StringComparison.OrdinalIgnoreCase)))
                                 lcoFilesToProcess.Add(new Tuple<long, string>(lioCuitModel.ivlngCuit, livstrFile));
+                        }
+                        catch (Exception lioE)
+                        {
+                            LogHelper.write(lioE);
+                            continue;
+                        }
+                    }
+                }
+                DocumentsUploadRequest lioDocumentsUploadRequest;
+                foreach (Tuple<long, string> lioO in lcoFilesToProcess)
+                {
+                    lioDocumentsUploadRequest = new DocumentsUploadRequest
+                    {
+                        ivstrName = Path.GetFileName(lioO.Item2),
+                        ivstrData = Convert.ToBase64String(Encoding.UTF8.GetBytes(File.ReadAllText(lioO.Item2))),
+                        ivblnComp = false,
+                        ivlngCuit = lioO.Item1
+                    };
+                    try
+                    {
+                        lcoUDocumentsUploadResponse = UploadDocument(lioDocumentsUploadRequest, vioConfiguration);
+                        if (lcoUDocumentsUploadResponse.Count == 0)
+                            continue;
+                        if (lcoUDocumentsUploadResponse[0].ivstrDescStatus != "OK")
+                            File.WriteAllText(Path.ChangeExtension(lioO.Item2, ".log"), lcoUDocumentsUploadResponse[0].ivstrDescStatus);
+                        File.Delete(lioO.Item2);
+                    }
+                    catch (Exception lioE)
+                    {
+                        LogHelper.write(lioE);
+                    }
+                }
+            }
+            catch (Exception lioE)
+            {
+                LogHelper.write(lioE);
+            }
+        }
+        private static async Task BuildTaskExtract(IConfiguration vioConfiguration)
+        {
+            try
+            {
+                if (!vioConfiguration.GetValue<bool>("AutoExtract"))
+                    return;
+                List<DocumentUploadResponse> lcoUDocumentsUploadResponse;
+                List<Tuple<long, string>> lcoFilesToProcess = new List<Tuple<long, string>>();
+                using NatContext lioContext = NatContext.GetContext(vioConfiguration);
+                {
+                    foreach (CuitModel lioCuitModel in lioContext.Cuits)
+                    {
+                        Cuit lioCuit = new Cuit { ioDcModel = lioCuitModel };
+                        if (string.IsNullOrEmpty(lioCuit.ioCnfg?.ivstrInFolder))
+                            continue;
+                        try
+                        {
+
                         }
                         catch (Exception lioE)
                         {
@@ -279,7 +335,7 @@ namespace Applet.Nat.Api.Static
                 else
                 {
                     if (lioDocumentUser.ivlngCuitEmisor != vioDocumentsUpload.ivlngCuit)
-                        throw new Exception(string.Format(Resources.lioE_ObjectNoM, "Cuit Emisor", "o"));
+                        throw new Exception($"Cuit Emisor {Resources.lioE_ObjectNoM}");
                     lioDocument = new Document(lioDocumentUser, lioContext);
                     lioDocument.ioDcModel.ivstrInData = lioDocumentUser.ivstrInputData;
                     lioDocument.ioDcModel.ivstrInType = lioFileInfo.Extension.ToLower();

@@ -89,7 +89,7 @@ namespace Applet.Nat.Api.Controllers
                     DataRow row = lioDT.NewRow();
                     row["Id."] = lioDocumentModel.ivlngDoc;
                     row["C.U.I.T."] = lioDocumentModel.ivlngCuitReceptor;
-                    row["Razon Social"] = lioDocument.ioDocumentUser?.ivstrRazonSocial ?? string.Empty;
+                    row["Razon Social"] = lioDocument.ioDcModel?.ivstrRazonSocial ?? string.Empty;
                     row["Fecha Emision"] = (lioDocumentModel.ivdtmEmision ?? DateTime.MinValue).ToString("dd/MM/yyyy");
                     row["Tipo"] = lcoTypes.FirstOrDefault(x => x.ivcodId == lioDocumentModel.ivnroTipo.ToString())?.ivstrDesc ?? string.Empty; ;
                     row["Punto de Venta"] = lioDocumentModel.ivnumPvta;

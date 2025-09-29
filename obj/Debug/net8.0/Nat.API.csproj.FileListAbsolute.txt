@@ -119,3 +119,4 @@ C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.API\obj\Debug\net8.0\
 C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.API\obj\Debug\net8.0\Nat.Api.pdb
 C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.API\obj\Debug\net8.0\Nat.Api.genruntimeconfig.cache
 C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.API\obj\Debug\net8.0\ref\Nat.Api.dll
+C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

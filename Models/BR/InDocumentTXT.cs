@@ -52,7 +52,6 @@ namespace Applet.Nat.Api.Br.Models
                 if (string.IsNullOrEmpty(lioServiceMapper.ivstrWs))
                     throw new Exception($"Servicio {Resources.lioE_ObjectNoM} en configuracion del CUIT");
                 #endregion
-                #region Lectura de Datos
                 livstr = lioCuit.GetEncoding().GetString(Convert.FromBase64String(Format.UnCompress(ivstrRaw ?? string.Empty, lioCuit.GetEncoding())));
                 string[] cvstrInDocumentLines = livstr.Split("\n");
                 UxDocumentAsociado lioUxDocumentAsociado;
@@ -82,7 +81,6 @@ namespace Applet.Nat.Api.Br.Models
                     //se para en la linea del identificador de inicio
                     livnumLine = cvstrInDocumentLines.ToList().IndexOf(livstr);
                     #region Campos de tipo U (unico)
-                    
                     if (lioMapperItem.ivstrCoord.StartsWith("U"))
                     {
                         // se para en la linea relativa
@@ -94,6 +92,7 @@ namespace Applet.Nat.Api.Br.Models
                             livstrPropertyValue = cvstrInDocumentLines[livnumLine].Substring(livnumOffset - 1, livnumLen).Trim();
                         else
                             livstrPropertyValue = cvstrInDocumentLines[livnumLine].Substring(livnumOffset - 1).Trim();
+                        livstrPropertyValue = Format.Property(lioMapperItem.ivstrProperty, livstrPropertyValue);
                         switch (lioMapperItem.ivstrProperty)
                         {
                             case "ivnroTipoDoc":
@@ -332,7 +331,7 @@ namespace Applet.Nat.Api.Br.Models
                             case "ivnroTipoRespReceptor":
                                 if (!short.TryParse(livstrPropertyValue, out livnro))
                                 {
-                                    lioSbErrors.AppendLine("Condicion Iva receptor {Resources.lioE_ObjectNoM}");
+                                    lioSbErrors.AppendLine($"Condicion Iva receptor {Resources.lioE_ObjectNoM}");
                                     continue;
                                 }
                                 lioDocumentUser.ivnroTipoRespReceptor = livnro;
@@ -346,7 +345,7 @@ namespace Applet.Nat.Api.Br.Models
                             case "ivdblImporteTotal":
                                 if (!double.TryParse(livstrPropertyValue, out livval))
                                 {
-                                    lioSbErrors.AppendLine("Importe Total {Resources.lioE_ObjectNoM}");
+                                    lioSbErrors.AppendLine($"Importe Total {Resources.lioE_ObjectNoM}");
                                     continue;
                                 }
                                 lioDocumentUser.ivdblImporteTotal = livval;
@@ -354,7 +353,7 @@ namespace Applet.Nat.Api.Br.Models
                             case "ivdblImporteGravado":
                                 if (!double.TryParse(livstrPropertyValue, out livval))
                                 {
-                                    lioSbErrors.AppendLine("Importe Gravado {Resources.lioE_ObjectNoM}");
+                                    lioSbErrors.AppendLine($"Importe Gravado {Resources.lioE_ObjectNoM}");
                                     continue;
                                 }
                                 lioDocumentUser.ivdblImporteGravado = livval;
@@ -362,7 +361,7 @@ namespace Applet.Nat.Api.Br.Models
                             case "ivdblImporteNoGravado":
                                 if (!double.TryParse(livstrPropertyValue, out livval))
                                 {
-                                    lioSbErrors.AppendLine("Importe NoGravado {Resources.lioE_ObjectNoM}");
+                                    lioSbErrors.AppendLine($"Importe NoGravado {Resources.lioE_ObjectNoM}");
                                     continue;
                                 }
                                 lioDocumentUser.ivdblImporteNoGravado = livval;
@@ -370,7 +369,7 @@ namespace Applet.Nat.Api.Br.Models
                             case "ivdblImporteExento":
                                 if (!double.TryParse(livstrPropertyValue, out livval))
                                 {
-                                    lioSbErrors.AppendLine("Importe Exento {Resources.lioE_ObjectNoM}");
+                                    lioSbErrors.AppendLine($"Importe Exento {Resources.lioE_ObjectNoM}");
                                     continue;
                                 }
                                 lioDocumentUser.ivdblImporteExento = livval;
@@ -382,7 +381,6 @@ namespace Applet.Nat.Api.Br.Models
                                 break;
                                 #endregion
                         }
-                        #endregion
                         if (lioMapperItem.ivstrProperty.StartsWith("coIvas"))  // caso iva unico 
                         {
                             if (lioDocumentUser.coIvas == null)
@@ -405,7 +403,7 @@ namespace Applet.Nat.Api.Br.Models
                                 case "coIvas.ivdblBaseImponible":
                                     if (!Double.TryParse(livstrPropertyValue, out livval))
                                     {
-                                        lioSbErrors.AppendLine($"Linea {livnumLine + 1}: Base Imponible {Resources.lioE_ObjectNoF}");
+                                        lioSbErrors.AppendLine($"Linea {livnumLine + 1}: Base Imponible IVA {Resources.lioE_ObjectNoF}");
                                         livblnOK = false;
                                         continue;
                                     }
@@ -414,7 +412,7 @@ namespace Applet.Nat.Api.Br.Models
                                 case "coIvas.ivdblImporte":
                                     if (!Double.TryParse(livstrPropertyValue, out livval))
                                     {
-                                        lioSbErrors.AppendLine($"Linea {livnumLine + 1}: Importe {Resources.lioE_ObjectNoM}");
+                                        lioSbErrors.AppendLine($"Linea {livnumLine + 1}: Importe IVA {Resources.lioE_ObjectNoM}");
                                         livblnOK = false;
                                         continue;
                                     }
@@ -456,10 +454,11 @@ namespace Applet.Nat.Api.Br.Models
                                     if (livstrLine.Length < livnumOffset) continue;
                                     if (livstrLine.Length < livnumFrom - 1 + livnumOffset)
                                         livnumOffset = livstrLine.Length - livnumFrom + 1;
-                                    if (lioMapperItem.ivstrCoord.Contains("FIX"))
-                                        livstrPropertyValue = lioMapperItem.ivstrformat;
-                                    else 
+                                    if (lioMapperItemR.ivstrCoord.Contains("FIX"))
+                                        livstrPropertyValue = lioMapperItemR.ivstrformat;
+                                    else
                                         livstrPropertyValue = livstrLine.Substring(livnumFrom - 1, livnumOffset).Trim();
+                                    livstrPropertyValue = Format.Property(lioMapperItemR.ivstrProperty, livstrPropertyValue);
                                     switch (lioMapperItemR.ivstrProperty)
                                     {
                                         case "coAsociados.ivnroCbtetipo":
@@ -545,16 +544,17 @@ namespace Applet.Nat.Api.Br.Models
                                     if (livstrLine.Length < livnumFrom) continue;
                                     if (livstrLine.Length < livnumFrom - 1 + livnumOffset)
                                         livnumOffset = livstrLine.Length - livnumFrom + 1;
-                                    if (lioMapperItem.ivstrCoord.Contains("FIX"))
-                                        livstrPropertyValue = lioMapperItem.ivstrformat;
+                                    if (lioMapperItemR.ivstrCoord.Contains("FIX"))
+                                        livstrPropertyValue = lioMapperItemR.ivstrformat;
                                     else
                                         livstrPropertyValue = livstrLine.Substring(livnumFrom - 1, livnumOffset).Trim();
+                                    livstrPropertyValue = Format.Property(lioMapperItemR.ivstrProperty, livstrPropertyValue);
                                     switch (lioMapperItemR.ivstrProperty)
                                     {
                                         case "coOtrosTributos.ivnroId":
                                             if (!short.TryParse(livstrPropertyValue, out livnro))
                                             {
-                                                lioSbErrors.AppendLine($"Linea {livnumLine + 1}: Id {Resources.lioE_ObjectNoM}");
+                                                lioSbErrors.AppendLine($"Linea {livnumLine + 1}: Id Otros Tributos {Resources.lioE_ObjectNoM}");
                                                 livblnOK = false;
                                                 continue;
                                             }
@@ -567,7 +567,7 @@ namespace Applet.Nat.Api.Br.Models
                                         case "coOtrosTributos.ivdblBaseImp":
                                             if (!Double.TryParse(livstrPropertyValue, out livval))
                                             {
-                                                lioSbErrors.AppendLine($"Linea {livnumLine + 1}: Base Imponible {Resources.lioE_ObjectNoF}");
+                                                lioSbErrors.AppendLine($"Linea {livnumLine + 1}: Base Imponible Otros Tributos {Resources.lioE_ObjectNoF}");
                                                 livblnOK = false;
                                                 continue;
                                             }
@@ -576,7 +576,7 @@ namespace Applet.Nat.Api.Br.Models
                                         case "coOtrosTributos.ivdblAlicuota":
                                             if (!Double.TryParse(livstrPropertyValue, out livval))
                                             {
-                                                lioSbErrors.AppendLine($"Linea {livnumLine + 1}: Alicuota {Resources.lioE_ObjectNoF}");
+                                                lioSbErrors.AppendLine($"Linea {livnumLine + 1}: Alicuota Otros Tributos {Resources.lioE_ObjectNoF}");
                                                 livblnOK = false;
                                                 continue;
                                             }
@@ -585,7 +585,7 @@ namespace Applet.Nat.Api.Br.Models
                                         case "coOtrosTributos.ivdblImporte":
                                             if (!Double.TryParse(livstrPropertyValue, out livval))
                                             {
-                                                lioSbErrors.AppendLine($"Linea {livnumLine + 1}: Importe {Resources.lioE_ObjectNoM}");
+                                                lioSbErrors.AppendLine($"Linea {livnumLine + 1}: Importe Otros Tributos {Resources.lioE_ObjectNoM}");
                                                 livblnOK = false;
                                                 continue;
                                             }
@@ -630,10 +630,11 @@ namespace Applet.Nat.Api.Br.Models
                                     if (livstrLine.Length < livnumFrom) continue;
                                     if (livstrLine.Length < livnumFrom - 1 + livnumOffset)
                                         livnumOffset = livstrLine.Length - livnumFrom + 1;
-                                    if (lioMapperItem.ivstrCoord.Contains("FIX"))
-                                        livstrPropertyValue = lioMapperItem.ivstrformat;
+                                    if (lioMapperItemR.ivstrCoord.Contains("FIX"))
+                                        livstrPropertyValue = lioMapperItemR.ivstrformat;
                                     else
                                         livstrPropertyValue = livstrLine.Substring(livnumFrom - 1, livnumOffset).Trim();
+                                    livstrPropertyValue = Format.Property(lioMapperItemR.ivstrProperty, livstrPropertyValue);
                                     switch (lioMapperItemR.ivstrProperty)
                                     {
                                         case "coIvas.ivnroTipo":
@@ -648,7 +649,7 @@ namespace Applet.Nat.Api.Br.Models
                                         case "coIvas.ivdblBaseImponible":
                                             if (!Double.TryParse(livstrPropertyValue, out livval))
                                             {
-                                                lioSbErrors.AppendLine($"Linea {livnumLine + 1}: Base Imponible {Resources.lioE_ObjectNoF}");
+                                                lioSbErrors.AppendLine($"Linea {livnumLine + 1}: Base Imponible IVA {Resources.lioE_ObjectNoF}");
                                                 livblnOK = false;
                                                 continue;
                                             }
@@ -657,7 +658,7 @@ namespace Applet.Nat.Api.Br.Models
                                         case "coIvas.ivdblImporte":
                                             if (!Double.TryParse(livstrPropertyValue, out livval))
                                             {
-                                                lioSbErrors.AppendLine($"Linea {livnumLine + 1}: Importe {Resources.lioE_ObjectNoM}");
+                                                lioSbErrors.AppendLine($"Linea {livnumLine + 1}: Importe IVA {Resources.lioE_ObjectNoM}");
                                                 livblnOK = false;
                                                 continue;
                                             }
@@ -702,10 +703,11 @@ namespace Applet.Nat.Api.Br.Models
                                     if (livstrLine.Length < livnumFrom) continue;
                                     if (livstrLine.Length < livnumFrom - 1 + livnumOffset)
                                         livnumOffset = livstrLine.Length - livnumFrom + 1;
-                                    if (lioMapperItem.ivstrCoord.Contains("FIX"))
-                                        livstrPropertyValue = lioMapperItem.ivstrformat;
+                                    if (lioMapperItemR.ivstrCoord.Contains("FIX"))
+                                        livstrPropertyValue = lioMapperItemR.ivstrformat;
                                     else
                                         livstrPropertyValue = livstrLine.Substring(livnumFrom - 1, livnumOffset).Trim();
+                                    livstrPropertyValue = Format.Property(lioMapperItemR.ivstrProperty, livstrPropertyValue);
                                     switch (lioMapperItemR.ivstrProperty)
                                     {
                                         case "coOpcionales.ivstrId":
@@ -763,10 +765,11 @@ namespace Applet.Nat.Api.Br.Models
                                     if (livstrLine.Length < livnumFrom) continue;
                                     if (livstrLine.Length < livnumFrom - 1 + livnumOffset)
                                         livnumOffset = livstrLine.Length - livnumFrom + 1;
-                                    if (lioMapperItem.ivstrCoord.Contains("FIX"))
-                                        livstrPropertyValue = lioMapperItem.ivstrformat;
+                                    if (lioMapperItemR.ivstrCoord.Contains("FIX"))
+                                        livstrPropertyValue = lioMapperItemR.ivstrformat;
                                     else
                                         livstrPropertyValue = livstrLine.Substring(livnumFrom - 1, livnumOffset).Trim();
+                                    livstrPropertyValue = Format.Property(lioMapperItemR.ivstrProperty, livstrPropertyValue);
                                     switch (lioMapperItemR.ivstrProperty)
                                     {
                                         case "coCompradores.ivnroDocTipo":
@@ -833,10 +836,11 @@ namespace Applet.Nat.Api.Br.Models
                                     if (livstrLine.Length < livnumFrom) continue;
                                     if (livstrLine.Length < livnumFrom - 1 + livnumOffset)
                                         livnumOffset = livstrLine.Length - livnumFrom + 1;
-                                    if (lioMapperItem.ivstrCoord.Contains("FIX"))
-                                        livstrPropertyValue = lioMapperItem.ivstrformat;
+                                    if (lioMapperItemR.ivstrCoord.Contains("FIX"))
+                                        livstrPropertyValue = lioMapperItemR.ivstrformat;
                                     else
                                         livstrPropertyValue = livstrLine.Substring(livnumFrom - 1, livnumOffset).Trim();
+                                    livstrPropertyValue = Format.Property(lioMapperItemR.ivstrProperty, livstrPropertyValue);
                                     switch (lioMapperItemR.ivstrProperty)
                                     {
                                         case "coItems.ivstrId":
@@ -962,10 +966,11 @@ namespace Applet.Nat.Api.Br.Models
                                     if (livstrLine.Length < livnumFrom) continue;
                                     if (livstrLine.Length < livnumFrom - 1 + livnumOffset)
                                         livnumOffset = livstrLine.Length - livnumFrom + 1;
-                                    if (lioMapperItem.ivstrCoord.Contains("FIX"))
-                                        livstrPropertyValue = lioMapperItem.ivstrformat;
+                                    if (lioMapperItemR.ivstrCoord.Contains("FIX"))
+                                        livstrPropertyValue = lioMapperItemR.ivstrformat;
                                     else
                                         livstrPropertyValue = livstrLine.Substring(livnumFrom - 1, livnumOffset).Trim();
+                                    livstrPropertyValue = Format.Property(lioMapperItemR.ivstrProperty, livstrPropertyValue);
                                     switch (lioMapperItemR.ivstrProperty)
                                     {
                                         case "coItemsCT.ivnroTipo":
@@ -1048,15 +1053,18 @@ namespace Applet.Nat.Api.Br.Models
                         livstrLine = cvstrInDocumentLines[livnumLine + livnumFrom]; //linea real a leer
                         if (string.IsNullOrEmpty(livstrLine.Trim()) || livstrLine.Trim() == "\r")
                             continue;
-                        int livnumColumn = 1;
+                        int livnumColumn = 0;
                         while (livnumOffset < livstrLine.Length)
                         {
+                            livnumColumn++;
                             if (livstrLine.Length < livnumLen + livnumOffset)
                                 livnumLen = livstrLine.Length - livnumOffset; // ajusta el offset al final de la linea
                             if (lioMapperItem.ivstrCoord.Contains("FIX"))
                                 livstrPropertyValue = lioMapperItem.ivstrformat;
                             else
                                 livstrPropertyValue = livstrLine.Substring(livnumOffset, livnumLen).Trim();
+                            livstrPropertyValue = Format.Property(lioMapperItem.ivstrProperty, livstrPropertyValue);
+                            livnumOffset += livnumLen;
                             switch (lioMapperItem.ivstrProperty)
                             {
                                 case "coAsociados.ivnroCbtetipo":
@@ -1127,7 +1135,7 @@ namespace Applet.Nat.Api.Br.Models
                                 case "coOtrosTributos.ivnroId":
                                     if (!short.TryParse(livstrPropertyValue, out livnro))
                                     {
-                                        lioSbErrors.AppendLine($"Linea {livnumLine + 1}: Id {Resources.lioE_ObjectNoM}");
+                                        lioSbErrors.AppendLine($"Linea {livnumLine + 1}: Id Otros Tributos {Resources.lioE_ObjectNoM}");
                                         livblnOK = false;
                                         continue;
                                     }
@@ -1150,7 +1158,7 @@ namespace Applet.Nat.Api.Br.Models
                                 case "coOtrosTributos.ivdblBaseImp":
                                     if (!Double.TryParse(livstrPropertyValue, out livval))
                                     {
-                                        lioSbErrors.AppendLine($"Linea {livnumLine + 1}: Base Imponible {Resources.lioE_ObjectNoF}");
+                                        lioSbErrors.AppendLine($"Linea {livnumLine + 1}: Base Imponible Otros Tributos {Resources.lioE_ObjectNoF}");
                                         livblnOK = false;
                                         continue;
                                     }
@@ -1163,7 +1171,7 @@ namespace Applet.Nat.Api.Br.Models
                                 case "coOtrosTributos.ivdblAlicuota":
                                     if (!Double.TryParse(livstrPropertyValue, out livval))
                                     {
-                                        lioSbErrors.AppendLine($"Linea {livnumLine + 1}: Alicuota encontrada");
+                                        lioSbErrors.AppendLine($"Linea {livnumLine + 1}: Alicuota Otros Tributos {Resources.lioE_ObjectNoF}");
                                         livblnOK = false;
                                         continue;
                                     }
@@ -1176,7 +1184,7 @@ namespace Applet.Nat.Api.Br.Models
                                 case "coOtrosTributos.ivdblImporte":
                                     if (!Double.TryParse(livstrPropertyValue, out livval))
                                     {
-                                        lioSbErrors.AppendLine($"Linea {livnumLine + 1}: Importe {Resources.lioE_ObjectNoM}");
+                                        lioSbErrors.AppendLine($"Linea {livnumLine + 1}: Importe Otros Tributos {Resources.lioE_ObjectNoM}");
                                         livblnOK = false;
                                         continue;
                                     }
@@ -1189,7 +1197,7 @@ namespace Applet.Nat.Api.Br.Models
                                 case "coIvas.ivnroTipo":
                                     if (!short.TryParse(livstrPropertyValue, out livnro))
                                     {
-                                        lioSbErrors.AppendLine($"Linea {livnumLine + 1}: Tipo Iva {Resources.lioE_ObjectNoF}");
+                                        lioSbErrors.AppendLine($"Linea {livnumLine + 1}: Tipo IVA {Resources.lioE_ObjectNoF}");
                                         livblnOK = false;
                                         continue;
                                     }
@@ -1202,7 +1210,7 @@ namespace Applet.Nat.Api.Br.Models
                                 case "coIvas.ivdblBaseImponible":
                                     if (!Double.TryParse(livstrPropertyValue, out livval))
                                     {
-                                        lioSbErrors.AppendLine($"Linea {livnumLine + 1}: Base Imponible {Resources.lioE_ObjectNoF}");
+                                        lioSbErrors.AppendLine($"Linea {livnumLine + 1}: Base Imponible IVA {Resources.lioE_ObjectNoF}");
                                         livblnOK = false;
                                         continue;
                                     }
@@ -1215,7 +1223,7 @@ namespace Applet.Nat.Api.Br.Models
                                 case "coIvas.ivdblImporte":
                                     if (!Double.TryParse(livstrPropertyValue, out livval))
                                     {
-                                        lioSbErrors.AppendLine($"Linea {livnumLine + 1}: Importe {Resources.lioE_ObjectNoM}");
+                                        lioSbErrors.AppendLine($"Linea {livnumLine + 1}: Importe IVA {Resources.lioE_ObjectNoM}");
                                         livblnOK = false;
                                         continue;
                                     }
@@ -1483,8 +1491,6 @@ namespace Applet.Nat.Api.Br.Models
                                     lioDocumentUser.coItemsCT[livnumColumn - 1].ivdblImporteItem = livval;
                                     break;
                             }
-                            livnumOffset += livnumLen;
-                            livnumColumn++;
                         }
                         if (lioSbErrors.Length > 0)
                             throw new Exception(lioSbErrors.ToString());
@@ -1571,6 +1577,7 @@ namespace Applet.Nat.Api.Br.Models
                     }
                     if (string.IsNullOrEmpty(livstrPropertyValue))
                         continue;
+                    livstrPropertyValue = Format.Property(lioMapperItem.ivstrProperty, livstrPropertyValue);
                     foreach (ServiceMapperItemXPath lioServiceMapperItemXPath in lioMapperItem.coXPaths)
                     {
                         lioXmlNode = lioXmlToPrinter.SelectSingleNode(lioServiceMapperItemXPath.ivstrData.Replace("{N}", "1"), lioNsMngr);
@@ -1603,7 +1610,7 @@ namespace Applet.Nat.Api.Br.Models
                     {
                         livnumLine++;
                         livstr = cvstrInDocumentLines[livnumLine] ?? string.Empty;
-                        if (string.IsNullOrEmpty(livstr) || livstr == "\r")
+                        if (string.IsNullOrEmpty(livstr.Trim()) || livstr.Trim() == "\r")
                         {
                             livnumExtendido++;
                             continue;
@@ -1625,6 +1632,7 @@ namespace Applet.Nat.Api.Br.Models
                         }
                         if (string.IsNullOrEmpty(livstrPropertyValue))
                             continue;
+                        livstrPropertyValue = Format.Property(lioMapperItem.ivstrProperty, livstrPropertyValue);
                         //recupera xpaths a cargar
                         foreach (ServiceMapperItemXPath lioServiceMapperItemXPath in lioMapperItem.coXPaths)
                         {
@@ -1707,8 +1715,9 @@ namespace Applet.Nat.Api.Br.Models
                             livnumLen = livstr.Length - livnumOffset; // ajusta el offset al final de la linea
                         if (lioMapperItem.ivstrCoord.Contains("FIX"))
                             livstrPropertyValue = lioMapperItem.ivstrformat;
-                        else 
+                        else
                             livstrPropertyValue = livstr.Substring(livnumOffset, livnumLen).Trim();
+                        livstrPropertyValue = Format.Property(lioMapperItem.ivstrProperty, livstrPropertyValue);
                         foreach (ServiceMapperItemXPath lioServiceMapperItemXPath in lioMapperItem.coXPaths)
                         {
                             if (!string.IsNullOrEmpty(lioServiceMapperItemXPath.ivstrParent))
@@ -1781,13 +1790,6 @@ namespace Applet.Nat.Api.Br.Models
             rivstrInicio = string.Empty;
             if (string.IsNullOrEmpty(vivstrXpath))
                 return false;
-            if (vivstrXpath.Contains("FIX"))
-            {
-                rivnumRelativeline = 0;
-                rivnumOffset = 0;
-                rivnumLen = 0;
-                return true;
-            }
             string[] cvstr = vivstrXpath.Split(':');
             if (cvstr.Length != 2)
                 return false;
@@ -1795,6 +1797,13 @@ namespace Applet.Nat.Api.Br.Models
             if (string.IsNullOrEmpty(rivstrInicio) || !rivstrInicio.StartsWith("*"))
                 return false;
             string livstr = cvstr[1].Trim();
+            if (livstr.Contains("FIX"))
+            {
+                rivnumRelativeline = 0;
+                rivnumOffset = 0;
+                rivnumLen = 0;
+                return true;
+            }
             if (livstr.Split(',').Length < 2)
                 return false;
             if (!int.TryParse(livstr.Split(',')[0], out rivnumRelativeline) || !int.TryParse(livstr.Split(',')[1], out rivnumOffset))

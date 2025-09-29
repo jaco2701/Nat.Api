@@ -13,7 +13,7 @@ namespace Applet.Nat.Api.Static
                 foreach (DataTable lioDataTable in vioDataSet.Tables)
                 {
                     ExcelWorksheet lioWs = lioxlPackage.Workbook.Worksheets.Add(lioDataTable.TableName);
-                    int livnumRow = 1;
+                    int livnumRow = 1, livnumColum;
                     short livnro = 0;
                     lioWs.Cells[livnumRow, 3].Value = DateTime.Now.ToString("'Fecha:' dd/MM/yyyy");
                     lioWs.Cells[livnumRow, 4].Value = DateTime.Now.ToString("'Hora:' hh:mm");
@@ -34,12 +34,16 @@ namespace Applet.Nat.Api.Static
                                 lioWs.Column(i).Width = livnro;
                             lioWs.Cells[livnumRow, i].Value = lioDataTable.Columns[i-1].ColumnName;
                         }
-                        for (int j = livnumRow; j <= lioDataTable.Rows.Count; j++)
-                            for (int k = 1; k <= lioDataTable.Columns.Count; k++)
+                        for (int j = 0; j < lioDataTable.Rows.Count; j++)
+                        {
+                            livnumColum=1;
+                            for (int k = 0; k < lioDataTable.Columns.Count; k++)
                             {
-                                lioWs.Cells[j + 1, k].Value = lioDataTable.Rows[j - 1].ItemArray[k - 1].ToString();
-
+                                lioWs.Cells[livnumRow, livnumColum].Value = lioDataTable.Rows[j].ItemArray[k].ToString();
+                                livnumColum++;
                             }
+                            livnumRow++;
+                        }
                     }
                     lioxlPackage.Save();
                 }

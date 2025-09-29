@@ -300,6 +300,19 @@ namespace Applet.Nat.Api.Static
                         rivException = String.Empty;
                         return livlng + livdec;*/
         }
+        public static string Property(string vivstrPropName, string vivstrPropValue)
+        {
+            if (!vivstrPropName.Contains("dbl"))
+                return vivstrPropValue;
+            if (!vivstrPropValue.Contains(","))
+                return vivstrPropValue;
+            //tiene ,
+            if (vivstrPropValue.Contains("."))
+                //tiene , y . reemplaza primero los . y luego las , por .
+                return vivstrPropValue.Replace(".", string.Empty).Replace(",", ".");
+            //solo reemplaza las ,
+            return vivstrPropValue.Replace(",", ".");
+        }
 
         public static double? GetDoubleFromString(string vivstrDoubleval, short vivnroDecpos)
         {

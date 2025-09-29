@@ -48,6 +48,9 @@
 				<EmailCont/>
 				<DirRcp>
 					<Calle/>
+					<Numero/>
+					<Piso/>
+					<Departamento/>
 					<Localidad/>
 					<Referencia/>
 					<Municipio/>
@@ -128,6 +131,7 @@
 			<NumericField name="CostoOperativo">0</NumericField>
 			<NumericField name="Descuento">0</NumericField>
 			<NumericField name="Flete">0</NumericField>
+			<NumericField name="ImporteDolar">0</NumericField>
 			<NumericField name="Impuesto1">0</NumericField>
 			<NumericField name="Impuesto10">0</NumericField>
 			<NumericField name="Impuesto11">0</NumericField>
@@ -154,7 +158,7 @@
 			<NumericField name="Impuesto8">0</NumericField>
 			<NumericField name="Impuesto9">0</NumericField>
 			<NumericField name="IVA1">0</NumericField>
-			<NumericField name="IVA1=2">0</NumericField>
+			<NumericField name="IVA2">0</NumericField>
 			<NumericField name="IVA3">0</NumericField>
 			<NumericField name="IVA4">0</NumericField>
 			<NumericField name="IVA5">0</NumericField>
@@ -190,11 +194,17 @@
 			<NumericField name="TasaIVA3">0</NumericField>
 			<NumericField name="TasaIVA4">0</NumericField>
 			<NumericField name="TasaIVA5">0</NumericField>
+			<NumericField name="TasaUSD">0</NumericField>
 			<StringField name="CalleRcp"/>
 			<StringField name="CalleRpt"/>
 			<StringField name="CalleRes"/>
 			<StringField name="Carga"/>
+			<StringField name="CiudadEntrega"/>
+			<StringField name="CodigoClienteEntrega"/>
 			<StringField name="Comentario"/>
+			<StringField name="Contacto"/>
+			<StringField name="ContactoNynas"/>	
+			<StringField name="CPEntrega"/>			
 			<StringField name="CPRcp"/>
 			<StringField name="CPRpt"/>
 			<StringField name="CPRes"/>
@@ -203,10 +213,15 @@
 			<StringField name="DescRespRecep"/>
 			<StringField name="Descuento"/>
 			<StringField name="Distribuye"/>
+			<StringField name="DomicilioEntrega"/>
 			<StringField name="EntregarEn1"/>
 			<StringField name="EntregarEn2"/>
+			<StringField name="Fax"/>
 			<StringField name="FechaCarga"/>
 			<StringField name="FechaImpresion"/>
+			<StringField name="FechaPedido"/>
+			<StringField name="FechaSolicitada"/>
+			<StringField name="FechaEntrega"/>
 			<StringField name="ID1"/>
 			<StringField name="ID2"/>
 			<StringField name="ID3"/>
@@ -229,18 +244,22 @@
 			<StringField name="LugarImpresion"/>
 			<StringField name="Mes"/>
 			<StringField name="MontoPalabras"/>
+			<StringField name="NombreEntrega"/>
 			<StringField name="NroRef"/>
+			<StringField name="NroRI"/>
 			<StringField name="NumeroRpt"/>
 			<StringField name="OrdenCompra"/>
 			<StringField name="OrdenVenta"/>
 			<StringField name="Origen"/>
 			<StringField name="OV"/>
+			<StringField name="PaisEntrega"/>
 			<StringField name="PaisRcp"/>
 			<StringField name="PaisRes"/>
 			<StringField name="PaisRpt"/>
 			<StringField name="Pedido"/>
 			<StringField name="PisoRpt"/>
 			<StringField name="ProvinciaEmi"/>
+			<StringField name="ProvinciaEntrega"/>
 			<StringField name="ProvinciaRcp"/>
 			<StringField name="ProvinciaRpt"/>
 			<StringField name="ProvinciaRes"/>
@@ -249,6 +268,8 @@
 			<StringField name="SerieRef"/>
 			<StringField name="SIGEXT_MOTIVO"/>
 			<StringField name="Texto1"/>
+			<StringField name="TerminosVenta1"/>
+			<StringField name="TerminosVenta2"/>
 			<StringField name="Texto2"/>
 			<StringField name="TextoCabecera"/>
 			<StringField name="TextoCabecera1"/>
@@ -292,6 +313,7 @@
 			<StringField name="TitImpuesto7"/>
 			<StringField name="TitImpuesto8"/>
 			<StringField name="TitImpuesto9"/>
+			<StringField name="Transporte"/>
 			<StringField name="Unidades"/>
 			<StringField name="ValorID1"/>
 			<StringField name="ValorID2"/>

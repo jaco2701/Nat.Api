@@ -129,10 +129,10 @@ namespace Applet.Nat.Api.Br.Models
                 ioDcModel.ivlngDoc = NN();
                 Cuit lioCuit = new Cuit(ioDcModel.ivlngCuitEmisor, mioContext);
                 if (lioCuit.ioCnfg == null || lioCuit.ioCnfg.coTemplateVersions == null)
-                    throw new Exception(string.Format(Resources.lioE_ObjectNoM, "CnfgCuit", "a"));
+                    throw new Exception($"Version de Plantillas {Resources.lioE_ObjectNoM}");
                 TemplateVersion lioO = lioCuit.ioCnfg.coTemplateVersions.FirstOrDefault(x => x.ivnroTipo == ioDcModel.ivnroTipo);
                 if (lioO == null)
-                    throw new Exception(string.Format(Resources.lioE_ObjectNoM, "TemplateVersion", "a"));
+                    throw new Exception($"Version de Plantillas {Resources.lioE_ObjectNoM}");
                 ioDcModel.ivnroTemplateVersion = lioO.ivnroTemplateVersion;
                 mioContext.Documents.Add(ioDcModel);
             }
