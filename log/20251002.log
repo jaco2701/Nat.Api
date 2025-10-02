@@ -1,0 +1,698 @@
+02/10/2025 06:13:39==>Encabezado de Autorizacion Invalido
+   at Applet.Nat.Api.Middleware.HeaderValidation.InvokeAsync(HttpContext context) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Middleware\HeaderValidation.cs:line 23
+02/10/2025 06:20:07==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 44
+02/10/2025 06:20:07==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 54
+02/10/2025 06:20:07==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 64
+02/10/2025 06:20:07==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 44
+02/10/2025 06:20:07==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 54
+02/10/2025 06:20:07==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 64
+02/10/2025 06:20:07==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 44
+02/10/2025 06:20:07==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 54
+02/10/2025 06:20:07==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 64
+02/10/2025 06:20:36==>Cuit Emisor no Encontrado o con forrmato erroneo.
+   at Applet.Nat.Api.Static.Queue.UploadDocument(DocumentsUploadRequest vioDocumentsUpload, IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 338
+   at Applet.Nat.Api.Controllers.DocumentController.Upload(DocumentsUploadRequest vioDocumentsUpload) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\DocumentController.cs:line 119
+02/10/2025 06:22:59==>The archive entry was compressed using an unsupported compression method.
+   at System.IO.Compression.Inflater.Inflate(FlushCode flushCode)
+   at System.IO.Compression.Inflater.ReadInflateOutput(Byte* bufPtr, Int32 length, FlushCode flushCode, Int32& bytesRead)
+   at System.IO.Compression.Inflater.InflateVerified(Byte* bufPtr, Int32 length)
+   at System.IO.Compression.DeflateStream.CopyToStream.Write(Byte[] buffer, Int32 offset, Int32 count)
+   at System.IO.Compression.DeflateStream.CopyToStream.CopyFromSourceToDestination()
+   at System.IO.Compression.DeflateStream.CopyTo(Stream destination, Int32 bufferSize)
+   at Applet.Nat.Api.Static.Format.UnCompress2(String value) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Format.cs:line 383
+   at Applet.Nat.Api.Static.Format.UnCompress(String vivstr, Encoding vioEncoding) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Format.cs:line 373
+   at Applet.Nat.Api.Br.Models.InDocumentXML.ToDocumentUser() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\InDocumentXML.cs:line 34
+02/10/2025 06:23:57==>Ejecucion Previa aun no finalizada
+   at Applet.Nat.Api.Controllers.MiscController.Queue() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 147
+02/10/2025 06:24:10==>no Encontrado o con forrmato erroneo.
+   at Applet.Nat.Api.Br.Models.Document.SendResponse() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 291
+   at Applet.Nat.Api.Br.Models.Document.Auth() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 272
+02/10/2025 06:24:23==>Object reference not set to an instance of an object.
+   at Applet.Nat.Api.Br.Models.InDocumentTXT.ToPrint() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\InDocumentTXT.cs:line 1666
+   at Applet.Nat.Api.Br.Models.Document.Print() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 428
+02/10/2025 06:24:23==>Error en Impresion de Documento
+   at Applet.Nat.Api.Br.Models.Document.Print() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 478
+   at Applet.Nat.Api.Static.Queue.BuildTaskDocs(List`1 vcvlngDocsToTask, IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 125
+02/10/2025 06:34:04==>Object reference not set to an instance of an object.
+   at Applet.Nat.Api.Br.Models.InDocumentTXT.ToPrint() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\InDocumentTXT.cs:line 1666
+   at Applet.Nat.Api.Br.Models.Document.Print() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 428
+02/10/2025 06:34:04==>Error en Impresion de Documento
+   at Applet.Nat.Api.Br.Models.Document.Print() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 478
+   at Applet.Nat.Api.Controllers.DocumentController.Task(DocumentTask vioDocumentTask) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\DocumentController.cs:line 172
+02/10/2025 06:34:04==>Ejecucion Previa aun no finalizada
+   at Applet.Nat.Api.Controllers.MiscController.Queue() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 147
+02/10/2025 06:34:04==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 44
+02/10/2025 06:34:04==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 54
+02/10/2025 06:34:04==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 64
+02/10/2025 06:34:04==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 44
+02/10/2025 06:34:04==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 54
+02/10/2025 06:34:04==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 64
+02/10/2025 06:34:17==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 06:34:43==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 06:35:21==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 06:35:33==>The archive entry was compressed using an unsupported compression method.
+   at System.IO.Compression.Inflater.Inflate(FlushCode flushCode)
+   at System.IO.Compression.Inflater.ReadInflateOutput(Byte* bufPtr, Int32 length, FlushCode flushCode, Int32& bytesRead)
+   at System.IO.Compression.Inflater.InflateVerified(Byte* bufPtr, Int32 length)
+   at System.IO.Compression.DeflateStream.CopyToStream.CopyFromSourceToDestination()
+   at System.IO.Compression.DeflateStream.CopyTo(Stream destination, Int32 bufferSize)
+   at Applet.Nat.Api.Static.Format.UnCompress2(String value) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Format.cs:line 383
+   at Applet.Nat.Api.Br.Models.Document.Share() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 207
+02/10/2025 06:35:58==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 06:36:34==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 06:37:11==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 06:37:49==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 06:38:26==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 06:39:02==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 06:39:38==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 06:40:15==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 06:40:29==>Linea 82: Id Otros Tributos no Encontrado o con forrmato erroneo.
+
+   at Applet.Nat.Api.Br.Models.InDocumentTXT.ToDocumentUser() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\InDocumentTXT.cs:line 1496
+02/10/2025 06:40:52==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 06:41:29==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 06:42:05==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 06:51:58==>Ejecucion Previa aun no finalizada
+   at Applet.Nat.Api.Controllers.MiscController.Queue() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 147
+02/10/2025 06:52:14==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 44
+02/10/2025 06:52:14==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 54
+02/10/2025 06:52:14==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 64
+02/10/2025 06:52:14==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 44
+02/10/2025 06:52:14==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 54
+02/10/2025 06:52:14==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 64
+02/10/2025 06:52:38==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 06:53:16==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 06:54:02==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 06:54:48==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 06:59:38==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 44
+02/10/2025 06:59:38==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 54
+02/10/2025 06:59:38==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 64
+02/10/2025 06:59:38==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 44
+02/10/2025 06:59:38==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 54
+02/10/2025 06:59:38==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 64
+02/10/2025 06:59:39==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 44
+02/10/2025 06:59:39==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 54
+02/10/2025 06:59:39==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 64
+02/10/2025 07:00:00==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 44
+02/10/2025 07:00:00==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 54
+02/10/2025 07:00:00==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 64
+02/10/2025 07:00:00==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 44
+02/10/2025 07:00:00==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 54
+02/10/2025 07:00:00==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 64
+02/10/2025 07:00:00==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 44
+02/10/2025 07:00:01==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 54
+02/10/2025 07:00:01==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 64
+02/10/2025 07:01:10==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 44
+02/10/2025 07:01:10==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 54
+02/10/2025 07:01:10==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 64
+02/10/2025 07:01:10==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 44
+02/10/2025 07:01:10==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 54
+02/10/2025 07:01:10==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 64
+02/10/2025 07:01:10==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 44
+02/10/2025 07:01:11==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 54
+02/10/2025 07:01:11==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 64
+02/10/2025 07:08:40==>The archive entry was compressed using an unsupported compression method.
+   at System.IO.Compression.Inflater.Inflate(FlushCode flushCode)
+   at System.IO.Compression.Inflater.ReadInflateOutput(Byte* bufPtr, Int32 length, FlushCode flushCode, Int32& bytesRead)
+   at System.IO.Compression.Inflater.ReadOutput(Byte* bufPtr, Int32 length, Int32& bytesRead)
+   at System.IO.Compression.Inflater.InflateVerified(Byte* bufPtr, Int32 length)
+   at System.IO.Compression.DeflateStream.CopyToStream.Write(Byte[] buffer, Int32 offset, Int32 count)
+   at System.IO.Compression.DeflateStream.CopyToStream.CopyFromSourceToDestination()
+   at Applet.Nat.Api.Static.Format.UnCompress2(String value) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Format.cs:line 383
+   at Applet.Nat.Api.Static.Format.UnCompress(String vivstr, Encoding vioEncoding) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Format.cs:line 373
+   at Applet.Nat.Api.Br.Models.InDocumentXML.ToDocumentUser() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\InDocumentXML.cs:line 34
+02/10/2025 07:09:07==>Ejecucion Previa aun no finalizada
+   at Applet.Nat.Api.Controllers.MiscController.Queue() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 147
+02/10/2025 07:09:18==>no Encontrado o con forrmato erroneo.
+   at Applet.Nat.Api.Br.Models.Document.SendResponse() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 291
+   at Applet.Nat.Api.Br.Models.Document.Auth() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 272
+02/10/2025 07:09:20==>System.FormatException: Input string was not in a correct format.
+   at System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   at System.Number.ParseDecimal(String value, NumberStyles options, NumberFormatInfo numfmt)
+   at System.Data.Common.DecimalStorage.ConvertXmlToObject(String s)
+   at System.Data.XmlDataLoader.LoadColumn(DataColumn column, Object[] foundColumns)
+   at System.Data.XmlDataLoader.LoadTable(DataTable table, Boolean isNested)
+   at System.Data.XmlDataLoader.LoadTable(DataTable table, Boolean isNested)
+   at System.Data.XmlDataLoader.LoadTable(DataTable table, Boolean isNested)
+   at System.Data.XmlDataLoader.LoadTopMostTable(DataTable table)
+   at System.Data.XmlDataLoader.LoadData(XmlReader reader)
+   at System.Data.DataSet.ReadXml(XmlReader reader, Boolean denyResolving)
+   at Nat.Rpt.Controllers.GenPdfController.Post(PrintRequest vioRequest) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Rpt\Controllers\GenPdfController.cs:line 53
+   at Applet.Nat.Api.Br.Models.Document.Print() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 467
+02/10/2025 07:09:21==>Error en Impresion de Documento
+   at Applet.Nat.Api.Br.Models.Document.Print() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 478
+   at Applet.Nat.Api.Static.Queue.BuildTaskDocs(List`1 vcvlngDocsToTask, IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 125
+02/10/2025 07:09:48==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 07:10:02==>System.FormatException: Input string was not in a correct format.
+   at System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   at System.Number.ParseDecimal(String value, NumberStyles options, NumberFormatInfo numfmt)
+   at System.Data.Common.DecimalStorage.ConvertXmlToObject(String s)
+   at System.Data.XmlDataLoader.LoadColumn(DataColumn column, Object[] foundColumns)
+   at System.Data.XmlDataLoader.LoadTable(DataTable table, Boolean isNested)
+   at System.Data.XmlDataLoader.LoadTable(DataTable table, Boolean isNested)
+   at System.Data.XmlDataLoader.LoadTable(DataTable table, Boolean isNested)
+   at System.Data.XmlDataLoader.LoadTopMostTable(DataTable table)
+   at System.Data.XmlDataLoader.LoadData(XmlReader reader)
+   at System.Data.DataSet.ReadXml(XmlReader reader, Boolean denyResolving)
+   at Nat.Rpt.Controllers.GenPdfController.Post(PrintRequest vioRequest) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Rpt\Controllers\GenPdfController.cs:line 53
+   at Applet.Nat.Api.Br.Models.Document.Print() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 467
+02/10/2025 07:10:02==>Error en Impresion de Documento
+   at Applet.Nat.Api.Br.Models.Document.Print() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 478
+   at Applet.Nat.Api.Controllers.DocumentController.Task(DocumentTask vioDocumentTask) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\DocumentController.cs:line 172
+02/10/2025 07:11:00==>System.FormatException: Input string was not in a correct format.
+   at System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   at System.Number.ParseDecimal(String value, NumberStyles options, NumberFormatInfo numfmt)
+   at System.Data.Common.DecimalStorage.ConvertXmlToObject(String s)
+   at System.Data.XmlDataLoader.LoadColumn(DataColumn column, Object[] foundColumns)
+   at System.Data.XmlDataLoader.LoadTable(DataTable table, Boolean isNested)
+   at System.Data.XmlDataLoader.LoadTable(DataTable table, Boolean isNested)
+   at System.Data.XmlDataLoader.LoadTable(DataTable table, Boolean isNested)
+   at System.Data.XmlDataLoader.LoadTopMostTable(DataTable table)
+   at System.Data.XmlDataLoader.LoadData(XmlReader reader)
+   at System.Data.DataSet.ReadXml(XmlReader reader, Boolean denyResolving)
+   at Nat.Rpt.Controllers.GenPdfController.Post(PrintRequest vioRequest) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Rpt\Controllers\GenPdfController.cs:line 53
+   at Applet.Nat.Api.Br.Models.Document.Print() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 467
+02/10/2025 07:11:00==>Error en Impresion de Documento
+   at Applet.Nat.Api.Br.Models.Document.Print() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 478
+   at Applet.Nat.Api.Controllers.DocumentController.Task(DocumentTask vioDocumentTask) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\DocumentController.cs:line 172
+02/10/2025 07:11:16==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 07:12:51==>System.FormatException: Input string was not in a correct format.
+   at System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   at System.Number.ParseDecimal(String value, NumberStyles options, NumberFormatInfo numfmt)
+   at System.Data.Common.DecimalStorage.ConvertXmlToObject(String s)
+   at System.Data.XmlDataLoader.LoadColumn(DataColumn column, Object[] foundColumns)
+   at System.Data.XmlDataLoader.LoadTable(DataTable table, Boolean isNested)
+   at System.Data.XmlDataLoader.LoadTable(DataTable table, Boolean isNested)
+   at System.Data.XmlDataLoader.LoadTable(DataTable table, Boolean isNested)
+   at System.Data.XmlDataLoader.LoadTopMostTable(DataTable table)
+   at System.Data.XmlDataLoader.LoadData(XmlReader reader)
+   at System.Data.DataSet.ReadXml(XmlReader reader, Boolean denyResolving)
+   at Nat.Rpt.Controllers.GenPdfController.Post(PrintRequest vioRequest) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Rpt\Controllers\GenPdfController.cs:line 53
+   at Applet.Nat.Api.Br.Models.Document.Print() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 467
+02/10/2025 07:12:51==>Error en Impresion de Documento
+   at Applet.Nat.Api.Br.Models.Document.Print() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 478
+   at Applet.Nat.Api.Controllers.DocumentController.Task(DocumentTask vioDocumentTask) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\DocumentController.cs:line 172
+02/10/2025 07:13:16==>Ejecucion Previa aun no finalizada
+   at Applet.Nat.Api.Controllers.MiscController.Queue() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 147
+02/10/2025 07:13:20==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 07:13:55==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 07:14:36==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 07:15:14==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 07:15:53==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 07:16:35==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 07:17:14==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 07:17:54==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 44
+02/10/2025 07:17:54==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 54
+02/10/2025 07:17:54==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 64
+02/10/2025 07:17:54==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 44
+02/10/2025 07:17:54==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 54
+02/10/2025 07:17:54==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 64
+02/10/2025 07:17:58==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 07:18:38==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 07:19:10==>Ejecucion Previa aun no finalizada
+   at Applet.Nat.Api.Controllers.MiscController.Queue() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 147
+02/10/2025 07:19:51==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 07:20:04==>The archive entry was compressed using an unsupported compression method.
+   at System.IO.Compression.Inflater.Inflate(FlushCode flushCode)
+   at System.IO.Compression.Inflater.ReadInflateOutput(Byte* bufPtr, Int32 length, FlushCode flushCode, Int32& bytesRead)
+   at System.IO.Compression.Inflater.InflateVerified(Byte* bufPtr, Int32 length)
+   at System.IO.MemoryStream.CopyTo(Stream destination, Int32 bufferSize)
+   at System.IO.Compression.DeflateStream.CopyToStream.CopyFromSourceToDestination()
+   at System.IO.Compression.DeflateStream.CopyTo(Stream destination, Int32 bufferSize)
+   at Applet.Nat.Api.Static.Format.UnCompress2(String value) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Format.cs:line 383
+   at Applet.Nat.Api.Br.Models.Document.Share() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 207
+02/10/2025 07:20:32==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 07:21:10==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 07:21:48==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 07:22:24==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 07:22:57==>The archive entry was compressed using an unsupported compression method.
+   at System.IO.Compression.Inflater.Inflate(FlushCode flushCode)
+   at System.IO.Compression.Inflater.ReadInflateOutput(Byte* bufPtr, Int32 length, FlushCode flushCode, Int32& bytesRead)
+   at System.IO.Compression.Inflater.InflateVerified(Byte* bufPtr, Int32 length)
+   at System.IO.Compression.DeflateStream.CopyToStream.CopyFromSourceToDestination()
+   at System.IO.Compression.DeflateStream.CopyTo(Stream destination, Int32 bufferSize)
+   at Applet.Nat.Api.Static.Format.UnCompress2(String value) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Format.cs:line 383
+   at Applet.Nat.Api.Static.Format.UnCompress(String vivstr, Encoding vioEncoding) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Format.cs:line 373
+   at Applet.Nat.Api.Br.Models.InDocumentXML.ToDocumentUser() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\InDocumentXML.cs:line 34
+02/10/2025 07:23:01==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 07:23:11==>Errores en Envio de Documento a AFIP:
+no Encontrado o con forrmato erroneo.
+no Encontrado o con forrmato erroneo.
+no Encontrado o con forrmato erroneo.
+
+   at Applet.Nat.Api.Br.Models.DocumentExp.Validate() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentExp.cs:line 556
+   at Applet.Nat.Api.Br.Models.Document.Validate() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 183
+   at Applet.Nat.Api.Static.Queue.BuildTaskDocs(List`1 vcvlngDocsToTask, IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 87
+02/10/2025 07:23:41==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 07:24:19==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 07:29:51==>Ejecucion Previa aun no finalizada
+   at Applet.Nat.Api.Controllers.MiscController.Queue() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 147
+02/10/2025 07:30:04==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 44
+02/10/2025 07:30:04==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 54
+02/10/2025 07:30:05==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 64
+02/10/2025 07:30:05==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 44
+02/10/2025 07:30:05==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 54
+02/10/2025 07:30:05==>Valor de Lista CUIT:0 no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 64
+02/10/2025 07:30:20==>The archive entry was compressed using an unsupported compression method.
+   at System.IO.Compression.Inflater.Inflate(FlushCode flushCode)
+   at System.IO.Compression.Inflater.ReadInflateOutput(Byte* bufPtr, Int32 length, FlushCode flushCode, Int32& bytesRead)
+   at System.IO.Compression.Inflater.ReadOutput(Byte* bufPtr, Int32 length, Int32& bytesRead)
+   at System.IO.Compression.Inflater.InflateVerified(Byte* bufPtr, Int32 length)
+   at System.IO.Compression.DeflateStream.CopyToStream.Write(Byte[] buffer, Int32 offset, Int32 count)
+   at System.IO.Compression.DeflateStream.CopyToStream.CopyFromSourceToDestination()
+   at Applet.Nat.Api.Static.Format.UnCompress2(String value) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Format.cs:line 383
+   at Applet.Nat.Api.Static.Format.UnCompress(String vivstr, Encoding vioEncoding) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Format.cs:line 373
+   at Applet.Nat.Api.Br.Models.InDocumentXML.ToDocumentUser() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\InDocumentXML.cs:line 34
+02/10/2025 07:30:33==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 07:30:43==>Errores en Envio de Documento a AFIP:
+Tipo Exportacion no Encontrado o con forrmato erroneo.
+no Encontrado o con forrmato erroneo.
+no Encontrado o con forrmato erroneo.
+
+   at Applet.Nat.Api.Br.Models.DocumentExp.Validate() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentExp.cs:line 556
+   at Applet.Nat.Api.Br.Models.Document.Validate() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 183
+   at Applet.Nat.Api.Static.Queue.BuildTaskDocs(List`1 vcvlngDocsToTask, IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 87
+02/10/2025 07:31:12==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 07:32:52==>Ejecucion Previa aun no finalizada
+   at Applet.Nat.Api.Controllers.MiscController.Queue() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 147
+02/10/2025 07:33:03==>The archive entry was compressed using an unsupported compression method.
+   at System.IO.Compression.Inflater.Inflate(FlushCode flushCode)
+   at System.IO.Compression.Inflater.ReadInflateOutput(Byte* bufPtr, Int32 length, FlushCode flushCode, Int32& bytesRead)
+   at System.IO.Compression.Inflater.ReadOutput(Byte* bufPtr, Int32 length, Int32& bytesRead)
+   at System.IO.Compression.Inflater.InflateVerified(Byte* bufPtr, Int32 length)
+   at System.IO.Compression.DeflateStream.CopyToStream.Write(Byte[] buffer, Int32 offset, Int32 count)
+   at System.IO.Compression.DeflateStream.CopyToStream.CopyFromSourceToDestination()
+   at Applet.Nat.Api.Static.Format.UnCompress2(String value) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Format.cs:line 383
+   at Applet.Nat.Api.Static.Format.UnCompress(String vivstr, Encoding vioEncoding) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Format.cs:line 373
+   at Applet.Nat.Api.Br.Models.InDocumentXML.ToDocumentUser() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\InDocumentXML.cs:line 34
+02/10/2025 07:33:31==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 07:33:41==>Errores en Envio de Documento a AFIP:
+Tipo Exportacion no Encontrado o con forrmato erroneo.
+Incoterms no Encontrado o con forrmato erroneo.
+Idioma no Encontrado o con forrmato erroneo.
+
+   at Applet.Nat.Api.Br.Models.DocumentExp.Validate() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentExp.cs:line 556
+   at Applet.Nat.Api.Br.Models.Document.Validate() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 183
+   at Applet.Nat.Api.Static.Queue.BuildTaskDocs(List`1 vcvlngDocsToTask, IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 87
+02/10/2025 07:34:10==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 07:34:46==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 07:35:23==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 07:35:59==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 07:36:35==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206
+02/10/2025 07:37:14==>Insufficient memory to continue the execution of the program.
+   at System.Text.StringBuilder.ExpandByABlock(Int32 minBlockCharCount)
+   at System.Text.StringBuilder.AppendWithExpansion(Char& value, Int32 valueCount)
+   at System.Text.StringBuilder.Append(Char[] value, Int32 startIndex, Int32 charCount)
+   at System.IO.StreamReader.ReadToEnd()
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Applet.Nat.Api.Static.Queue.BuildTaskUpLoad(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Queue.cs:line 206

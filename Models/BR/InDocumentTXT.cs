@@ -93,6 +93,7 @@ namespace Applet.Nat.Api.Br.Models
                         else
                             livstrPropertyValue = cvstrInDocumentLines[livnumLine].Substring(livnumOffset - 1).Trim();
                         livstrPropertyValue = Format.Property(lioMapperItem.ivstrProperty, livstrPropertyValue);
+                        if (string.IsNullOrEmpty(livstrPropertyValue)) continue;
                         switch (lioMapperItem.ivstrProperty)
                         {
                             case "ivnroTipoDoc":
@@ -250,7 +251,6 @@ namespace Applet.Nat.Api.Br.Models
                                 if (!string.IsNullOrEmpty(livstrPropertyValue))
                                     lioDocumentUser.ivstrPermisoExistente = livstrPropertyValue;
                                 break;
-                            #endregion
                             #region Emisor
                             case "ivlngCuitEmisor":
                                 if (!long.TryParse(livstrPropertyValue, out livlng))
@@ -459,6 +459,7 @@ namespace Applet.Nat.Api.Br.Models
                                     else
                                         livstrPropertyValue = livstrLine.Substring(livnumFrom - 1, livnumOffset).Trim();
                                     livstrPropertyValue = Format.Property(lioMapperItemR.ivstrProperty, livstrPropertyValue);
+                                    if (string.IsNullOrEmpty(livstrPropertyValue)) continue;
                                     switch (lioMapperItemR.ivstrProperty)
                                     {
                                         case "coAsociados.ivnroCbtetipo":
@@ -549,6 +550,7 @@ namespace Applet.Nat.Api.Br.Models
                                     else
                                         livstrPropertyValue = livstrLine.Substring(livnumFrom - 1, livnumOffset).Trim();
                                     livstrPropertyValue = Format.Property(lioMapperItemR.ivstrProperty, livstrPropertyValue);
+                                    if (string.IsNullOrEmpty(livstrPropertyValue)) continue;
                                     switch (lioMapperItemR.ivstrProperty)
                                     {
                                         case "coOtrosTributos.ivnroId":
@@ -635,6 +637,7 @@ namespace Applet.Nat.Api.Br.Models
                                     else
                                         livstrPropertyValue = livstrLine.Substring(livnumFrom - 1, livnumOffset).Trim();
                                     livstrPropertyValue = Format.Property(lioMapperItemR.ivstrProperty, livstrPropertyValue);
+                                    if (string.IsNullOrEmpty(livstrPropertyValue)) continue;
                                     switch (lioMapperItemR.ivstrProperty)
                                     {
                                         case "coIvas.ivnroTipo":
@@ -708,6 +711,7 @@ namespace Applet.Nat.Api.Br.Models
                                     else
                                         livstrPropertyValue = livstrLine.Substring(livnumFrom - 1, livnumOffset).Trim();
                                     livstrPropertyValue = Format.Property(lioMapperItemR.ivstrProperty, livstrPropertyValue);
+                                    if (string.IsNullOrEmpty(livstrPropertyValue)) continue;
                                     switch (lioMapperItemR.ivstrProperty)
                                     {
                                         case "coOpcionales.ivstrId":
@@ -770,6 +774,7 @@ namespace Applet.Nat.Api.Br.Models
                                     else
                                         livstrPropertyValue = livstrLine.Substring(livnumFrom - 1, livnumOffset).Trim();
                                     livstrPropertyValue = Format.Property(lioMapperItemR.ivstrProperty, livstrPropertyValue);
+                                    if (string.IsNullOrEmpty(livstrPropertyValue)) continue;
                                     switch (lioMapperItemR.ivstrProperty)
                                     {
                                         case "coCompradores.ivnroDocTipo":
@@ -841,6 +846,7 @@ namespace Applet.Nat.Api.Br.Models
                                     else
                                         livstrPropertyValue = livstrLine.Substring(livnumFrom - 1, livnumOffset).Trim();
                                     livstrPropertyValue = Format.Property(lioMapperItemR.ivstrProperty, livstrPropertyValue);
+                                    if (string.IsNullOrEmpty(livstrPropertyValue)) continue;
                                     switch (lioMapperItemR.ivstrProperty)
                                     {
                                         case "coItems.ivstrId":
@@ -971,6 +977,7 @@ namespace Applet.Nat.Api.Br.Models
                                     else
                                         livstrPropertyValue = livstrLine.Substring(livnumFrom - 1, livnumOffset).Trim();
                                     livstrPropertyValue = Format.Property(lioMapperItemR.ivstrProperty, livstrPropertyValue);
+                                    if (string.IsNullOrEmpty(livstrPropertyValue)) continue;
                                     switch (lioMapperItemR.ivstrProperty)
                                     {
                                         case "coItemsCT.ivnroTipo":
@@ -1065,6 +1072,7 @@ namespace Applet.Nat.Api.Br.Models
                                 livstrPropertyValue = livstrLine.Substring(livnumOffset, livnumLen).Trim();
                             livstrPropertyValue = Format.Property(lioMapperItem.ivstrProperty, livstrPropertyValue);
                             livnumOffset += livnumLen;
+                            if (string.IsNullOrEmpty(livstrPropertyValue)) continue;
                             switch (lioMapperItem.ivstrProperty)
                             {
                                 case "coAsociados.ivnroCbtetipo":
@@ -1718,57 +1726,60 @@ namespace Applet.Nat.Api.Br.Models
                         else
                             livstrPropertyValue = livstr.Substring(livnumOffset, livnumLen).Trim();
                         livstrPropertyValue = Format.Property(lioMapperItem.ivstrProperty, livstrPropertyValue);
-                        foreach (ServiceMapperItemXPath lioServiceMapperItemXPath in lioMapperItem.coXPaths)
+                        if (!string.IsNullOrEmpty(livstrPropertyValue))
                         {
-                            if (!string.IsNullOrEmpty(lioServiceMapperItemXPath.ivstrParent))
+                            foreach (ServiceMapperItemXPath lioServiceMapperItemXPath in lioMapperItem.coXPaths)
                             {
-                                //livnumIdx = livstrXp.Split("=>")[0].Trim().IndexOf("[");  // busca el nodo listador
-                                //if (livnumIdx > 0)
-                                //    livstrXPathNodeList = livstrXp.Substring(0, livnumIdx);
-                                //else
-                                //    livstrXPathNodeList = livstrXp;
-                                lcoXmlNodes = lioXmlToPrinter.SelectNodes(lioServiceMapperItemXPath.ivstrParent, lioNsMngr);
-                                if (lcoXmlNodes == null || lcoXmlNodes.Count == 0)
+                                if (!string.IsNullOrEmpty(lioServiceMapperItemXPath.ivstrParent))
                                 {
-                                    lioSbErrors.AppendLine($"{lioMapperItem.ivstrProperty} xpath de nodo repetitivo {lioServiceMapperItemXPath.ivstrParent} {Resources.lioE_ObjectNoM} ");
-                                    continue;
-                                }
-                                if (lioXmlNodeToClone == null)
-                                    lioXmlNodeToClone = lcoXmlNodes.Item(0); // guarda el primer nodo repetitivo para clonarlo
-                                if (lcoXmlNodes.Count < livnumColumn)
-                                {
-                                    //agrega un nodo nuevo al padre
-                                    lioXmlNode = lioXmlToPrinter.ImportNode(lioXmlNodeToClone, true);
-                                    if (lioXmlNode == null)
+                                    //livnumIdx = livstrXp.Split("=>")[0].Trim().IndexOf("[");  // busca el nodo listador
+                                    //if (livnumIdx > 0)
+                                    //    livstrXPathNodeList = livstrXp.Substring(0, livnumIdx);
+                                    //else
+                                    //    livstrXPathNodeList = livstrXp;
+                                    lcoXmlNodes = lioXmlToPrinter.SelectNodes(lioServiceMapperItemXPath.ivstrParent, lioNsMngr);
+                                    if (lcoXmlNodes == null || lcoXmlNodes.Count == 0)
                                     {
-                                        lioSbErrors.AppendLine($"Error en clonado de nodo para nueva linea: {lioMapperItem.ivstrProperty} xpath {lioXmlNodeToClone} {Resources.lioE_ObjectNoM}");
+                                        lioSbErrors.AppendLine($"{lioMapperItem.ivstrProperty} xpath de nodo repetitivo {lioServiceMapperItemXPath.ivstrParent} {Resources.lioE_ObjectNoM} ");
                                         continue;
                                     }
-                                    //clona el nodo y lo agrega al padre
-                                    lioXmlParent = lioXmlNodeToClone.ParentNode;  // obtiene el padre del nodo repetitivo
-                                    if (!string.IsNullOrEmpty(lioServiceMapperItemXPath.ivstrEnum)) // si tiene un numerador, lo actualiza
-                                        lioXmlNode.SelectSingleNode(lioServiceMapperItemXPath.ivstrEnum, lioNsMngr).InnerText = livnumColumn.ToString();
-                                    lioXmlParent.AppendChild(lioXmlNode);
+                                    if (lioXmlNodeToClone == null)
+                                        lioXmlNodeToClone = lcoXmlNodes.Item(0); // guarda el primer nodo repetitivo para clonarlo
+                                    if (lcoXmlNodes.Count < livnumColumn)
+                                    {
+                                        //agrega un nodo nuevo al padre
+                                        lioXmlNode = lioXmlToPrinter.ImportNode(lioXmlNodeToClone, true);
+                                        if (lioXmlNode == null)
+                                        {
+                                            lioSbErrors.AppendLine($"Error en clonado de nodo para nueva linea: {lioMapperItem.ivstrProperty} xpath {lioXmlNodeToClone} {Resources.lioE_ObjectNoM}");
+                                            continue;
+                                        }
+                                        //clona el nodo y lo agrega al padre
+                                        lioXmlParent = lioXmlNodeToClone.ParentNode;  // obtiene el padre del nodo repetitivo
+                                        if (!string.IsNullOrEmpty(lioServiceMapperItemXPath.ivstrEnum)) // si tiene un numerador, lo actualiza
+                                            lioXmlNode.SelectSingleNode(lioServiceMapperItemXPath.ivstrEnum, lioNsMngr).InnerText = livnumColumn.ToString();
+                                        lioXmlParent.AppendChild(lioXmlNode);
+                                    }
+                                    lcoXmlNodes = lioXmlToPrinter.SelectNodes(lioServiceMapperItemXPath.ivstrParent, lioNsMngr);
+                                    livstrXPath = lioServiceMapperItemXPath.ivstrData.Replace("{N}", livnumColumn.ToString());
+                                    lioXmlNode = lcoXmlNodes.Item(livnumColumn - 1).SelectSingleNode(livstrXPath, lioNsMngr);
                                 }
-                                lcoXmlNodes = lioXmlToPrinter.SelectNodes(lioServiceMapperItemXPath.ivstrParent, lioNsMngr);
-                                livstrXPath = lioServiceMapperItemXPath.ivstrData.Replace("{N}", livnumColumn.ToString());
-                                lioXmlNode = lcoXmlNodes.Item(livnumColumn - 1).SelectSingleNode(livstrXPath, lioNsMngr);
-                            }
-                            else
-                            {
-                                livstrXPath = lioServiceMapperItemXPath.ivstrData.Replace("{N}", livnumColumn.ToString());
-                                lioXmlNode = lioXmlToPrinter.SelectSingleNode(livstrXPath, lioNsMngr);
-                            }
-                            if (lioXmlNode == null)
-                            {
-                                lioSbErrors.AppendLine($"{lioMapperItem.ivstrProperty} xpath {livstrXPath} {Resources.lioE_ObjectNoM} ");
-                                continue;
-                            }
-                            lioXmlNode.InnerText = FormatPropertyValue(lioMapperItem, livstrPropertyValue);
-                            if (lioXmlNode.InnerText == null)
-                            {
-                                lioSbErrors.AppendLine($"Error en conversion {lioMapperItem.ivstrProperty}");
-                                continue;
+                                else
+                                {
+                                    livstrXPath = lioServiceMapperItemXPath.ivstrData.Replace("{N}", livnumColumn.ToString());
+                                    lioXmlNode = lioXmlToPrinter.SelectSingleNode(livstrXPath, lioNsMngr);
+                                }
+                                if (lioXmlNode == null)
+                                {
+                                    lioSbErrors.AppendLine($"{lioMapperItem.ivstrProperty} xpath {livstrXPath} {Resources.lioE_ObjectNoM} ");
+                                    continue;
+                                }
+                                lioXmlNode.InnerText = FormatPropertyValue(lioMapperItem, livstrPropertyValue);
+                                if (lioXmlNode.InnerText == null)
+                                {
+                                    lioSbErrors.AppendLine($"Error en conversion {lioMapperItem.ivstrProperty}");
+                                    continue;
+                                }
                             }
                         }
                         livnumOffset += livnumLen;
@@ -1781,6 +1792,7 @@ namespace Applet.Nat.Api.Br.Models
                 throw new Exception(lioSbErrors.ToString());
             return lioXmlToPrinter.OuterXml;
         }
+        #endregion
         #region PRIVATE METHODS
         private bool GetCoordinates(string vivstrXpath, out string rivstrInicio, out int rivnumRelativeline, out int rivnumOffset, out int rivnumLen)
         {
