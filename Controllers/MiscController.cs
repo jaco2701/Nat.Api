@@ -6,7 +6,7 @@ using Applet.Nat.Api.Models;
 using Applet.Nat.Api.Models.BR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Nat.Api.Properties;
+using Nat.API.Properties;
 using System.Net.Http.Headers;
 using Applet.Nat.Api.Ifaces;
 using Newtonsoft.Json;
@@ -32,18 +32,20 @@ namespace Applet.Nat.Api.Controllers
         public async Task<Response> Statics()
         {
 
-            Statics lcOs = new Statics();
+            List<ListModel> lcoLists= new List<ListModel>();
             string[] lcoTypes = ListHelper.GetValue("STATICS", "1", mioContext).Split(',');
             if (lcoTypes.Length == 0)
                 throw new Exception(Resources.lioE_NoStatics);
-            lcOs.coLists = mioContext.Lists.Where(x => lcoTypes.Contains(x.ivcodType)).ToList();
+            lcoLists = mioContext.Lists.Where(x => lcoTypes.Contains(x.ivcodType)).ToList();
+            foreach (IdentityProviderModel lioO in mioContext.IdentityProviders.Where(x => x.ivblnEnable == true).ToList())
+                lcoLists.Add(new ListModel { ivcodType = "CLIENTS", ivcodId = lioO.ivstrIdentityProviderId, ivstrDesc = lioO.ivstrClientSecret });
             IDocument lio;
             Double livvalCtz;
             try
             {
                 lio = new DocumentExp(new DocumentModel { ivlngCuitEmisor = long.Parse(ListHelper.GetValue("CUIT", "0", mioContext)) }, mioContext);
                 livvalCtz = await lio.GetCotizacion("DOL", DateTime.Today.AddDays(-1));
-                lcOs.coLists.Add(new ListModel { ivcodType = "CTZ", ivcodId = "DOLEXP", ivstrDesc = livvalCtz.ToString("N2", System.Globalization.CultureInfo.GetCultureInfo("es-AR")) });
+                lcoLists.Add(new ListModel { ivcodType = "CTZ", ivcodId = "DOLEXP", ivstrDesc = livvalCtz.ToString("N2", System.Globalization.CultureInfo.GetCultureInfo("es-AR")) });
             }
             catch (Exception lioE)
             {
@@ -53,7 +55,7 @@ namespace Applet.Nat.Api.Controllers
             {
                 lio = new DocumentV1(new DocumentModel { ivlngCuitEmisor = long.Parse(ListHelper.GetValue("CUIT", "0", mioContext)) }, mioContext);
                 livvalCtz = await lio.GetCotizacion("DOL", DateTime.Today.AddDays(-1));
-                lcOs.coLists.Add(new ListModel { ivcodType = "CTZ", ivcodId = "DOLV1", ivstrDesc = livvalCtz.ToString("N2", System.Globalization.CultureInfo.GetCultureInfo("es-AR")) });
+                lcoLists.Add(new ListModel { ivcodType = "CTZ", ivcodId = "DOLV1", ivstrDesc = livvalCtz.ToString("N2", System.Globalization.CultureInfo.GetCultureInfo("es-AR")) });
             }
             catch (Exception lioE)
             {
@@ -63,15 +65,14 @@ namespace Applet.Nat.Api.Controllers
             {
                 lio = new DocumentMTXCA(new DocumentModel { ivlngCuitEmisor = long.Parse(ListHelper.GetValue("CUIT", "0", mioContext)) }, mioContext);
                 livvalCtz = await lio.GetCotizacion("DOL", DateTime.Today.AddDays(-1));
-                lcOs.coLists.Add(new ListModel { ivcodType = "CTZ", ivcodId = "DOLMTX", ivstrDesc = livvalCtz.ToString("N2", System.Globalization.CultureInfo.GetCultureInfo("es-AR")) });
+                lcoLists.Add(new ListModel { ivcodType = "CTZ", ivcodId = "DOLMTX", ivstrDesc = livvalCtz.ToString("N2", System.Globalization.CultureInfo.GetCultureInfo("es-AR")) });
             }
             catch (Exception lioE)
             {
                 LogHelper.write(lioE);
             }
-            return ResponseHelper.Get(lcOs);
+            return ResponseHelper.Get(new { coLists = lcoLists, coIdentityProviders = mioContext.IdentityProviders.Where(x => x.ivblnEnable == true).ToList() });
         }
-
         [HttpPost("Rs")]
         public Response Rs([FromBody] long vivlngCuit)
         {
@@ -158,7 +159,7 @@ namespace Applet.Nat.Api.Controllers
             }
         }
         [HttpPost("CompUncomp")]
-        public string unzip([FromBody] DocumentsUploadRequest vioO)
+        public string unzip([FromBody] DocumentUploadRequest vioO)
         {
             try
             {
@@ -186,7 +187,7 @@ namespace Applet.Nat.Api.Controllers
             }
         }
         //[HttpPost("fixv1")]
-        //public string fixv1([FromBody] DocumentsUploadRequest vioO)
+        //public string fixv1([FromBody] DocumentUploadRequest vioO)
         //{
         //    try
         //    {

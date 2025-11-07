@@ -1,4 +1,3 @@
-using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -21,9 +20,5 @@ namespace Applet.Nat.Api.DC
         public bool? ivblnEnable { get; set; }
         [Column("nrologonFails")]
         public short? ivnrologonFails { get; set; }
-    }
-    public class UserPassRequest
-    {
-        public string ivstrPass { get; set; }
     }
 }

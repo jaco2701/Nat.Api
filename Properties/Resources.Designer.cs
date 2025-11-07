@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Nat.Api.Properties {
+namespace Nat.API.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Nat.Api.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Nat.Api.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Nat.API.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -642,6 +642,15 @@ namespace Nat.Api.Properties {
         internal static string lioL_RtaWS {
             get {
                 return ResourceManager.GetString("lioL_RtaWS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Destinatarios.
+        /// </summary>
+        internal static string lioL_Share {
+            get {
+                return ResourceManager.GetString("lioL_Share", resourceCulture);
             }
         }
         

@@ -4,7 +4,7 @@ using Applet.Nat.Api.Models;
 using Applet.Nat.Api.Models.BR;
 using Applet.Nat.Api.Static;
 using Nat.Api.Models.BR;
-using Nat.Api.Properties;
+using Nat.API.Properties;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Net.Mail;
@@ -21,10 +21,10 @@ namespace Applet.Nat.Api.Br.Models
         {
             get
             {
-                if (mioDocumentUser == null || mioDocumentUser.ivlngCbte==null)
+                if (mioDocumentUser == null || mioDocumentUser.ivlngCbte == null)
                 {
                     mioDocumentUser = new DocumentUser();
-                    iIRawDocument.ivstrRaw = ioDcModel.ivstrInData ?? String.Empty;
+                    iIRawDocument.ivstrRaw = ioDcModel.ivstrInData ?? string.Empty;
                     iIRawDocument.ivstrName = $"{ioDcModel.ivnroTipo}_0";
                     iIRawDocument.ivstrKey = ivstrKey;
                     mioDocumentUser = iIRawDocument?.ToDocumentUser();
@@ -51,6 +51,7 @@ namespace Applet.Nat.Api.Br.Models
                 return miIRawDocument;
             }
         }
+        public IDocument ivIDocument { get; set; }
         public string ivstrKey
         {
             get
@@ -63,8 +64,6 @@ namespace Applet.Nat.Api.Br.Models
         private NatContext mioContext;
         private DocumentUser mioDocumentUser;
         private IRawDocument miIRawDocument;
-        //private Token mioToken;
-        private IDocument mivIDocument { get; set; }
         private string mivstrDisplay
         {
             get
@@ -138,7 +137,7 @@ namespace Applet.Nat.Api.Br.Models
             }
             else
             {
-                if (lioDBDocumentModel.ivnroStatus >= 50 && mivIDocument.AuthDataModified(new Document(lioDBDocumentModel, mioContext).mivIDocument))
+                if (lioDBDocumentModel.ivnroStatus >= 50 && ivIDocument.AuthDataModified(new Document(lioDBDocumentModel, mioContext).ivIDocument))
                     throw new Exception(Resources.lioE_Doc_AuthInfoMod);
                 lioDBDocumentModel.ivnroStatus = ioDcModel.ivnroStatus;
                 if (ioDcModel.ivdtmEmision != null)
@@ -163,7 +162,6 @@ namespace Applet.Nat.Api.Br.Models
                 ioDcModel.ivlngDoc = lioDBDocumentModel.ivlngDoc;
             }
             mioContext.SaveChanges();
-
         }
         public string Delete()
         {
@@ -180,35 +178,48 @@ namespace Applet.Nat.Api.Br.Models
         }
         public void Validate()
         {
-            mivIDocument.Validate();
+            ivIDocument.Validate();
         }
-        public async Task<short> Share()
+        public async Task<short> Share(IConfiguration vioConfiguration)
         {
             try
             {
                 if (ioDocumentUser == null)
                     throw new Exception(Resources.lioE_Mail_No);
-                if (string.IsNullOrEmpty(ioDocumentUser.ivstrEmail))
-                    throw new Exception(Resources.lioE_Mail_No);
-                if (!MailHelper.IsValidEmail(ioDocumentUser?.ivstrEmail))
-                    throw new Exception(Resources.lioE_Mail_No);
-                string vivstrImgPath = "./Rpt/nat.png";
-                string vivstrTemplatePath = "./Rpt/email-doc.html";
-                System.Net.Mail.LinkedResource lioImgLinkResource = new System.Net.Mail.LinkedResource(vivstrImgPath, MediaTypeNames.Image.Jpeg)
-                {
-                    ContentId = System.Guid.NewGuid().ToString()
-                };
-                string livstrTitle = $"{Resources.lioL_Mail_Subject}: {mivstrDisplay}";
-                string livstrBody = System.IO.File.ReadAllText(vivstrTemplatePath)
-                    .Replace("[IVSTRTITLE]", livstrTitle)
-                    .Replace("[IMG_NAT]", $"cid:{lioImgLinkResource.ContentId}");
+                List<string> lcvstrAddresses = new List<string>();
+                if (!string.IsNullOrEmpty(ioDocumentUser.ivstrEmail))
+                    foreach (string livstrAddress in ioDocumentUser.ivstrEmail.Split(";", StringSplitOptions.TrimEntries).ToList())
+                        if (MailHelper.IsValidEmail(livstrAddress))
+                            lcvstrAddresses.Add(livstrAddress);
+                Cuit lioCuit = new Cuit(ioDcModel.ivlngCuitEmisor, mioContext);
+                if (lioCuit.ioCnfg?.coParameters.FirstOrDefault(x => x.ivstrId == "Email") != null)
+                    foreach (string livstrAddress in lioCuit.ioCnfg?.coParameters?.FirstOrDefault(x => x.ivstrId == "Email")?.ivstrValue?.Split(";", StringSplitOptions.TrimEntries))
+                        if (MailHelper.IsValidEmail(livstrAddress))
+                            lcvstrAddresses.Add(livstrAddress);
+                ServiceMapper lioServiceMapper = lioCuit.ioCnfg.coServiceMappers.FirstOrDefault(x => x.ivstrWs == "mail" && (x.cvnroDocTypes[0]==0 || x.cvnroDocTypes.Contains(ioDcModel.ivnroTipo)));
+                if (lioServiceMapper == null || string.IsNullOrEmpty(lioServiceMapper.ivstrTemplate) || string.IsNullOrEmpty(lioServiceMapper.ivstrInputType))
+                    throw new Exception($"Mapeador {Resources.lioE_ObjectNoM}");
+                string livstrSubject = lioServiceMapper.ivstrTemplate,
+                    livstrBody = lioServiceMapper.ivstrInputType,
+                    livstrfilename = $"{Path.GetTempPath()}/{ivstrKey}_{ioDcModel.ivnroTemplateVersion}.pdf";
+                livstrSubject = livstrSubject
+                    .Replace("#nro", ivstrKey)
+                    .Replace("#cuit", ioDcModel.ivlngCuitReceptor.ToString());
+                livstrBody = livstrBody
+                    .Replace("#nro", ivstrKey)
+                    .Replace("#cuit", ioDcModel.ivlngCuitReceptor.ToString())
+                    .Replace("#nl", Environment.NewLine);
                 AlternateView lioHtmlView = AlternateView.CreateAlternateViewFromString(livstrBody, Encoding.UTF8, MediaTypeNames.Text.Html);
-                string livstr = await Print(), strfilename = $"{Path.GetTempPath()}/{ivstrKey}_{ioDcModel.ivnroTemplateVersion}.pdf";
-                File.WriteAllBytes(strfilename, Format.UnCompress2(livstr));
-                Attachment lioPdfAttachment = new Attachment(strfilename, MediaTypeNames.Application.Pdf);
-                lioHtmlView.LinkedResources.Add(lioImgLinkResource);
-                MailHelper.Send(mioDocumentUser.ivstrEmail, Resources.lioL_Mail_Subject, livstrBody, new List<AlternateView> { lioHtmlView }, new List<Attachment> { lioPdfAttachment }, mioContext);
-                return 70;
+                string livstrB46pdf= await Print();
+                File.WriteAllBytes(livstrfilename, Convert.FromBase64String(livstrB46pdf));
+                Attachment lioPdfAttachment = new Attachment(livstrfilename, MediaTypeNames.Application.Pdf);
+                MailHelper.Send(livstrSubject, livstrBody, lcvstrAddresses.ToArray(), null, new List<Attachment> { lioPdfAttachment }, mioContext);
+                new DocumentTracking(mioContext, ioDcModel.ivlngDoc)
+                    .addTrack(
+                        70,
+                        $"{Resources.lioL_Share}: {ioDocumentUser.ivstrEmail}"
+                    );
+                return (70);
             }
             catch (Exception lioE)
             {
@@ -216,9 +227,9 @@ namespace Applet.Nat.Api.Br.Models
                 new DocumentTracking(mioContext, ioDcModel.ivlngDoc)
                 .addTrack(
                    80,
-                   string.Empty
+                   lioE.Message
                 );
-                return 80;
+                return (80);
             }
         }
         public string Tracking()
@@ -267,7 +278,7 @@ namespace Applet.Nat.Api.Br.Models
         {
             try
             {
-                ioDcModel.ivnroStatus = await mivIDocument.Auth();
+                ioDcModel.ivnroStatus = await ivIDocument.Auth();
                 Save();
                 SendResponse();
             }
@@ -280,144 +291,9 @@ namespace Applet.Nat.Api.Br.Models
         {
             UxAuth lioUxAuth;
             Cuit lioCuit = new Cuit(ioDcModel.ivlngCuitEmisor, mioContext);
-            if (lioCuit.ioCnfg == null)
-                throw new Exception(string.Format(Resources.lioE_ObjectNoM, "CnfgCuit", "a"));
-            ServiceMapper lioMapper = lioCuit.ioCnfg?.coServiceMappers.FirstOrDefault(x => x.ivstrWs == "rta");
-            if (lioMapper == null)
-                throw new Exception(string.Format(Resources.lioE_ObjectNoM, "Mapeador", "o"));
-            if (string.IsNullOrEmpty(lioMapper.ivstrTemplate))
-                throw new Exception(string.Format(Resources.lioE_ObjectNoM, "Template", "o"));
-            if (!File.Exists($"{ListHelper.GetValue("PATH", "template", mioContext)}/{ioDcModel.ivlngCuitEmisor}/{lioMapper.ivstrTemplate}"))
-                throw new Exception(string.Format(Resources.lioE_ObjectNoM, "Template", "o"));
-            string livstrRta = File.ReadAllText($"{ListHelper.GetValue("PATH", "template", mioContext)}/{ioDcModel.ivlngCuitEmisor}/{lioMapper.ivstrTemplate}"), livstr, livstrPropInFile;
-            DocumentTrackingModel lioDocumentTrackingModel;
-            UxAuth mioAuthNode = mivIDocument.GetAuth();
-            foreach (ServiceMapperItem lioServiceMapperItem in lioMapper.coItems)
-            {
-                livstr = string.Empty;
-                switch (lioServiceMapperItem.ivstrProperty)
-                {
-                    case "ivdtmGen":
-                        livstr = DateTime.Now.ToString(lioServiceMapperItem.ivstrformat);
-                        break;
-                    case "ivnroTipo":
-                        livstr = ioDcModel.ivnroTipo.ToString();
-                        break;
-                    case "ivlngDoc":
-                        livstr = ioDcModel.ivlngDoc.ToString();
-                        break;
-                    case "ivnumPvta":
-                        livstr = ioDcModel.ivnumPvta.ToString();
-                        break;
-                    case "ivlngCbte":
-                        livstr = ioDcModel.ivlngCbte.ToString();
-                        break;
-                    case "ivdtmEmision":
-                        if (ioDcModel.ivdtmEmision == null)
-                            throw new Exception(string.Format(Resources.lioE_ObjectNoM, "DtmEmision", "a"));
-                        livstr = (ioDcModel.ivdtmEmision ?? DateTime.MinValue).ToString(lioServiceMapperItem.ivstrformat);
-                        break;
-                    case "ivdblImporte":
-                        livstr = ioDcModel.ivdblImporte.ToString();
-                        break;
-                    case "ivlngCuitEmisor":
-                        livstr = ioDcModel.ivlngCuitEmisor.ToString();
-                        break;
-                    case "ivlngDocReceptor":
-                        livstr = ioDocumentUser.ivlngDocReceptor.ToString();
-                        break;
-                    case "ivstrIdCliente":
-                        livstr = ioDocumentUser.ivstrIdCliente;
-                        break;
-                    case "ivdtmRec":
-                        lioDocumentTrackingModel = mioContext.DocumentTrackings.OrderByDescending(x => x.ivnumTrack).FirstOrDefault(x => x.ivlngDoc == ioDcModel.ivlngDoc && x.ivnroStatus == 10);
-                        if (lioDocumentTrackingModel == null)
-                            throw new Exception(string.Format(Resources.lioE_ObjectNoM, "DtmRec", "a"));
-                        livstr = lioDocumentTrackingModel.ivdtmTrack.ToString(lioServiceMapperItem.ivstrformat);
-                        break;
-                    case "ivdtmAct":
-                        lioDocumentTrackingModel = mioContext.DocumentTrackings.OrderByDescending(x => x.ivnumTrack).FirstOrDefault(x => x.ivlngDoc == ioDcModel.ivlngDoc);
-                        if (lioDocumentTrackingModel == null)
-                            throw new Exception(string.Format(Resources.lioE_ObjectNoM, "dtmAct", "a"));
-                        livstr = lioDocumentTrackingModel.ivdtmTrack.ToString(lioServiceMapperItem.ivstrformat);
-                        break;
-                    case "ivstrFileName":
-                        livstr = $"{ivstrKey}_{ioDcModel.ivnroTemplateVersion}.pdf";
-                        break;
-                    case "ivstrAuthCode":
-                        livstr = mioAuthNode?.ivstrAuthCode ?? string.Empty;
-                        break;
-                    case "ivdtmNode":
-                        if (mioAuthNode?.ivdtmNode == null)
-                            throw new Exception(string.Format(Resources.lioE_ObjectNoM, "DtmEmision", "a"));
-                        livstr = (mioAuthNode?.ivdtmNode ?? DateTime.MinValue).ToString(lioServiceMapperItem.ivstrformat);
-                        break;
-                    case "ivdtmAuthVenc":
-                        if (mioAuthNode?.ivdtmAuthVenc == null)
-                            throw new Exception(string.Format(Resources.lioE_ObjectNoM, "DtmAuthVenc", "a"));
-                        livstr = string.Empty;
-                        if (DateTime.TryParseExact(mioAuthNode?.ivdtmAuthVenc, "yyyyMMdd", null, System.Globalization.DateTimeStyles.None, out DateTime livdtm))
-                            livstr = livdtm.ToString(lioServiceMapperItem.ivstrformat);
-                        break;
-                    case "ivnumTrack":
-                        livstr = mioAuthNode?.ivnumtrack.ToString() ?? string.Empty; ;
-                        break;
-                    case "ivstr3o4":
-                        livstr = string.IsNullOrEmpty(mioAuthNode?.ivstrAuthCode) ? "3" : "4";
-                        break;
-                    case "ivstrAuthDsc":
-                        livstr = mioAuthNode?.ivtrStatusDesc ?? string.Empty; ;
-                        break;
-                    case "ivstrAuthObs":
-                        livstr = mioAuthNode?.ivstrErrors ?? string.Empty; ;
-                        break;
-                    case "ivstrTrackId":
-                        livstr = string.Empty;
-                        break;
-                    default:
-                        livstr = string.Empty;
-                        break;
-                }
-                if (livstr?.Length > lioServiceMapperItem.ivnumLen)
-                    livstr = livstr.Substring(0, lioServiceMapperItem.ivnumLen ?? 0);
-                if (livstr?.Length < lioServiceMapperItem.ivnumLen)
-                {
-                    if (!string.IsNullOrEmpty(lioServiceMapperItem.ivstrLPad))
-                        livstr = livstr.PadLeft(lioServiceMapperItem.ivnumLen ?? 0, lioServiceMapperItem.ivstrLPad[0]);
-                    else if (!string.IsNullOrEmpty(lioServiceMapperItem.ivstrRPad))
-                        livstr = livstr.PadRight(lioServiceMapperItem.ivnumLen ?? 0, lioServiceMapperItem.ivstrRPad[0]);
-                }
-                livstrPropInFile = "{" + lioServiceMapperItem.ivstrProperty + "}";
-                livstrRta = livstrRta.Replace(livstrPropInFile, livstr);
-            }
-            if (!string.IsNullOrEmpty(lioCuit.ioCnfg.ivstrOutFolder))
-            {
-                string livstrFileName = $"{ioDcModel.ivnroTipo.ToString().PadLeft(2, '0')}_{ioDcModel.ivnumPvta.ToString().PadLeft(4, '0')}_{ioDcModel.ivlngCbte.ToString().PadLeft(8, '0')}.{lioMapper.ivstrTemplate.Split('.')[1].Trim()}";
-                string livstrPathOut = $"{lioCuit.ioCnfg.ivstrOutFolder}/{livstrFileName}";
-                if (File.Exists(livstrPathOut))
-                    File.Delete(livstrPathOut);
-                foreach (string livstrline in livstrRta.Split("\r\n"))
-                {
-                    if (string.IsNullOrEmpty(livstrline.Trim()))
-                        continue;
-                    livstr = livstrline;
-                    if (livstr.Length < lioMapper.ivnumRecLen)
-                        livstr = livstrline.PadRight(lioMapper.ivnumRecLen ?? 0, ' ');
-                    File.AppendAllText(livstrPathOut, $"{livstr}\r\n", Encoding.UTF8);
-                }
-                new DocumentTracking(mioContext, ioDcModel.ivlngDoc)
-                   .addTrack(
-                       55,
-                       $"{Resources.lioL_Rta} {livstrFileName}"
-                   );
-            }
-            else
-                new DocumentTracking(mioContext, ioDcModel.ivlngDoc)
-                    .addTrack(
-                        55,
-                        Resources.lioL_RtaWS
-                    );
-            return Convert.ToBase64String(Encoding.UTF8.GetBytes(livstrRta));
+            IDocsIO liIDocsIO = lioCuit.getIDocsIO();
+            liIDocsIO.DocsO([this]);
+            return "OK";
         }
         public async Task<string> Print()
         {
@@ -427,7 +303,7 @@ namespace Applet.Nat.Api.Br.Models
                 string livstrXml, livstr, livstrQR;
                 livstrXml = iIRawDocument.ToPrint();
                 //QR
-                UxAuth lioUxAuth = mivIDocument.GetAuth();
+                UxAuth lioUxAuth = ivIDocument.GetAuth();
                 QRData lioQRData = new QRData
                 {
                     ver = 1,
@@ -474,13 +350,13 @@ namespace Applet.Nat.Api.Br.Models
             {
                 LogHelper.write(lioE);
                 if (!string.IsNullOrEmpty(lioXmlDocument.OuterXml))
-                    LogHelper.writeinfo(lioXmlDocument.OuterXml,ListHelper.GetValue("FORMAT", "VERBOSE", mioContext)=="1");
+                    LogHelper.writeinfo(lioXmlDocument.OuterXml, ListHelper.GetValue("FORMAT", "VERBOSE", mioContext) == "1");
                 throw new Exception(Resources.lioE_PrintNo);
             }
         }
         public UxAuth GetAuth()
         {
-            return mivIDocument.GetAuth();
+            return ivIDocument.GetAuth();
         }
         #endregion
         #region PRIVATE METHODS
@@ -490,11 +366,11 @@ namespace Applet.Nat.Api.Br.Models
             {
                 case "wsfev1":
                 case "wsfe":
-                case "wsmtxca": { mivIDocument = new DocumentV1(ioDcModel, mioContext); break; }
-                case "wsfexv1": { mivIDocument = new DocumentExp(ioDcModel, mioContext); break; }
+                case "wsmtxca": { ivIDocument = new DocumentV1(ioDcModel, mioContext); break; }
+                case "wsfexv1": { ivIDocument = new DocumentExp(ioDcModel, mioContext); break; }
                 default: throw new Exception(Resources.lioE_Svc_No);
             }
-            mivIDocument.SetData(ioDocumentUser);
+            ivIDocument.SetData(ioDocumentUser);
         }
         private long NN()
         {

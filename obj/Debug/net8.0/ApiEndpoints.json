@@ -139,7 +139,7 @@
     "Parameters": [
       {
         "Name": "vioDocumentsUpload",
-        "Type": "Applet.Nat.Api.Br.Models.DocumentsUploadRequest",
+        "Type": "Applet.Nat.Api.Br.Models.DocumentUploadRequest",
         "IsRequired": true
       }
     ],
@@ -237,7 +237,7 @@
     "Parameters": [
       {
         "Name": "vioO",
-        "Type": "Applet.Nat.Api.Br.Models.DocumentsUploadRequest",
+        "Type": "Applet.Nat.Api.Br.Models.DocumentUploadRequest",
         "IsRequired": true
       }
     ],

@@ -1,0 +1,498 @@
+29/10/2025 02:45:18==>An error occurred while sending the request.
+   at System.Runtime.AsyncResult.End[TAsyncResult](IAsyncResult result)
+   at System.ServiceModel.Channels.ServiceChannel.SendAsyncResult.End(SendAsyncResult result)
+   at System.ServiceModel.Channels.ServiceChannel.EndCall(String action, Object[] outs, IAsyncResult result)
+   at System.ServiceModel.Channels.ServiceChannelProxy.TaskCreator.<>c__DisplayClass1_0.<CreateGenericTask>b__0(IAsyncResult asyncResult)
+--- End of stack trace from previous location ---
+   at Applet.Nat.Api.Br.Models.DocumentExp.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentExp.cs:line 156
+An error occurred while sending the request.
+   at System.Net.Http.HttpConnection.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.SendWithVersionDetectionAndRetryAsync(HttpRequestMessage request, Boolean async, Boolean doRequestAuth, CancellationToken cancellationToken)
+   at System.Net.Http.DiagnosticsHandler.SendAsyncCore(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.RedirectHandler.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.DecompressionHandler.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpClient.<SendAsync>g__Core|83_0(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationTokenSource cts, Boolean disposeCts, CancellationTokenSource pendingRequestsCts, CancellationToken originalCancellationToken)
+   at System.ServiceModel.Channels.HttpChannelFactory`1.HttpClientRequestChannel.HttpClientChannelAsyncRequest.SendRequestAsync(Message message, TimeoutHelper timeoutHelper)
+Unable to read data from the transport connection: An existing connection was forcibly closed by the remote host..
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.ThrowException(SocketError error, CancellationToken cancellationToken)
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.System.Threading.Tasks.Sources.IValueTaskSource<System.Int32>.GetResult(Int16 token)
+   at System.Net.Security.SslStream.EnsureFullTlsFrameAsync[TIOAdapter](CancellationToken cancellationToken, Int32 estimatedSize)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at System.Net.Security.SslStream.ReadAsyncInternal[TIOAdapter](Memory`1 buffer, CancellationToken cancellationToken)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at System.Net.Http.HttpConnection.InitialFillAsync(Boolean async)
+   at System.Net.Http.HttpConnection.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+29/10/2025 02:45:18==>Cotizacion Invalida
+   at Applet.Nat.Api.Br.Models.DocumentExp.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentExp.cs:line 175
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 45
+29/10/2025 02:45:19==>Valor de Lista FORMAT:dtmwsmtxca no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Models.Afip.AfipService.get_ivstrDateformat() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\Afip\AfipService.cs:line 74
+   at Applet.Nat.BR.DocumentMTXCA.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentMtxca.cs:line 540
+29/10/2025 02:45:19==>Cotizacion Invalida
+   at Applet.Nat.BR.DocumentMTXCA.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentMtxca.cs:line 566
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 65
+29/10/2025 02:45:19==>An error occurred while sending the request.
+   at System.Runtime.AsyncResult.End[TAsyncResult](IAsyncResult result)
+   at System.ServiceModel.Channels.ServiceChannel.SendAsyncResult.End(SendAsyncResult result)
+   at System.ServiceModel.Channels.ServiceChannel.EndCall(String action, Object[] outs, IAsyncResult result)
+   at System.ServiceModel.Channels.ServiceChannelProxy.TaskCreator.<>c__DisplayClass1_0.<CreateGenericTask>b__0(IAsyncResult asyncResult)
+--- End of stack trace from previous location ---
+   at Applet.Nat.Api.Br.Models.DocumentExp.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentExp.cs:line 156
+An error occurred while sending the request.
+   at System.Net.Http.HttpConnection.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.SendWithVersionDetectionAndRetryAsync(HttpRequestMessage request, Boolean async, Boolean doRequestAuth, CancellationToken cancellationToken)
+   at System.Net.Http.DiagnosticsHandler.SendAsyncCore(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.RedirectHandler.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.DecompressionHandler.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpClient.<SendAsync>g__Core|83_0(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationTokenSource cts, Boolean disposeCts, CancellationTokenSource pendingRequestsCts, CancellationToken originalCancellationToken)
+   at System.ServiceModel.Channels.HttpChannelFactory`1.HttpClientRequestChannel.HttpClientChannelAsyncRequest.SendRequestAsync(Message message, TimeoutHelper timeoutHelper)
+Unable to read data from the transport connection: An existing connection was forcibly closed by the remote host..
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.ThrowException(SocketError error, CancellationToken cancellationToken)
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.System.Threading.Tasks.Sources.IValueTaskSource<System.Int32>.GetResult(Int16 token)
+   at System.Net.Security.SslStream.EnsureFullTlsFrameAsync[TIOAdapter](CancellationToken cancellationToken, Int32 estimatedSize)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at System.Net.Security.SslStream.ReadAsyncInternal[TIOAdapter](Memory`1 buffer, CancellationToken cancellationToken)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at System.Net.Http.HttpConnection.InitialFillAsync(Boolean async)
+   at System.Net.Http.HttpConnection.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+29/10/2025 02:45:19==>Cotizacion Invalida
+   at Applet.Nat.Api.Br.Models.DocumentExp.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentExp.cs:line 175
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 45
+29/10/2025 02:45:19==>Valor de Lista FORMAT:dtmwsmtxca no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Models.Afip.AfipService.get_ivstrDateformat() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\Afip\AfipService.cs:line 74
+   at Applet.Nat.BR.DocumentMTXCA.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentMtxca.cs:line 540
+29/10/2025 02:45:19==>Cotizacion Invalida
+   at Applet.Nat.BR.DocumentMTXCA.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentMtxca.cs:line 566
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 65
+29/10/2025 02:49:22==>The operation has timed out.
+   at System.Net.Mail.SmtpClient.Send(MailMessage message)
+   at Applet.Nat.Api.Static.MailHelper.Send(String vivstrSubject, String vivstrBody, String vivstrAddress, IReadOnlyCollection`1 vcoAlternateViews, IReadOnlyCollection`1 vcoAttachments, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\MailHelper.cs:line 40
+   at Applet.Nat.Api.Br.Models.Document.Share(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 215
+29/10/2025 03:06:50==>An error occurred while sending the request.
+   at System.Runtime.AsyncResult.End[TAsyncResult](IAsyncResult result)
+   at System.ServiceModel.Channels.ServiceChannel.SendAsyncResult.End(SendAsyncResult result)
+   at System.ServiceModel.Channels.ServiceChannel.EndCall(String action, Object[] outs, IAsyncResult result)
+   at System.ServiceModel.Channels.ServiceChannelProxy.TaskCreator.<>c__DisplayClass1_0.<CreateGenericTask>b__0(IAsyncResult asyncResult)
+--- End of stack trace from previous location ---
+   at Applet.Nat.Api.Br.Models.DocumentExp.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentExp.cs:line 156
+An error occurred while sending the request.
+   at System.Net.Http.HttpConnection.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.SendWithVersionDetectionAndRetryAsync(HttpRequestMessage request, Boolean async, Boolean doRequestAuth, CancellationToken cancellationToken)
+   at System.Net.Http.DiagnosticsHandler.SendAsyncCore(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.RedirectHandler.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.DecompressionHandler.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpClient.<SendAsync>g__Core|83_0(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationTokenSource cts, Boolean disposeCts, CancellationTokenSource pendingRequestsCts, CancellationToken originalCancellationToken)
+   at System.ServiceModel.Channels.HttpChannelFactory`1.HttpClientRequestChannel.HttpClientChannelAsyncRequest.SendRequestAsync(Message message, TimeoutHelper timeoutHelper)
+Unable to read data from the transport connection: An existing connection was forcibly closed by the remote host..
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.ThrowException(SocketError error, CancellationToken cancellationToken)
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.System.Threading.Tasks.Sources.IValueTaskSource<System.Int32>.GetResult(Int16 token)
+   at System.Net.Security.SslStream.EnsureFullTlsFrameAsync[TIOAdapter](CancellationToken cancellationToken, Int32 estimatedSize)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at System.Net.Security.SslStream.ReadAsyncInternal[TIOAdapter](Memory`1 buffer, CancellationToken cancellationToken)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at System.Net.Http.HttpConnection.InitialFillAsync(Boolean async)
+   at System.Net.Http.HttpConnection.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+29/10/2025 03:06:50==>Cotizacion Invalida
+   at Applet.Nat.Api.Br.Models.DocumentExp.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentExp.cs:line 175
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 45
+29/10/2025 03:06:50==>Valor de Lista FORMAT:dtmwsmtxca no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Models.Afip.AfipService.get_ivstrDateformat() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\Afip\AfipService.cs:line 74
+   at Applet.Nat.BR.DocumentMTXCA.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentMtxca.cs:line 540
+29/10/2025 03:06:50==>Cotizacion Invalida
+   at Applet.Nat.BR.DocumentMTXCA.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentMtxca.cs:line 566
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 65
+29/10/2025 03:06:51==>An error occurred while sending the request.
+   at System.Runtime.AsyncResult.End[TAsyncResult](IAsyncResult result)
+   at System.ServiceModel.Channels.ServiceChannel.SendAsyncResult.End(SendAsyncResult result)
+   at System.ServiceModel.Channels.ServiceChannel.EndCall(String action, Object[] outs, IAsyncResult result)
+   at System.ServiceModel.Channels.ServiceChannelProxy.TaskCreator.<>c__DisplayClass1_0.<CreateGenericTask>b__0(IAsyncResult asyncResult)
+--- End of stack trace from previous location ---
+   at Applet.Nat.Api.Br.Models.DocumentExp.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentExp.cs:line 156
+An error occurred while sending the request.
+   at System.Net.Http.HttpConnection.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.SendWithVersionDetectionAndRetryAsync(HttpRequestMessage request, Boolean async, Boolean doRequestAuth, CancellationToken cancellationToken)
+   at System.Net.Http.DiagnosticsHandler.SendAsyncCore(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.RedirectHandler.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.DecompressionHandler.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpClient.<SendAsync>g__Core|83_0(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationTokenSource cts, Boolean disposeCts, CancellationTokenSource pendingRequestsCts, CancellationToken originalCancellationToken)
+   at System.ServiceModel.Channels.HttpChannelFactory`1.HttpClientRequestChannel.HttpClientChannelAsyncRequest.SendRequestAsync(Message message, TimeoutHelper timeoutHelper)
+Unable to read data from the transport connection: An existing connection was forcibly closed by the remote host..
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.ThrowException(SocketError error, CancellationToken cancellationToken)
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.System.Threading.Tasks.Sources.IValueTaskSource<System.Int32>.GetResult(Int16 token)
+   at System.Net.Security.SslStream.EnsureFullTlsFrameAsync[TIOAdapter](CancellationToken cancellationToken, Int32 estimatedSize)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at System.Net.Security.SslStream.ReadAsyncInternal[TIOAdapter](Memory`1 buffer, CancellationToken cancellationToken)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at System.Net.Http.HttpConnection.InitialFillAsync(Boolean async)
+   at System.Net.Http.HttpConnection.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+29/10/2025 03:06:51==>Cotizacion Invalida
+   at Applet.Nat.Api.Br.Models.DocumentExp.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentExp.cs:line 175
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 45
+29/10/2025 03:06:51==>Valor de Lista FORMAT:dtmwsmtxca no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Models.Afip.AfipService.get_ivstrDateformat() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\Afip\AfipService.cs:line 74
+   at Applet.Nat.BR.DocumentMTXCA.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentMtxca.cs:line 540
+29/10/2025 03:06:51==>Cotizacion Invalida
+   at Applet.Nat.BR.DocumentMTXCA.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentMtxca.cs:line 566
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 65
+29/10/2025 03:18:41==>The archive entry was compressed using an unsupported compression method.
+   at System.IO.Compression.Inflater.Inflate(FlushCode flushCode)
+   at System.IO.Compression.Inflater.ReadInflateOutput(Byte* bufPtr, Int32 length, FlushCode flushCode, Int32& bytesRead)
+   at System.IO.Compression.Inflater.InflateVerified(Byte* bufPtr, Int32 length)
+   at System.IO.Compression.DeflateStream.CopyToStream.CopyFromSourceToDestination()
+   at System.IO.Compression.DeflateStream.CopyTo(Stream destination, Int32 bufferSize)
+   at Applet.Nat.Api.Static.Format.UnCompress2(String value) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Format.cs:line 390
+   at Applet.Nat.Api.Static.Format.UnCompress(String vivstr, Encoding vioEncoding) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Format.cs:line 380
+   at Applet.Nat.Api.Br.Models.InDocumentXML.ToDocumentUser() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\InDocumentXML.cs:line 34
+29/10/2025 03:18:43==>An error occurred while sending the request.
+   at System.Runtime.AsyncResult.End[TAsyncResult](IAsyncResult result)
+   at System.ServiceModel.Channels.ServiceChannel.SendAsyncResult.End(SendAsyncResult result)
+   at System.ServiceModel.Channels.ServiceChannel.EndCall(String action, Object[] outs, IAsyncResult result)
+   at System.ServiceModel.Channels.ServiceChannelProxy.TaskCreator.<>c__DisplayClass1_0.<CreateGenericTask>b__0(IAsyncResult asyncResult)
+--- End of stack trace from previous location ---
+   at Applet.Nat.Api.Br.Models.DocumentExp.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentExp.cs:line 156
+An error occurred while sending the request.
+   at System.Net.Http.HttpConnection.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.SendWithVersionDetectionAndRetryAsync(HttpRequestMessage request, Boolean async, Boolean doRequestAuth, CancellationToken cancellationToken)
+   at System.Net.Http.DiagnosticsHandler.SendAsyncCore(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.RedirectHandler.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.DecompressionHandler.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpClient.<SendAsync>g__Core|83_0(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationTokenSource cts, Boolean disposeCts, CancellationTokenSource pendingRequestsCts, CancellationToken originalCancellationToken)
+   at System.ServiceModel.Channels.HttpChannelFactory`1.HttpClientRequestChannel.HttpClientChannelAsyncRequest.SendRequestAsync(Message message, TimeoutHelper timeoutHelper)
+Unable to read data from the transport connection: An existing connection was forcibly closed by the remote host..
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.ThrowException(SocketError error, CancellationToken cancellationToken)
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.System.Threading.Tasks.Sources.IValueTaskSource<System.Int32>.GetResult(Int16 token)
+   at System.Net.Security.SslStream.EnsureFullTlsFrameAsync[TIOAdapter](CancellationToken cancellationToken, Int32 estimatedSize)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at System.Net.Security.SslStream.ReadAsyncInternal[TIOAdapter](Memory`1 buffer, CancellationToken cancellationToken)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at System.Net.Http.HttpConnection.InitialFillAsync(Boolean async)
+   at System.Net.Http.HttpConnection.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+29/10/2025 03:18:43==>Cotizacion Invalida
+   at Applet.Nat.Api.Br.Models.DocumentExp.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentExp.cs:line 175
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 45
+29/10/2025 03:18:44==>Valor de Lista FORMAT:dtmwsmtxca no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Models.Afip.AfipService.get_ivstrDateformat() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\Afip\AfipService.cs:line 74
+   at Applet.Nat.BR.DocumentMTXCA.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentMtxca.cs:line 540
+29/10/2025 03:18:44==>Cotizacion Invalida
+   at Applet.Nat.BR.DocumentMTXCA.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentMtxca.cs:line 566
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 65
+29/10/2025 03:18:44==>An error occurred while sending the request.
+   at System.Runtime.AsyncResult.End[TAsyncResult](IAsyncResult result)
+   at System.ServiceModel.Channels.ServiceChannel.SendAsyncResult.End(SendAsyncResult result)
+   at System.ServiceModel.Channels.ServiceChannel.EndCall(String action, Object[] outs, IAsyncResult result)
+   at System.ServiceModel.Channels.ServiceChannelProxy.TaskCreator.<>c__DisplayClass1_0.<CreateGenericTask>b__0(IAsyncResult asyncResult)
+--- End of stack trace from previous location ---
+   at Applet.Nat.Api.Br.Models.DocumentExp.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentExp.cs:line 156
+An error occurred while sending the request.
+   at System.Net.Http.HttpConnection.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.SendWithVersionDetectionAndRetryAsync(HttpRequestMessage request, Boolean async, Boolean doRequestAuth, CancellationToken cancellationToken)
+   at System.Net.Http.DiagnosticsHandler.SendAsyncCore(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.RedirectHandler.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.DecompressionHandler.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpClient.<SendAsync>g__Core|83_0(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationTokenSource cts, Boolean disposeCts, CancellationTokenSource pendingRequestsCts, CancellationToken originalCancellationToken)
+   at System.ServiceModel.Channels.HttpChannelFactory`1.HttpClientRequestChannel.HttpClientChannelAsyncRequest.SendRequestAsync(Message message, TimeoutHelper timeoutHelper)
+Unable to read data from the transport connection: An existing connection was forcibly closed by the remote host..
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.ThrowException(SocketError error, CancellationToken cancellationToken)
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.System.Threading.Tasks.Sources.IValueTaskSource<System.Int32>.GetResult(Int16 token)
+   at System.Net.Security.SslStream.EnsureFullTlsFrameAsync[TIOAdapter](CancellationToken cancellationToken, Int32 estimatedSize)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at System.Net.Security.SslStream.ReadAsyncInternal[TIOAdapter](Memory`1 buffer, CancellationToken cancellationToken)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at System.Net.Http.HttpConnection.InitialFillAsync(Boolean async)
+   at System.Net.Http.HttpConnection.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+29/10/2025 03:18:44==>Cotizacion Invalida
+   at Applet.Nat.Api.Br.Models.DocumentExp.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentExp.cs:line 175
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 45
+29/10/2025 03:18:44==>Valor de Lista FORMAT:dtmwsmtxca no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Models.Afip.AfipService.get_ivstrDateformat() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\Afip\AfipService.cs:line 74
+   at Applet.Nat.BR.DocumentMTXCA.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentMtxca.cs:line 540
+29/10/2025 03:18:44==>Cotizacion Invalida
+   at Applet.Nat.BR.DocumentMTXCA.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentMtxca.cs:line 566
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 65
+29/10/2025 03:19:08==>Correo Electronico Invalido
+   at Applet.Nat.Api.Br.Models.Document.Share(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 200
+29/10/2025 03:19:20==>Correo Electronico Invalido
+   at Applet.Nat.Api.Br.Models.Document.Share(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 200
+29/10/2025 03:19:32==>Correo Electronico Invalido
+   at Applet.Nat.Api.Br.Models.Document.Share(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 200
+29/10/2025 03:19:44==>Correo Electronico Invalido
+   at Applet.Nat.Api.Br.Models.Document.Share(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 200
+29/10/2025 03:19:55==>Correo Electronico Invalido
+   at Applet.Nat.Api.Br.Models.Document.Share(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 200
+29/10/2025 03:20:07==>Correo Electronico Invalido
+   at Applet.Nat.Api.Br.Models.Document.Share(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 200
+29/10/2025 03:20:18==>Correo Electronico Invalido
+   at Applet.Nat.Api.Br.Models.Document.Share(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 200
+29/10/2025 03:20:30==>Correo Electronico Invalido
+   at Applet.Nat.Api.Br.Models.Document.Share(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 200
+29/10/2025 03:20:42==>Correo Electronico Invalido
+   at Applet.Nat.Api.Br.Models.Document.Share(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 200
+29/10/2025 03:20:54==>Correo Electronico Invalido
+   at Applet.Nat.Api.Br.Models.Document.Share(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 200
+29/10/2025 03:21:05==>Correo Electronico Invalido
+   at Applet.Nat.Api.Br.Models.Document.Share(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 200
+29/10/2025 03:21:17==>Correo Electronico Invalido
+   at Applet.Nat.Api.Br.Models.Document.Share(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 200
+29/10/2025 03:21:29==>Correo Electronico Invalido
+   at Applet.Nat.Api.Br.Models.Document.Share(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 200
+29/10/2025 03:21:40==>Correo Electronico Invalido
+   at Applet.Nat.Api.Br.Models.Document.Share(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 200
+29/10/2025 03:21:51==>Correo Electronico Invalido
+   at Applet.Nat.Api.Br.Models.Document.Share(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 200
+29/10/2025 03:22:04==>Correo Electronico Invalido
+   at Applet.Nat.Api.Br.Models.Document.Share(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 200
+29/10/2025 03:22:15==>Correo Electronico Invalido
+   at Applet.Nat.Api.Br.Models.Document.Share(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 200
+29/10/2025 03:22:27==>Correo Electronico Invalido
+   at Applet.Nat.Api.Br.Models.Document.Share(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 200
+29/10/2025 03:32:30==>An error occurred while sending the request.
+   at System.Runtime.AsyncResult.End[TAsyncResult](IAsyncResult result)
+   at System.ServiceModel.Channels.ServiceChannel.SendAsyncResult.End(SendAsyncResult result)
+   at System.ServiceModel.Channels.ServiceChannel.EndCall(String action, Object[] outs, IAsyncResult result)
+   at System.ServiceModel.Channels.ServiceChannelProxy.TaskCreator.<>c__DisplayClass1_0.<CreateGenericTask>b__0(IAsyncResult asyncResult)
+--- End of stack trace from previous location ---
+   at Applet.Nat.Api.Br.Models.DocumentExp.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentExp.cs:line 156
+An error occurred while sending the request.
+   at System.Net.Http.HttpConnection.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.SendWithVersionDetectionAndRetryAsync(HttpRequestMessage request, Boolean async, Boolean doRequestAuth, CancellationToken cancellationToken)
+   at System.Net.Http.DiagnosticsHandler.SendAsyncCore(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.RedirectHandler.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.DecompressionHandler.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpClient.<SendAsync>g__Core|83_0(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationTokenSource cts, Boolean disposeCts, CancellationTokenSource pendingRequestsCts, CancellationToken originalCancellationToken)
+   at System.ServiceModel.Channels.HttpChannelFactory`1.HttpClientRequestChannel.HttpClientChannelAsyncRequest.SendRequestAsync(Message message, TimeoutHelper timeoutHelper)
+Unable to read data from the transport connection: An existing connection was forcibly closed by the remote host..
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.ThrowException(SocketError error, CancellationToken cancellationToken)
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.System.Threading.Tasks.Sources.IValueTaskSource<System.Int32>.GetResult(Int16 token)
+   at System.Net.Security.SslStream.EnsureFullTlsFrameAsync[TIOAdapter](CancellationToken cancellationToken, Int32 estimatedSize)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at System.Net.Security.SslStream.ReadAsyncInternal[TIOAdapter](Memory`1 buffer, CancellationToken cancellationToken)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at System.Net.Http.HttpConnection.InitialFillAsync(Boolean async)
+   at System.Net.Http.HttpConnection.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+29/10/2025 03:32:30==>Cotizacion Invalida
+   at Applet.Nat.Api.Br.Models.DocumentExp.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentExp.cs:line 175
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 45
+29/10/2025 03:32:30==>Valor de Lista FORMAT:dtmwsmtxca no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Models.Afip.AfipService.get_ivstrDateformat() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\Afip\AfipService.cs:line 74
+   at Applet.Nat.BR.DocumentMTXCA.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentMtxca.cs:line 540
+29/10/2025 03:32:30==>Cotizacion Invalida
+   at Applet.Nat.BR.DocumentMTXCA.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentMtxca.cs:line 566
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 65
+29/10/2025 03:32:31==>An error occurred while sending the request.
+   at System.Runtime.AsyncResult.End[TAsyncResult](IAsyncResult result)
+   at System.ServiceModel.Channels.ServiceChannel.SendAsyncResult.End(SendAsyncResult result)
+   at System.ServiceModel.Channels.ServiceChannel.EndCall(String action, Object[] outs, IAsyncResult result)
+   at System.ServiceModel.Channels.ServiceChannelProxy.TaskCreator.<>c__DisplayClass1_0.<CreateGenericTask>b__0(IAsyncResult asyncResult)
+--- End of stack trace from previous location ---
+   at Applet.Nat.Api.Br.Models.DocumentExp.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentExp.cs:line 156
+An error occurred while sending the request.
+   at System.Net.Http.HttpConnection.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.SendWithVersionDetectionAndRetryAsync(HttpRequestMessage request, Boolean async, Boolean doRequestAuth, CancellationToken cancellationToken)
+   at System.Net.Http.DiagnosticsHandler.SendAsyncCore(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.RedirectHandler.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.DecompressionHandler.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpClient.<SendAsync>g__Core|83_0(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationTokenSource cts, Boolean disposeCts, CancellationTokenSource pendingRequestsCts, CancellationToken originalCancellationToken)
+   at System.ServiceModel.Channels.HttpChannelFactory`1.HttpClientRequestChannel.HttpClientChannelAsyncRequest.SendRequestAsync(Message message, TimeoutHelper timeoutHelper)
+Unable to read data from the transport connection: An existing connection was forcibly closed by the remote host..
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.ThrowException(SocketError error, CancellationToken cancellationToken)
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.System.Threading.Tasks.Sources.IValueTaskSource<System.Int32>.GetResult(Int16 token)
+   at System.Net.Security.SslStream.EnsureFullTlsFrameAsync[TIOAdapter](CancellationToken cancellationToken, Int32 estimatedSize)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at System.Net.Security.SslStream.ReadAsyncInternal[TIOAdapter](Memory`1 buffer, CancellationToken cancellationToken)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at System.Net.Http.HttpConnection.InitialFillAsync(Boolean async)
+   at System.Net.Http.HttpConnection.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+29/10/2025 03:32:31==>Cotizacion Invalida
+   at Applet.Nat.Api.Br.Models.DocumentExp.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentExp.cs:line 175
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 45
+29/10/2025 03:32:31==>Valor de Lista FORMAT:dtmwsmtxca no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Models.Afip.AfipService.get_ivstrDateformat() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\Afip\AfipService.cs:line 74
+   at Applet.Nat.BR.DocumentMTXCA.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentMtxca.cs:line 540
+29/10/2025 03:32:31==>Cotizacion Invalida
+   at Applet.Nat.BR.DocumentMTXCA.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentMtxca.cs:line 566
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 65
+29/10/2025 03:32:32==>Correo Electronico Invalido
+   at Applet.Nat.Api.Br.Models.Document.Share(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 200
+29/10/2025 03:32:54==>Correo Electronico Invalido
+   at Applet.Nat.Api.Br.Models.Document.Share(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 200
+29/10/2025 03:33:11==>Correo Electronico Invalido
+   at Applet.Nat.Api.Br.Models.Document.Share(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 200
+29/10/2025 03:36:11==>The archive entry was compressed using an unsupported compression method.
+   at System.IO.Compression.Inflater.Inflate(FlushCode flushCode)
+   at System.IO.Compression.Inflater.ReadInflateOutput(Byte* bufPtr, Int32 length, FlushCode flushCode, Int32& bytesRead)
+   at System.IO.Compression.Inflater.ReadOutput(Byte* bufPtr, Int32 length, Int32& bytesRead)
+   at System.IO.Compression.Inflater.InflateVerified(Byte* bufPtr, Int32 length)
+   at System.IO.Compression.DeflateStream.CopyToStream.Write(Byte[] buffer, Int32 offset, Int32 count)
+   at System.IO.Compression.DeflateStream.CopyToStream.CopyFromSourceToDestination()
+   at Applet.Nat.Api.Static.Format.UnCompress2(String value) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Format.cs:line 390
+   at Applet.Nat.Api.Static.Format.UnCompress(String vivstr, Encoding vioEncoding) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Format.cs:line 380
+   at Applet.Nat.Api.Br.Models.InDocumentXML.ToDocumentUser() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\InDocumentXML.cs:line 34
+29/10/2025 03:36:19==>An error occurred while sending the request.
+   at System.Runtime.AsyncResult.End[TAsyncResult](IAsyncResult result)
+   at System.ServiceModel.Channels.ServiceChannel.SendAsyncResult.End(SendAsyncResult result)
+   at System.ServiceModel.Channels.ServiceChannel.EndCall(String action, Object[] outs, IAsyncResult result)
+   at System.ServiceModel.Channels.ServiceChannelProxy.TaskCreator.<>c__DisplayClass1_0.<CreateGenericTask>b__0(IAsyncResult asyncResult)
+--- End of stack trace from previous location ---
+   at Applet.Nat.Api.Br.Models.DocumentExp.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentExp.cs:line 156
+An error occurred while sending the request.
+   at System.Net.Http.HttpConnection.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.SendWithVersionDetectionAndRetryAsync(HttpRequestMessage request, Boolean async, Boolean doRequestAuth, CancellationToken cancellationToken)
+   at System.Net.Http.DiagnosticsHandler.SendAsyncCore(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.RedirectHandler.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.DecompressionHandler.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpClient.<SendAsync>g__Core|83_0(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationTokenSource cts, Boolean disposeCts, CancellationTokenSource pendingRequestsCts, CancellationToken originalCancellationToken)
+   at System.ServiceModel.Channels.HttpChannelFactory`1.HttpClientRequestChannel.HttpClientChannelAsyncRequest.SendRequestAsync(Message message, TimeoutHelper timeoutHelper)
+Unable to read data from the transport connection: An existing connection was forcibly closed by the remote host..
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.ThrowException(SocketError error, CancellationToken cancellationToken)
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.System.Threading.Tasks.Sources.IValueTaskSource<System.Int32>.GetResult(Int16 token)
+   at System.Net.Security.SslStream.EnsureFullTlsFrameAsync[TIOAdapter](CancellationToken cancellationToken, Int32 estimatedSize)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at System.Net.Security.SslStream.ReadAsyncInternal[TIOAdapter](Memory`1 buffer, CancellationToken cancellationToken)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at System.Net.Http.HttpConnection.InitialFillAsync(Boolean async)
+   at System.Net.Http.HttpConnection.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+29/10/2025 03:36:19==>Cotizacion Invalida
+   at Applet.Nat.Api.Br.Models.DocumentExp.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentExp.cs:line 175
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 45
+29/10/2025 03:36:19==>Valor de Lista FORMAT:dtmwsmtxca no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Models.Afip.AfipService.get_ivstrDateformat() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\Afip\AfipService.cs:line 74
+   at Applet.Nat.BR.DocumentMTXCA.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentMtxca.cs:line 540
+29/10/2025 03:36:20==>Cotizacion Invalida
+   at Applet.Nat.BR.DocumentMTXCA.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentMtxca.cs:line 566
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 65
+29/10/2025 03:36:20==>An error occurred while sending the request.
+   at System.Runtime.AsyncResult.End[TAsyncResult](IAsyncResult result)
+   at System.ServiceModel.Channels.ServiceChannel.SendAsyncResult.End(SendAsyncResult result)
+   at System.ServiceModel.Channels.ServiceChannel.EndCall(String action, Object[] outs, IAsyncResult result)
+   at System.ServiceModel.Channels.ServiceChannelProxy.TaskCreator.<>c__DisplayClass1_0.<CreateGenericTask>b__0(IAsyncResult asyncResult)
+--- End of stack trace from previous location ---
+   at Applet.Nat.Api.Br.Models.DocumentExp.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentExp.cs:line 156
+An error occurred while sending the request.
+   at System.Net.Http.HttpConnection.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.SendWithVersionDetectionAndRetryAsync(HttpRequestMessage request, Boolean async, Boolean doRequestAuth, CancellationToken cancellationToken)
+   at System.Net.Http.DiagnosticsHandler.SendAsyncCore(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.RedirectHandler.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.DecompressionHandler.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpClient.<SendAsync>g__Core|83_0(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationTokenSource cts, Boolean disposeCts, CancellationTokenSource pendingRequestsCts, CancellationToken originalCancellationToken)
+   at System.ServiceModel.Channels.HttpChannelFactory`1.HttpClientRequestChannel.HttpClientChannelAsyncRequest.SendRequestAsync(Message message, TimeoutHelper timeoutHelper)
+Unable to read data from the transport connection: An existing connection was forcibly closed by the remote host..
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.ThrowException(SocketError error, CancellationToken cancellationToken)
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.System.Threading.Tasks.Sources.IValueTaskSource<System.Int32>.GetResult(Int16 token)
+   at System.Net.Security.SslStream.EnsureFullTlsFrameAsync[TIOAdapter](CancellationToken cancellationToken, Int32 estimatedSize)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at System.Net.Security.SslStream.ReadAsyncInternal[TIOAdapter](Memory`1 buffer, CancellationToken cancellationToken)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at System.Net.Http.HttpConnection.InitialFillAsync(Boolean async)
+   at System.Net.Http.HttpConnection.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+29/10/2025 03:36:20==>Cotizacion Invalida
+   at Applet.Nat.Api.Br.Models.DocumentExp.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentExp.cs:line 175
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 45
+29/10/2025 03:36:20==>Valor de Lista FORMAT:dtmwsmtxca no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Models.Afip.AfipService.get_ivstrDateformat() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\Afip\AfipService.cs:line 74
+   at Applet.Nat.BR.DocumentMTXCA.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentMtxca.cs:line 540
+29/10/2025 03:36:20==>Cotizacion Invalida
+   at Applet.Nat.BR.DocumentMTXCA.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentMtxca.cs:line 566
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 65
+29/10/2025 03:36:39==>Correo Electronico Invalido
+   at Applet.Nat.Api.Br.Models.Document.Share(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 201
+29/10/2025 03:38:01==>The archive entry was compressed using an unsupported compression method.
+   at System.IO.Compression.Inflater.Inflate(FlushCode flushCode)
+   at System.IO.Compression.Inflater.ReadInflateOutput(Byte* bufPtr, Int32 length, FlushCode flushCode, Int32& bytesRead)
+   at System.IO.Compression.Inflater.InflateVerified(Byte* bufPtr, Int32 length)
+   at System.IO.Compression.DeflateStream.CopyToStream.CopyFromSourceToDestination()
+   at System.IO.Compression.DeflateStream.CopyTo(Stream destination, Int32 bufferSize)
+   at Applet.Nat.Api.Static.Format.UnCompress2(String value) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Format.cs:line 390
+   at Applet.Nat.Api.Static.Format.UnCompress(String vivstr, Encoding vioEncoding) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Format.cs:line 380
+   at Applet.Nat.Api.Br.Models.InDocumentXML.ToDocumentUser() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\InDocumentXML.cs:line 34
+29/10/2025 03:38:52==>Correo Electronico Invalido
+   at Applet.Nat.Api.Br.Models.Document.Share(IConfiguration vioConfiguration) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\Document.cs:line 201
+29/10/2025 03:42:39==>Ejecucion Previa aun no finalizada
+   at Applet.Nat.Api.Controllers.MiscController.Queue() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 147
+29/10/2025 03:43:04==>The archive entry was compressed using an unsupported compression method.
+   at System.IO.Compression.Inflater.Inflate(FlushCode flushCode)
+   at System.IO.Compression.Inflater.ReadInflateOutput(Byte* bufPtr, Int32 length, FlushCode flushCode, Int32& bytesRead)
+   at System.IO.Compression.Inflater.ReadOutput(Byte* bufPtr, Int32 length, Int32& bytesRead)
+   at System.IO.Compression.Inflater.InflateVerified(Byte* bufPtr, Int32 length)
+   at System.IO.Compression.DeflateStream.CopyToStream.Write(Byte[] buffer, Int32 offset, Int32 count)
+   at System.IO.Compression.DeflateStream.CopyToStream.CopyFromSourceToDestination()
+   at Applet.Nat.Api.Static.Format.UnCompress2(String value) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Format.cs:line 390
+   at Applet.Nat.Api.Static.Format.UnCompress(String vivstr, Encoding vioEncoding) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\Format.cs:line 380
+   at Applet.Nat.Api.Br.Models.InDocumentXML.ToDocumentUser() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\InDocumentXML.cs:line 34
+29/10/2025 03:44:05==>An error occurred while sending the request.
+   at System.Runtime.AsyncResult.End[TAsyncResult](IAsyncResult result)
+   at System.ServiceModel.Channels.ServiceChannel.SendAsyncResult.End(SendAsyncResult result)
+   at System.ServiceModel.Channels.ServiceChannel.EndCall(String action, Object[] outs, IAsyncResult result)
+   at System.ServiceModel.Channels.ServiceChannelProxy.TaskCreator.<>c__DisplayClass1_0.<CreateGenericTask>b__0(IAsyncResult asyncResult)
+--- End of stack trace from previous location ---
+   at Applet.Nat.Api.Br.Models.DocumentExp.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentExp.cs:line 156
+An error occurred while sending the request.
+   at System.Net.Http.HttpConnection.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.SendWithVersionDetectionAndRetryAsync(HttpRequestMessage request, Boolean async, Boolean doRequestAuth, CancellationToken cancellationToken)
+   at System.Net.Http.DiagnosticsHandler.SendAsyncCore(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.RedirectHandler.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.DecompressionHandler.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpClient.<SendAsync>g__Core|83_0(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationTokenSource cts, Boolean disposeCts, CancellationTokenSource pendingRequestsCts, CancellationToken originalCancellationToken)
+   at System.ServiceModel.Channels.HttpChannelFactory`1.HttpClientRequestChannel.HttpClientChannelAsyncRequest.SendRequestAsync(Message message, TimeoutHelper timeoutHelper)
+Unable to read data from the transport connection: An existing connection was forcibly closed by the remote host..
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.ThrowException(SocketError error, CancellationToken cancellationToken)
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.System.Threading.Tasks.Sources.IValueTaskSource<System.Int32>.GetResult(Int16 token)
+   at System.Net.Security.SslStream.EnsureFullTlsFrameAsync[TIOAdapter](CancellationToken cancellationToken, Int32 estimatedSize)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at System.Net.Security.SslStream.ReadAsyncInternal[TIOAdapter](Memory`1 buffer, CancellationToken cancellationToken)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at System.Net.Http.HttpConnection.InitialFillAsync(Boolean async)
+   at System.Net.Http.HttpConnection.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+29/10/2025 03:44:05==>Cotizacion Invalida
+   at Applet.Nat.Api.Br.Models.DocumentExp.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentExp.cs:line 175
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 45
+29/10/2025 03:44:07==>Valor de Lista FORMAT:dtmwsmtxca no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Models.Afip.AfipService.get_ivstrDateformat() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\Afip\AfipService.cs:line 74
+   at Applet.Nat.BR.DocumentMTXCA.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentMtxca.cs:line 540
+29/10/2025 03:44:07==>Cotizacion Invalida
+   at Applet.Nat.BR.DocumentMTXCA.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentMtxca.cs:line 566
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 65
+29/10/2025 03:44:07==>An error occurred while sending the request.
+   at System.Runtime.AsyncResult.End[TAsyncResult](IAsyncResult result)
+   at System.ServiceModel.Channels.ServiceChannel.SendAsyncResult.End(SendAsyncResult result)
+   at System.ServiceModel.Channels.ServiceChannel.EndCall(String action, Object[] outs, IAsyncResult result)
+   at System.ServiceModel.Channels.ServiceChannelProxy.TaskCreator.<>c__DisplayClass1_0.<CreateGenericTask>b__0(IAsyncResult asyncResult)
+--- End of stack trace from previous location ---
+   at Applet.Nat.Api.Br.Models.DocumentExp.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentExp.cs:line 156
+An error occurred while sending the request.
+   at System.Net.Http.HttpConnection.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.SendWithVersionDetectionAndRetryAsync(HttpRequestMessage request, Boolean async, Boolean doRequestAuth, CancellationToken cancellationToken)
+   at System.Net.Http.DiagnosticsHandler.SendAsyncCore(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.RedirectHandler.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.DecompressionHandler.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpClient.<SendAsync>g__Core|83_0(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationTokenSource cts, Boolean disposeCts, CancellationTokenSource pendingRequestsCts, CancellationToken originalCancellationToken)
+   at System.ServiceModel.Channels.HttpChannelFactory`1.HttpClientRequestChannel.HttpClientChannelAsyncRequest.SendRequestAsync(Message message, TimeoutHelper timeoutHelper)
+Unable to read data from the transport connection: An existing connection was forcibly closed by the remote host..
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.ThrowException(SocketError error, CancellationToken cancellationToken)
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.System.Threading.Tasks.Sources.IValueTaskSource<System.Int32>.GetResult(Int16 token)
+   at System.Net.Security.SslStream.EnsureFullTlsFrameAsync[TIOAdapter](CancellationToken cancellationToken, Int32 estimatedSize)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at System.Net.Security.SslStream.ReadAsyncInternal[TIOAdapter](Memory`1 buffer, CancellationToken cancellationToken)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at System.Net.Http.HttpConnection.InitialFillAsync(Boolean async)
+   at System.Net.Http.HttpConnection.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+29/10/2025 03:44:07==>Cotizacion Invalida
+   at Applet.Nat.Api.Br.Models.DocumentExp.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentExp.cs:line 175
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 45
+29/10/2025 03:44:08==>Valor de Lista FORMAT:dtmwsmtxca no encontrado
+   at Applet.Nat.Api.Static.ListHelper.GetValue(String vivcodType, String vivcodId, NatContext vioContext) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Static\ListHelper.cs:line 26
+   at Applet.Nat.Api.Models.Afip.AfipService.get_ivstrDateformat() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\Afip\AfipService.cs:line 74
+   at Applet.Nat.BR.DocumentMTXCA.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentMtxca.cs:line 540
+29/10/2025 03:44:08==>Cotizacion Invalida
+   at Applet.Nat.BR.DocumentMTXCA.GetCotizacion(String vivstrMoneda, DateTime vivdtm) in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\DocumentMtxca.cs:line 566
+   at Applet.Nat.Api.Controllers.MiscController.Statics() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Controllers\MiscController.cs:line 65

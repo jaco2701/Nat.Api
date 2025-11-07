@@ -28,15 +28,16 @@ namespace Applet.Nat.Api.Static
                         string[] lcvstrColswidth = vivstrColswidth.Split(new char[] { ',' }, StringSplitOptions.TrimEntries);
                         for (int i = 1; i <= lioDataTable.Columns.Count; i++)
                         {
-                            if (lcvstrColswidth.Length < i || !short.TryParse(lcvstrColswidth[i-1], out livnro))
+                            if (lcvstrColswidth.Length < i || !short.TryParse(lcvstrColswidth[i - 1], out livnro))
                                 lioWs.Column(i).Width = 30;
                             else
                                 lioWs.Column(i).Width = livnro;
-                            lioWs.Cells[livnumRow, i].Value = lioDataTable.Columns[i-1].ColumnName;
+                            lioWs.Cells[livnumRow, i].Value = lioDataTable.Columns[i - 1].ColumnName;
                         }
+                        livnumRow++;
                         for (int j = 0; j < lioDataTable.Rows.Count; j++)
                         {
-                            livnumColum=1;
+                            livnumColum = 1;
                             for (int k = 0; k < lioDataTable.Columns.Count; k++)
                             {
                                 lioWs.Cells[livnumRow, livnumColum].Value = lioDataTable.Rows[j].ItemArray[k].ToString();

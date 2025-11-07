@@ -281,22 +281,22 @@
           "content": {
             "application/json-patch+json": {
               "schema": {
-                "$ref": "#/components/schemas/DocumentsUploadRequest"
+                "$ref": "#/components/schemas/DocumentUploadRequest"
               }
             },
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/DocumentsUploadRequest"
+                "$ref": "#/components/schemas/DocumentUploadRequest"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/DocumentsUploadRequest"
+                "$ref": "#/components/schemas/DocumentUploadRequest"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/DocumentsUploadRequest"
+                "$ref": "#/components/schemas/DocumentUploadRequest"
               }
             }
           }
@@ -789,22 +789,22 @@
           "content": {
             "application/json-patch+json": {
               "schema": {
-                "$ref": "#/components/schemas/DocumentsUploadRequest"
+                "$ref": "#/components/schemas/DocumentUploadRequest"
               }
             },
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/DocumentsUploadRequest"
+                "$ref": "#/components/schemas/DocumentUploadRequest"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/DocumentsUploadRequest"
+                "$ref": "#/components/schemas/DocumentUploadRequest"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/DocumentsUploadRequest"
+                "$ref": "#/components/schemas/DocumentUploadRequest"
               }
             }
           }
@@ -1029,20 +1029,11 @@
             },
             "nullable": true
           },
-          "ivstrInFolder": {
-            "type": "string",
-            "nullable": true
-          },
-          "ivstrOutFolder": {
-            "type": "string",
-            "nullable": true
-          },
-          "ivstrEncoding": {
-            "type": "string",
-            "nullable": true
-          },
-          "ivblnAdmin": {
-            "type": "boolean",
+          "coParameters": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CuitParameter"
+            },
             "nullable": true
           },
           "coTemplateVersions": {
@@ -1073,6 +1064,20 @@
         },
         "additionalProperties": false
       },
+      "CuitParameter": {
+        "type": "object",
+        "properties": {
+          "ivstrId": {
+            "type": "string",
+            "nullable": true
+          },
+          "ivstrValue": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "DocumentKey": {
         "type": "object",
         "properties": {
@@ -1089,28 +1094,6 @@
             "format": "int32"
           },
           "ivlngCbte": {
-            "type": "integer",
-            "format": "int64"
-          }
-        },
-        "additionalProperties": false
-      },
-      "DocumentsUploadRequest": {
-        "type": "object",
-        "properties": {
-          "ivstrData": {
-            "type": "string",
-            "nullable": true
-          },
-          "ivstrName": {
-            "type": "string",
-            "nullable": true
-          },
-          "ivblnComp": {
-            "type": "boolean",
-            "nullable": true
-          },
-          "ivlngCuit": {
             "type": "integer",
             "format": "int64"
           }
@@ -1141,6 +1124,28 @@
         },
         "additionalProperties": false
       },
+      "DocumentUploadRequest": {
+        "type": "object",
+        "properties": {
+          "ivstrData": {
+            "type": "string",
+            "nullable": true
+          },
+          "ivstrName": {
+            "type": "string",
+            "nullable": true
+          },
+          "ivblnComp": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "ivlngCuit": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "additionalProperties": false
+      },
       "eTask": {
         "enum": [
           1,
@@ -1154,7 +1159,8 @@
           9,
           10,
           11,
-          12
+          12,
+          13
         ],
         "type": "integer",
         "format": "int32"
@@ -1305,6 +1311,10 @@
           "ivstrCoord": {
             "type": "string",
             "nullable": true
+          },
+          "ivblnIsNumeric": {
+            "type": "boolean",
+            "readOnly": true
           }
         },
         "additionalProperties": false

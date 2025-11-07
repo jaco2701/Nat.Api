@@ -5,7 +5,7 @@ using Azure.Core;
 using Microsoft.AspNetCore.Components.Server.Circuits;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
-using Nat.Api.Properties;
+using Nat.API.Properties;
 using Newtonsoft.Json;
 using OfficeOpenXml.FormulaParsing.Utilities;
 using System.Net.Http.Headers;

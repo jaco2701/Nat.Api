@@ -4,7 +4,7 @@ using Applet.Nat.Api.DC;
 using Microsoft.AspNetCore.Mvc;
 using Applet.Nat.Api.Static;
 using Applet.Nat.Api.Ifaces;
-using Nat.Api.Properties;
+using Nat.API.Properties;
 using Nat.Api.Models.BR;
 using System.Data;
 using Applet.Nat.Api.Models.BR;

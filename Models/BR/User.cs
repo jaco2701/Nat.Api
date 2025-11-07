@@ -1,15 +1,7 @@
 using Applet.Nat.Api.DC;
-using Applet.Nat.Api.Models;
 using Applet.Nat.Api.Static;
-using Azure.Core;
-using Microsoft.AspNetCore.Components.Server.Circuits;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
-using Nat.Api.Properties;
-using Newtonsoft.Json;
-using OfficeOpenXml.FormulaParsing.Utilities;
-using System.Net.Http.Headers;
-using System.Text;
+using Nat.API.Properties;
 namespace Applet.Nat.Api.Br.Models
 {
     public class User
@@ -154,7 +146,7 @@ namespace Applet.Nat.Api.Br.Models
             {
                 lioCuit= new Cuit(lioO.ivlngCuit,mioContext);
                 lioO.ivstrRS = lioCuit.ioDcModel.ivstrCuitRS;
-                lioO.ivstrEncoding = lioCuit.ioCnfg.ivstrEncoding ??string.Empty;
+                lioO.ivstrEncoding = lioCuit.ioCnfg?.coParameters.FirstOrDefault(x => x.ivstrId == "Encoding")?.ivstrValue ??string.Empty;
             }
         }
         #endregion

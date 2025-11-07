@@ -1,19 +1,17 @@
+using Applet.Nat.Api.Br.Models;
 using System;
 namespace Applet.Nat.Api.Br
 {
     public class CuitCnfg
     {
         public ServiceMapper[]? coServiceMappers { get; set; }
-        public string? ivstrInFolder { get; set; }
-        public string? ivstrOutFolder { get; set; }
-        public string? ivstrEncoding { get; set; }
-        public bool? ivblnAdmin { get; set; }
+        public CuitParameter[] coParameters { get; set; }
         public TemplateVersion[]? coTemplateVersions { get; set; }
     }
     public class ServiceMapper
     {
         public string? ivstrWs { get; set; }
-        public ServiceMapperItem[] coItems { get; set; }
+        public ServiceMapperItem[]? coItems { get; set; }
         public int? ivnumRecLen { get; set; }
         public string? ivstrTemplate { get; set; }
         public string? ivstrInputType { get; set; }
@@ -28,7 +26,7 @@ namespace Applet.Nat.Api.Br
         public string? ivstrRPad { get; set; }
         public string? ivstrformat { get; set; }
         public string? ivstrCoord { get; set; }
-        
+        public bool ivblnIsNumeric { get { return ivstrProperty.Contains("ivnro") || ivstrProperty.Contains("ivnum") || ivstrProperty.Contains("ivlng") || ivstrProperty.Contains("ivdbl"); } }
     }
     public class ServiceMapperItemXPath
     {
@@ -40,6 +38,12 @@ namespace Applet.Nat.Api.Br
     {
         public short ivnroTipo { get; set; }
         public short ivnroTemplateVersion { get; set; }
+
+    }
+    public class CuitParameter
+    {
+        public string ivstrId { get; set; }
+        public string ivstrValue { get; set; }
 
     }
 }

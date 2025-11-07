@@ -9,14 +9,13 @@ namespace Applet.Nat.Api.DC
         public NatContext(DbContextOptions options) : base(options)
         {
         }
-
+        public string ivstrCnn { get; set; }
         public static NatContext GetContext(IConfiguration mioConfiguration)
         {
             var optionsBuilder = new DbContextOptionsBuilder<NatContext>();
             optionsBuilder.UseSqlServer(mioConfiguration.GetConnectionString("sqlserver"));
             return new NatContext(optionsBuilder.Options);
         }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //PK compuestas
@@ -24,6 +23,7 @@ namespace Applet.Nat.Api.DC
             modelBuilder.Entity<DocumentTrackingModel>().HasKey(x => new { x.ivlngDoc, x.ivnumTrack });
             modelBuilder.Entity<UserCuitModel>().HasKey(x => new { x.ivnumUser, x.ivlngCuit });
         }
+        public DbSet<IdentityProviderModel> IdentityProviders { get; set; }
         public DbSet<CuitModel> Cuits { get; set; }
         public DbSet<DocumentModel> Documents { get; set; }
         public DbSet<DocumentTrackingModel> DocumentTrackings { get; set; }

@@ -3,10 +3,11 @@ using Applet.Nat.Api.Br.Models;
 using Applet.Nat.Api.DC;
 using Applet.Nat.Api.Ifaces;
 using Applet.Nat.Api.Models.BR;
+using Microsoft.AspNetCore.Components.Server.Circuits;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Nat.Api.Properties;
+using Nat.API.Properties;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -98,7 +99,7 @@ namespace Applet.Nat.Api.Static
                             LogHelper.write(lioE);
                             continue;
                         }
-                        LogHelper.writeinfo($"{DateTime.Now} {Resources.lioM_ProcDoc} {lioDocument.ivstrKey}",ListHelper.GetValue("FORMAT", "VERBOSE", lioContext) == "1");
+                        LogHelper.writeinfo($"{DateTime.Now} {Resources.lioM_ProcDoc} {lioDocument.ivstrKey}", ListHelper.GetValue("FORMAT", "VERBOSE", lioContext) == "1");
 
                         await lioDocument.Auth();
                         if (lioDocument.ioDcModel.ivnroStatus == 35)
@@ -116,7 +117,6 @@ namespace Applet.Nat.Api.Static
                     {
                         try
                         {
-                            string livstrWsData = string.Empty;
                             //  LogHelper.write($"{DateTime.Now} {Resources.lioM_ProcDoc} {lioDocument.ivstrKey}");
                             if (lioDocument.ioDcModel.ivnroStatus == 50)
                             {
@@ -138,8 +138,7 @@ namespace Applet.Nat.Api.Static
                             }
                             else if (lioDocument.ioDcModel.ivnroStatus == 60)
                             {
-                                lioDocument.ioDcModel.ivnroStatus = await lioDocument.Share();
-                                livstrWsData = lioDocument.ioDocumentUser?.ivstrEmail ?? string.Empty;
+								lioDocument.ioDcModel.ivnroStatus= await lioDocument.Share(vioConfiguration);
                             }
                             else if (lioDocument.ioDcModel.ivnroStatus == 80)
                             {
@@ -179,19 +178,21 @@ namespace Applet.Nat.Api.Static
             {
                 if (!vioConfiguration.GetValue<bool>("AutoUpload"))
                     return;
-                List<DocumentUploadResponse> lcoUDocumentsUploadResponse;
-                List<Tuple<long, string>> lcoFilesToProcess = new List<Tuple<long, string>>();
+                Cuit lioCuit;
                 using NatContext lioContext = NatContext.GetContext(vioConfiguration);
                 {
                     foreach (CuitModel lioCuitModel in lioContext.Cuits)
                     {
-                        Cuit lioCuit = new Cuit { ioDcModel = lioCuitModel };
-                        if (string.IsNullOrEmpty(lioCuit.ioCnfg?.ivstrInFolder))
-                            continue;
                         try
                         {
-                            foreach (string livstrFile in Directory.GetFiles(lioCuit.ioCnfg.ivstrInFolder).Where(file => !file.EndsWith(".log", StringComparison.OrdinalIgnoreCase)))
-                                lcoFilesToProcess.Add(new Tuple<long, string>(lioCuitModel.ivlngCuit, livstrFile));
+                            lioCuit = new Cuit(lioCuitModel, lioContext, vioConfiguration);
+                            CuitParameter lioCuitParameter = lioCuit.ioCnfg?.coParameters?.FirstOrDefault(x => x.ivstrId == "LoadMethod");
+                            if (lioCuitParameter == null || string.IsNullOrEmpty(lioCuitParameter.ivstrValue) || !short.TryParse(lioCuitParameter.ivstrValue, out short livnroLoadMethod))
+                                continue;
+                            if (livnroLoadMethod == (short)eLoadMethod.Manual)
+                                continue;
+                            IDocsIO liIDocsIO = lioCuit.getIDocsIO();
+                            await liIDocsIO.DocsI();
                         }
                         catch (Exception lioE)
                         {
@@ -200,184 +201,10 @@ namespace Applet.Nat.Api.Static
                         }
                     }
                 }
-                DocumentsUploadRequest lioDocumentsUploadRequest;
-                foreach (Tuple<long, string> lioO in lcoFilesToProcess)
-                {
-                    lioDocumentsUploadRequest = new DocumentsUploadRequest
-                    {
-                        ivstrName = Path.GetFileName(lioO.Item2),
-                        ivstrData = Convert.ToBase64String(Encoding.UTF8.GetBytes(File.ReadAllText(lioO.Item2))),
-                        ivblnComp = false,
-                        ivlngCuit = lioO.Item1
-                    };
-                    try
-                    {
-                        lcoUDocumentsUploadResponse = UploadDocument(lioDocumentsUploadRequest, vioConfiguration);
-                        if (lcoUDocumentsUploadResponse.Count == 0)
-                            continue;
-                        if (lcoUDocumentsUploadResponse[0].ivstrDescStatus != "OK")
-                            File.WriteAllText(Path.ChangeExtension(lioO.Item2, ".log"), lcoUDocumentsUploadResponse[0].ivstrDescStatus);
-                        File.Delete(lioO.Item2);
-                    }
-                    catch (Exception lioE)
-                    {
-                        LogHelper.write(lioE);
-                    }
-                }
             }
             catch (Exception lioE)
             {
                 LogHelper.write(lioE);
-            }
-        }
-        private static async Task BuildTaskExtract(IConfiguration vioConfiguration)
-        {
-            try
-            {
-                if (!vioConfiguration.GetValue<bool>("AutoExtract"))
-                    return;
-                List<DocumentUploadResponse> lcoUDocumentsUploadResponse;
-                List<Tuple<long, string>> lcoFilesToProcess = new List<Tuple<long, string>>();
-                using NatContext lioContext = NatContext.GetContext(vioConfiguration);
-                {
-                    foreach (CuitModel lioCuitModel in lioContext.Cuits)
-                    {
-                        Cuit lioCuit = new Cuit { ioDcModel = lioCuitModel };
-                        if (string.IsNullOrEmpty(lioCuit.ioCnfg?.ivstrInFolder))
-                            continue;
-                        try
-                        {
-
-                        }
-                        catch (Exception lioE)
-                        {
-                            LogHelper.write(lioE);
-                            continue;
-                        }
-                    }
-                }
-                DocumentsUploadRequest lioDocumentsUploadRequest;
-                foreach (Tuple<long, string> lioO in lcoFilesToProcess)
-                {
-                    lioDocumentsUploadRequest = new DocumentsUploadRequest
-                    {
-                        ivstrName = Path.GetFileName(lioO.Item2),
-                        ivstrData = Convert.ToBase64String(Encoding.UTF8.GetBytes(File.ReadAllText(lioO.Item2))),
-                        ivblnComp = false,
-                        ivlngCuit = lioO.Item1
-                    };
-                    try
-                    {
-                        lcoUDocumentsUploadResponse = UploadDocument(lioDocumentsUploadRequest, vioConfiguration);
-                        if (lcoUDocumentsUploadResponse.Count == 0)
-                            continue;
-                        if (lcoUDocumentsUploadResponse[0].ivstrDescStatus != "OK")
-                            File.WriteAllText(Path.ChangeExtension(lioO.Item2, ".log"), lcoUDocumentsUploadResponse[0].ivstrDescStatus);
-                        File.Delete(lioO.Item2);
-                    }
-                    catch (Exception lioE)
-                    {
-                        LogHelper.write(lioE);
-                    }
-                }
-            }
-            catch (Exception lioE)
-            {
-                LogHelper.write(lioE);
-            }
-        }
-        public static List<DocumentUploadResponse> UploadDocument(DocumentsUploadRequest vioDocumentsUpload, IConfiguration vioConfiguration)
-        {
-            using NatContext lioContext = NatContext.GetContext(vioConfiguration);
-            {
-                List<DocumentUploadResponse> lcoDocumentUserResponse = new List<DocumentUploadResponse>();
-
-                Document lioDocument;
-                if (string.IsNullOrEmpty(vioDocumentsUpload.ivstrName))
-                    throw new Exception($"Nombre de Documento {Resources.lioE_ObjectNoM}");
-                if (string.IsNullOrEmpty(vioDocumentsUpload.ivstrData))
-                    throw new Exception($"Datos de Documento {Resources.lioE_ObjectNoM}");
-                IRawDocument lioRawDocument;
-                FileInfo lioFileInfo = new FileInfo(vioDocumentsUpload.ivstrName);
-                switch (lioFileInfo.Extension.ToLower())
-                {
-                    case ".json":
-                        lioRawDocument = new InDocumentJSON(vioDocumentsUpload.ivlngCuit, lioContext);
-                        break;
-                    case ".xml":
-                        lioRawDocument = new InDocumentXML(vioDocumentsUpload.ivlngCuit, lioContext);
-                        break;
-                    case ".txt":
-                        lioRawDocument = new InDocumentTXT(vioDocumentsUpload.ivlngCuit, lioContext);
-                        break;
-                    default:
-                        throw new Exception(string.Format(Resources.lioE_ObjectNoM, "Document Extension", "a"));
-                }
-                if (!vioDocumentsUpload.ivblnComp ?? false) //sino viene comprimido lo comprimo
-                    vioDocumentsUpload.ivstrData = Format.Compress(vioDocumentsUpload.ivstrData);
-                lioRawDocument.ivstrRaw = vioDocumentsUpload.ivstrData;
-                lioRawDocument.ivstrName = vioDocumentsUpload.ivstrName;
-                DocumentUser lioDocumentUser = lioRawDocument.ToDocumentUser();
-                if (!string.IsNullOrEmpty(lioDocumentUser.ivstrLoadErrors))
-                {
-                    lcoDocumentUserResponse.Add(
-                        new DocumentUploadResponse
-                        {
-                            ivlngCuitEmisor = lioDocumentUser.ivlngCuitEmisor,
-                            ivlngCbte = lioDocumentUser.ivlngCbte,
-                            ivnumPvta = lioDocumentUser.ivnumPvta,
-                            ivnroTipoDoc = lioDocumentUser.ivnroTipoDoc,
-                            ivnroStatus = 2,
-                            ivstrDescStatus = lioDocumentUser.ivstrLoadErrors
-                        });
-                    lioDocumentUser.ivstrLoadErrors = string.Empty;
-                }
-                else
-                {
-                    if (lioDocumentUser.ivlngCuitEmisor != vioDocumentsUpload.ivlngCuit)
-                        throw new Exception($"Cuit Emisor {Resources.lioE_ObjectNoM}");
-                    lioDocument = new Document(lioDocumentUser, lioContext);
-                    lioDocument.ioDcModel.ivstrInData = lioDocumentUser.ivstrInputData;
-                    lioDocument.ioDcModel.ivstrInType = lioFileInfo.Extension.ToLower();
-                    lioDocumentUser.ivstrInputData = string.Empty;
-                    lioDocument.ioDcModel.ivnroStatus = 10;
-                    try
-                    {
-                        lioDocument.Save();
-                        lcoDocumentUserResponse.Add(
-                            new DocumentUploadResponse
-                            {
-                                ivlngDoc = lioDocument.ioDcModel.ivlngDoc,
-                                ivlngCuitEmisor = lioDocumentUser.ivlngCuitEmisor,
-                                ivlngCbte = lioDocumentUser.ivlngCbte,
-                                ivnumPvta = lioDocumentUser.ivnumPvta,
-                                ivnroTipoDoc = lioDocumentUser.ivnroTipoDoc,
-                                ivnroStatus = 1,
-                                ivstrDescStatus = "OK"
-                            });
-                        new DocumentTracking(lioContext, lioDocument.ioDcModel.ivlngDoc).addTrack(
-                            10,
-                            string.Empty
-                        );
-                    }
-                    catch (Exception lioE)
-                    {
-                        lcoDocumentUserResponse.Add(
-                             new DocumentUploadResponse
-                             {
-                                 ivlngDoc = lioDocument.ioDcModel.ivlngDoc,
-                                 ivlngCuitEmisor = lioDocumentUser.ivlngCuitEmisor,
-                                 ivlngCbte = lioDocumentUser.ivlngCbte,
-                                 ivnumPvta = lioDocumentUser.ivnumPvta,
-                                 ivnroTipoDoc = lioDocumentUser.ivnroTipoDoc,
-                                 ivnroStatus = 2,
-                                 ivstrDescStatus = lioE.Message
-                             });
-                        LogHelper.write(lioE);
-                    }        
-                }
-                return lcoDocumentUserResponse;
-
             }
         }
     }

@@ -5,7 +5,7 @@ using Applet.Nat.Api.Static;
 using Applet.Nat.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Nat.Api.Properties;
+using Nat.API.Properties;
 using System.Net.Http.Headers;
 
 namespace Applet.Nat.Api.Controllers

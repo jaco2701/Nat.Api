@@ -312,6 +312,9 @@
   <data name="lioL_RtaWS" xml:space="preserve">
     <value>Respuesta Enviada via servicio</value>
   </data>
+  <data name="lioL_Share" xml:space="preserve">
+    <value>Destinatarios</value>
+  </data>
   <data name="lioM_DocOK" xml:space="preserve">
     <value>Doc[{0}]=&gt;[{1}]</value>
   </data>

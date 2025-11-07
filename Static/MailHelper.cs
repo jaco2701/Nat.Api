@@ -1,13 +1,18 @@
-﻿using Microsoft.Extensions.Configuration;
-using System.Text;
-using System.Security.Cryptography;
-using System.Linq;
+﻿using Applet.Nat.Api.DC;
+using Applet.Nat.Api.Models.BR;
+using Microsoft.Extensions.Configuration;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Numeric;
 using System;
-using System.Text.RegularExpressions;
 using System.Collections.Generic;
-using System.Net.Mail;
+using System.ComponentModel;
+using System.Linq;
 using System.Net;
-using Applet.Nat.Api.DC;
+using System.Net.Mail;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
+using System.ServiceModel.Channels;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Applet.Nat.Api.Static
 {
@@ -26,48 +31,98 @@ namespace Applet.Nat.Api.Static
             return !string.IsNullOrEmpty(vivstreAddress) && Regex.IsMatch(vivstreAddress, mivstrAddressPattern);
         }
 
-        public static void Send(string vivstrSubject, string vivstrBody, string vivstrAddress, IReadOnlyCollection<AlternateView> vcoAlternateViews, IReadOnlyCollection<Attachment> vcoAttachments, NatContext vioContext)
+        public static void Send(string vivstrSubject, string vivstrBody, string[] vcvstrAddress, IReadOnlyCollection<AlternateView> vcoAlternateViews, IReadOnlyCollection<Attachment> vcoAttachments, NatContext vioContext)
         {
-            EnviarEmail(vivstrSubject, vivstrBody, new List<string> { vivstrAddress }, vcoAlternateViews, vcoAttachments, vioContext);
-        }
-
-
-        public static void EnviarEmail(string vivsterSubject, string vivstrBody, List<string> vcvstrAddress,IReadOnlyCollection<AlternateView> vcoAlternateViews, IReadOnlyCollection<Attachment> vcoAttachments, NatContext vioContext)
-        {
+            SmtpClient lioSmtpClient = GetSmtpClient(vioContext);
+            MailMessage lioMailMessage = PrepareMsg(vivstrSubject, vivstrBody, vcvstrAddress, vcoAlternateViews, vcoAttachments, vioContext);
             try
             {
-                ListModel[] lcoSmtpConfig = ListHelper.GetAll("Smtp", vioContext);
-                var message = new MailMessage
-                {
-                    From = new MailAddress(lcoSmtpConfig.First(x=>x.ivcodId == "From").ivstrDesc,lcoSmtpConfig.First(x => x.ivcodId == "FromDisplay").ivstrDesc),
-                    Subject = vivsterSubject,
-                    IsBodyHtml = true,
-                    Body = vivstrBody
-                };
-                foreach (var livstrAddress in vcvstrAddress) 
-                    message.Bcc.Add(new MailAddress(livstrAddress));
-                if (vcoAlternateViews != null)
-                    foreach (var lioO in vcoAlternateViews)
-                        message.AlternateViews.Add(lioO);
-                if (vcoAttachments != null)
-                    foreach (var lioO in vcoAttachments)
-                        message.Attachments.Add(lioO);
-
-                using var client = new SmtpClient
-                {
-                    Host = lcoSmtpConfig.First(x => x.ivcodId == "Host").ivstrDesc,
-                    Port = int.Parse(lcoSmtpConfig.First(x => x.ivcodId == "Port").ivstrDesc),
-                    EnableSsl = true,
-                    DeliveryMethod = SmtpDeliveryMethod.Network,
-                    UseDefaultCredentials = false,
-                    Credentials = new NetworkCredential(lcoSmtpConfig.First(x => x.ivcodId == "Usr").ivstrDesc, lcoSmtpConfig.First(x => x.ivcodId == "Pass").ivstrDesc)
-                };
-                client.Send(message);
-                client.Dispose();
+                lioSmtpClient.Send(lioMailMessage);
             }
-            catch (Exception lioE)
+            catch 
             {
-                throw new Exception("Error en Envio de Correo:" + lioE.ToString()); ;
+               throw;
+            }
+            finally
+            {
+                lioSmtpClient.Dispose();
+                lioMailMessage.Dispose();
+            }
+        }
+
+        public static SmtpClient GetSmtpClient(NatContext vioContext)
+        {
+            ListModel[] lcoSmtpConfig = ListHelper.GetAll("SMTP", vioContext);
+            var lioSmtpClient = new SmtpClient
+            {
+                Host = lcoSmtpConfig.First(x => x.ivcodId == "HOST").ivstrDesc,
+                Port = int.Parse(lcoSmtpConfig.First(x => x.ivcodId == "PORT").ivstrDesc),
+                EnableSsl = false,
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                UseDefaultCredentials = false,
+                Timeout = int.Parse(lcoSmtpConfig.First(x => x.ivcodId == "TIMEOUT")?.ivstrDesc ?? "10000"),
+                Credentials = new NetworkCredential(lcoSmtpConfig.First(x => x.ivcodId == "USER").ivstrDesc, lcoSmtpConfig.First(x => x.ivcodId == "PASS").ivstrDesc),
+            };
+            return lioSmtpClient;
+        }
+        public static MailMessage PrepareMsg(string vivstrSubject, string vivstrBody, string[] vcvstrAddress, IReadOnlyCollection<AlternateView> vcoAlternateViews, IReadOnlyCollection<Attachment> vcoAttachments, NatContext vioContext)
+        {
+            ListModel[] lcoSmtpConfig = ListHelper.GetAll("SMTP", vioContext);
+            var lioMailMessage = new MailMessage
+            {
+                From = new MailAddress(lcoSmtpConfig.First(x => x.ivcodId == "USER").ivstrDesc, lcoSmtpConfig.First(x => x.ivcodId == "USERDISP").ivstrDesc),
+                Subject = vivstrSubject,
+                IsBodyHtml = false,
+                Body = vivstrBody
+            };
+            foreach (var livstrAddress in vcvstrAddress)
+                lioMailMessage.To.Add(new MailAddress(livstrAddress));
+            if (vcoAlternateViews != null)
+                foreach (var lioO in vcoAlternateViews)
+                    lioMailMessage.AlternateViews.Add(lioO);
+            if (vcoAttachments != null)
+                foreach (var lioO in vcoAttachments)
+                    lioMailMessage.Attachments.Add(lioO);
+            return lioMailMessage;
+        }
+        public static void SendAsync(long vivlngDoc, string vivstrSubject, string vivstrBody, string[] vcvstrAddress, IReadOnlyCollection<AlternateView> vcoAlternateViews, IReadOnlyCollection<Attachment> vcoAttachments, IConfiguration viIConfiguration)
+        {
+            using NatContext lioContext = NatContext.GetContext(viIConfiguration);
+            {
+                SmtpClient lioSmtpClient = GetSmtpClient(lioContext);
+                lioSmtpClient.EnableSsl = true;
+                MailMessage lioMailMessage = PrepareMsg(vivstrSubject, vivstrBody, vcvstrAddress, vcoAlternateViews, vcoAttachments, lioContext);
+                lioSmtpClient.SendCompleted += (sender, e) =>
+                {
+                    SendCompletedCallback(sender, e, vivlngDoc, viIConfiguration);
+                };
+                string livstrUsrToken = new Random(999).Next().ToString();
+                lioSmtpClient.SendAsync(lioMailMessage, livstrUsrToken);
+                //lioSmtpClient.Dispose();
+                //lioMailMessage.Dispose();
+            }
+        }
+        private static void SendCompletedCallback(object sender, AsyncCompletedEventArgs vioEventArgs, long vivlngDoc, IConfiguration viIConfiguration)
+        {
+            using NatContext lioContext = NatContext.GetContext(viIConfiguration);
+            {
+                if (vioEventArgs.Error != null)
+                {
+                    LogHelper.write(vioEventArgs.Error);
+                    new DocumentTracking(lioContext, vivlngDoc)
+                        .addTrack(80, $"Error: {vioEventArgs.Error.Message}");
+                }
+                else if (vioEventArgs.Cancelled)
+                {
+                    LogHelper.writeinfo("Envio de Correo Cancelado.", false);
+                    new DocumentTracking(lioContext, vivlngDoc)
+                        .addTrack(80, "Envio de Correo Cancelado.");
+                }
+                else
+                {
+                    new DocumentTracking(lioContext, vivlngDoc)
+                        .addTrack(70, "Email sent successfully.");
+                }
             }
         }
     }

@@ -2,7 +2,7 @@
 using Applet.Nat.Api.Ifaces;
 using Applet.Nat.Api.Static;
 using Microsoft.AspNetCore.Components.Server.Circuits;
-using Nat.Api.Properties;
+using Nat.API.Properties;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Globalization;

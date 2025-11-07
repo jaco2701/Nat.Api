@@ -1,6 +1,6 @@
 ﻿using System.Net.Http.Headers;
 using Applet.Nat.Api.Static;
-using Nat.Api.Properties;
+using Nat.API.Properties;
 
 namespace Applet.Nat.Api.Middleware
 {

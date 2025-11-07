@@ -1,0 +1,2 @@
+24/10/2025 12:37:19==>El path C:\NAT\Nat.IO\30539206946\IN no existe.
+   at Nat.API.Models.BR.FileUploader.UploadDocs() in C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\Models\BR\FileUploader.cs:line 33

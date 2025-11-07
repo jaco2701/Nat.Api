@@ -5,7 +5,7 @@ using System.Xml;
 using Applet.Nat.Api.DC;
 using Newtonsoft.Json;
 using Microsoft.IdentityModel.Protocols.WsTrust;
-using Nat.Api.Properties;
+using Nat.API.Properties;
 namespace Applet.Nat.Api.Br.Models
 {
 

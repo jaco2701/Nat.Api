@@ -280,7 +280,7 @@ namespace Applet.Nat.Api.Static
             }
             double? lioResult = GetDoubleFromString(vivstrDoubleval, (short)vivnroLengthDecimal);
             rivException = lioResult == null ? "con formato erroneo" : string.Empty;
-            return lioResult??0;
+            return lioResult ?? 0;
             /*
                         vivnroLengthEntera = vioXmlNode.InnerText.Length - vivnroLengthDecimal;
                         long livlng = 0;
@@ -307,11 +307,18 @@ namespace Applet.Nat.Api.Static
             if (!vivstrPropValue.Contains(","))
                 return vivstrPropValue;
             //tiene ,
-            if (vivstrPropValue.Contains("."))
-                //tiene , y . reemplaza primero los . y luego las , por .
+            int livnumIdxPto = vivstrPropValue.IndexOf(".");
+            int livnumIdxComa = vivstrPropValue.IndexOf(",");
+            if (livnumIdxPto != -1 && livnumIdxComa != -1 && livnumIdxPto > livnumIdxComa)
+                //tiene , y . y la , es antes que el .
+                return vivstrPropValue.Replace(",", string.Empty);
+            if (livnumIdxPto != -1 && livnumIdxComa != -1 && livnumIdxPto < livnumIdxComa)
+                //tiene , y . y la , es despues que el .
                 return vivstrPropValue.Replace(".", string.Empty).Replace(",", ".");
-            //solo reemplaza las ,
-            return vivstrPropValue.Replace(",", ".");
+            if (livnumIdxPto == -1)
+                //tiene , y no tiene .
+                return vivstrPropValue.Replace(",", ".");
+            return vivstrPropValue;
         }
 
         public static double? GetDoubleFromString(string vivstrDoubleval, short vivnroDecpos)

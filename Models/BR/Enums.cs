@@ -18,18 +18,14 @@ namespace Applet.Nat.Api.Br.Models
         Save= 10,
         Pass =11,
         Rta = 12,
+        UploadDocs = 13,
     }
-    //public enum eStatus: short
-    //{
-    //    Recibido = 10,
-    //    ErrorValidacion = 20,
-    //    Enviado = 30,
-    //    Rechazado = 40,
-    //    Autorizado = 50,
-    //    Impreso = 60,
-    //    Distribuido = 70,
-    //    Terminado = 80,
-    //}
+    public enum eLoadMethod : short
+    {
+        Manual = 0,
+        File = 1,
+        OracleCanonical = 2
+    }
 
 }
 

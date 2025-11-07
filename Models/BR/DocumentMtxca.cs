@@ -7,7 +7,7 @@ using Applet.Nat.Api.Models.Afip;
 using Applet.Nat.Api.Models.BR;
 using Applet.Nat.Api.Static;
 using Microsoft.IdentityModel.Tokens;
-using Nat.Api.Properties;
+using Nat.API.Properties;
 using Newtonsoft.Json;
 
 namespace Applet.Nat.BR
@@ -530,11 +530,38 @@ namespace Applet.Nat.BR
                 codigoMoneda = vivstrMoneda,
                 fechaCotizacion = vivdtm
             };
-            LogHelper.writeinfo(
-                $"Request: {JsonConvert.SerializeObject(lioconsultarCotizacionMonedaRequest)}",
-                ListHelper.GetValue("FORMAT", "VERBOSE", mioContext) == "1"
-            );
-            consultarCotizacionMonedaResponse lioconsultarCotizacionMonedaResponse = await lioService.consultarCotizacionMonedaAsync(lioconsultarCotizacionMonedaRequest);
+            consultarCotizacionMonedaResponse lioconsultarCotizacionMonedaResponse = null;
+            short livnroIntento = 0;
+            while (true)
+            {
+                livnroIntento++;
+                try
+                {
+                    LogHelper.writeinfo(
+                       $"FEParamGetCotizacionAsync: Url:{lioAfipService.ivstrUrl} Auth:{JsonConvert.SerializeObject(lioAutRequest)}, Moneda: {vivstrMoneda}, Fecha:{vivdtm.ToString(lioAfipService.ivstrDateformat)}",
+                       ListHelper.GetValue("FORMAT", "VERBOSE", mioContext) == "1"
+                    );
+                    lioconsultarCotizacionMonedaResponse = await lioService.consultarCotizacionMonedaAsync(lioconsultarCotizacionMonedaRequest);
+                    break;
+                }
+                catch (Exception lioE)
+                {
+                    if (lioE.Message.Contains("The SSL connection could not be established"))
+                    {
+                        if (livnroIntento < 3)
+                            await Task.Delay(2000);
+                        continue;
+                    }
+                    else
+                    {
+                        LogHelper.write(lioE);
+                        break;
+                    }
+                }
+            }
+
+
+
             if (lioconsultarCotizacionMonedaResponse == null)
                 throw new Exception(Resources.lioE_Cotiz_No);
             if (lioconsultarCotizacionMonedaResponse.arrayErrores != null && lioconsultarCotizacionMonedaResponse.arrayErrores.Count() != 0)

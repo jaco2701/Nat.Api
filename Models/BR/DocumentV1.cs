@@ -5,7 +5,7 @@ using Applet.Nat.Api.Ifaces;
 using Applet.Nat.Api.Models.Afip;
 using Applet.Nat.Api.Models.BR;
 using Applet.Nat.Api.Static;
-using Nat.Api.Properties;
+using Nat.API.Properties;
 using Newtonsoft.Json;
 using System.Net;
 
@@ -137,7 +137,7 @@ namespace Applet.Nat.Api.Br.Models
             short livnroNextStatus = 40;
             DocumentTracking lioDocumentTracking = new DocumentTracking(mioContext, mioDcModel.ivlngDoc);
             AfipService lioAfipService = new AfipService { ivstrName = ivstrDocWs, ioContext = mioContext };
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            ServicePointManager.SecurityProtocol = (SecurityProtocolType)int.Parse(ListHelper.GetValue("FORMAT", "TLS", mioContext));
             AfipLoginResponse lioAfipLoginResponse = await lioAfipService.GetAfipLogin();
             FEAuthRequest lioAutRequest = new FEAuthRequest()
             {
@@ -178,6 +178,7 @@ namespace Applet.Nat.Api.Br.Models
                            }
                        )
                    );
+                    LogHelper.write(lioE);
                     return livnroNextStatus;
                 }
             }
@@ -409,7 +410,7 @@ namespace Applet.Nat.Api.Br.Models
                        )
                     );
                     LogHelper.write(lioE);
-                    return 40; ;
+                    return 40; 
                 }
             }
             if (lioFECAESolicitarResponse.Body.FECAESolicitarResult.FeDetResp != null && lioFECAESolicitarResponse.Body.FECAESolicitarResult.FeDetResp.Length > 0)
@@ -588,10 +589,16 @@ namespace Applet.Nat.Api.Br.Models
                 }
                 catch (Exception lioE)
                 {
-                    if (lioE.Message.Contains("The SSL connection could not be established") && livnroIntento < 3)
+                    if (lioE.Message.Contains("The SSL connection could not be established"))
                     {
-                        await Task.Delay(2000);
+                        if (livnroIntento < 3)
+                            await Task.Delay(2000);
                         continue;
+                    }
+                    else
+                    {
+                        LogHelper.write(lioE);
+                        break;
                     }
                 }
             }

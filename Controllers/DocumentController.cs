@@ -4,7 +4,7 @@ using Applet.Nat.Api.DC;
 using Microsoft.AspNetCore.Mvc;
 using Applet.Nat.Api.Static;
 using Applet.Nat.Api.Ifaces;
-using Nat.Api.Properties;
+using Nat.API.Properties;
 using Nat.Api.Models.BR;
 using System.Data;
 using Applet.Nat.Api.Models.BR;
@@ -112,11 +112,11 @@ namespace Applet.Nat.Api.Controllers
             }
         }
         [HttpPost("Upload")]
-        public Response Upload([FromBody] DocumentsUploadRequest vioDocumentsUpload)
+        public Response Upload([FromBody] DocumentUploadRequest vioDocumentsUpload)
         {
             try
             {
-                return ResponseHelper.Get(Queue.UploadDocument(vioDocumentsUpload, mioConfiguration));
+                return ResponseHelper.Get(DocHelper.UploadDocument(vioDocumentsUpload, mioConfiguration));
             }
             catch (Exception lioE)
             {
@@ -182,7 +182,7 @@ namespace Applet.Nat.Api.Controllers
                                 );
                             break;
                         case eTask.Share:
-                            await lioDocument.Share();
+                            await lioDocument.Share(mioConfiguration);
                             lioDocumentTaskResponse.ioData = "OK";
                             break;
                         case eTask.Original:

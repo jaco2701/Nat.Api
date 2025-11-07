@@ -194,7 +194,7 @@ namespace Applet.Nat.Api.Br.Models
         [JsonProperty("Descripcion")]
         public string? ivstrDescStatus { get; set; }
     }
-    public class DocumentsUploadRequest
+    public class DocumentUploadRequest
     {
         [JsonProperty("Documento")]
         public string? ivstrData { get; set; }
