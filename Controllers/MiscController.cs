@@ -37,8 +37,6 @@ namespace Applet.Nat.Api.Controllers
             if (lcoTypes.Length == 0)
                 throw new Exception(Resources.lioE_NoStatics);
             lcoLists = mioContext.Lists.Where(x => lcoTypes.Contains(x.ivcodType)).ToList();
-            foreach (IdentityProviderModel lioO in mioContext.IdentityProviders.Where(x => x.ivblnEnable == true).ToList())
-                lcoLists.Add(new ListModel { ivcodType = "CLIENTS", ivcodId = lioO.ivstrIdentityProviderId, ivstrDesc = lioO.ivstrClientSecret });
             IDocument lio;
             Double livvalCtz;
             try

@@ -198,7 +198,7 @@ namespace Applet.Nat.Api.Br.Models
                             lcvstrAddresses.Add(livstrAddress);
                 ServiceMapper lioServiceMapper = lioCuit.ioCnfg.coServiceMappers.FirstOrDefault(x => x.ivstrWs == "mail" && (x.cvnroDocTypes[0]==0 || x.cvnroDocTypes.Contains(ioDcModel.ivnroTipo)));
                 if (lioServiceMapper == null || string.IsNullOrEmpty(lioServiceMapper.ivstrTemplate) || string.IsNullOrEmpty(lioServiceMapper.ivstrInputType))
-                    throw new Exception($"Mapeador {Resources.lioE_ObjectNoM}");
+                    throw new Exception($"Configuracion de Distribucion {Resources.lioE_ObjectNoF}");
                 string livstrSubject = lioServiceMapper.ivstrTemplate,
                     livstrBody = lioServiceMapper.ivstrInputType,
                     livstrfilename = $"{Path.GetTempPath()}/{ivstrKey}_{ioDcModel.ivnroTemplateVersion}.pdf";
@@ -217,7 +217,7 @@ namespace Applet.Nat.Api.Br.Models
                 new DocumentTracking(mioContext, ioDcModel.ivlngDoc)
                     .addTrack(
                         70,
-                        $"{Resources.lioL_Share}: {ioDocumentUser.ivstrEmail}"
+                        $"{Resources.lioL_Share}: {string.Join(',',lcvstrAddresses)}"
                     );
                 return (70);
             }

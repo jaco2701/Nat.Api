@@ -12,8 +12,10 @@ namespace Applet.Nat.Api.DC
         public string ivstrIdentityProvider { get; set; }
         [Column("strIdentityProviderId")]
         public string ivstrIdentityProviderId { get; set; }
-        [Column("strIdentityProviderUrl")]
-        public string ivstrIdentityProviderUrl { get; set; }
+        [Column("strIdentityProviderUrlLogin")]
+        public string ivstrIdentityProviderUrlLogin { get; set; }
+        [Column("strIdentityProviderUrlToken")]
+        public string ivstrIdentityProviderUrlToken { get; set; }
         [Column("strClientSecret")]
         public string? ivstrClientSecret { get; set; }
         [Column("blnEnable")]
