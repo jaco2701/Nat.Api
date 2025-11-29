@@ -39,16 +39,16 @@ namespace Applet.Nat.Api.Controllers
             lcoLists = mioContext.Lists.Where(x => lcoTypes.Contains(x.ivcodType)).ToList();
             IDocument lio;
             Double livvalCtz;
-            try
-            {
-                lio = new DocumentExp(new DocumentModel { ivlngCuitEmisor = long.Parse(ListHelper.GetValue("CUIT", "0", mioContext)) }, mioContext);
-                livvalCtz = await lio.GetCotizacion("DOL", DateTime.Today.AddDays(-1));
-                lcoLists.Add(new ListModel { ivcodType = "CTZ", ivcodId = "DOLEXP", ivstrDesc = livvalCtz.ToString("N2", System.Globalization.CultureInfo.GetCultureInfo("es-AR")) });
-            }
-            catch (Exception lioE)
-            {
-                LogHelper.write(lioE);
-            }
+            //try
+            //{
+            //    lio = new DocumentExp(new DocumentModel { ivlngCuitEmisor = long.Parse(ListHelper.GetValue("CUIT", "0", mioContext)) }, mioContext);
+            //    livvalCtz = await lio.GetCotizacion("DOL", DateTime.Today.AddDays(-1));
+            //    lcoLists.Add(new ListModel { ivcodType = "CTZ", ivcodId = "DOLEXP", ivstrDesc = livvalCtz.ToString("N2", System.Globalization.CultureInfo.GetCultureInfo("es-AR")) });
+            //}
+            //catch (Exception lioE)
+            //{
+            //    LogHelper.write(lioE);
+            //}
             try
             {
                 lio = new DocumentV1(new DocumentModel { ivlngCuitEmisor = long.Parse(ListHelper.GetValue("CUIT", "0", mioContext)) }, mioContext);
@@ -59,16 +59,16 @@ namespace Applet.Nat.Api.Controllers
             {
                 LogHelper.write(lioE);
             }
-            try
-            {
-                lio = new DocumentMTXCA(new DocumentModel { ivlngCuitEmisor = long.Parse(ListHelper.GetValue("CUIT", "0", mioContext)) }, mioContext);
-                livvalCtz = await lio.GetCotizacion("DOL", DateTime.Today.AddDays(-1));
-                lcoLists.Add(new ListModel { ivcodType = "CTZ", ivcodId = "DOLMTX", ivstrDesc = livvalCtz.ToString("N2", System.Globalization.CultureInfo.GetCultureInfo("es-AR")) });
-            }
-            catch (Exception lioE)
-            {
-                LogHelper.write(lioE);
-            }
+            //try
+            //{
+            //    lio = new DocumentMTXCA(new DocumentModel { ivlngCuitEmisor = long.Parse(ListHelper.GetValue("CUIT", "0", mioContext)) }, mioContext);
+            //    livvalCtz = await lio.GetCotizacion("DOL", DateTime.Today.AddDays(-1));
+            //    lcoLists.Add(new ListModel { ivcodType = "CTZ", ivcodId = "DOLMTX", ivstrDesc = livvalCtz.ToString("N2", System.Globalization.CultureInfo.GetCultureInfo("es-AR")) });
+            //}
+            //catch (Exception lioE)
+            //{
+            //    LogHelper.write(lioE);
+            //}
             return ResponseHelper.Get(new { coLists = lcoLists, coIdentityProviders = mioContext.IdentityProviders.Where(x => x.ivblnEnable == true).ToList() });
         }
         [HttpPost("Rs")]

@@ -121,3 +121,4 @@ C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.API\obj\Debug\net8.0\
 C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.API\obj\Debug\net8.0\ref\Nat.Api.dll
 C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\bin\Debug\net8.0\Connected Services\Applet.Nat.OracleCanonical.Get\ConnectedService.json
 C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\bin\Debug\net8.0\Connected Services\Applet.Nat.OracleCanonical.Update\ConnectedService.json
+C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

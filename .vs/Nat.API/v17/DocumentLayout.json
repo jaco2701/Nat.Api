@@ -1,32 +1,7 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Users\\Jaco2701\\Documents\\Visual Studio Projects\\Nat\\Nat.Api\\",
-  "Documents": [
-    {
-      "AbsoluteMoniker": "D:0:0:{EA8F5104-6366-4CAB-88FE-97ED89772297}|Nat.API.csproj|c:\\users\\jaco2701\\documents\\visual studio projects\\nat\\nat.api\\models\\br\\document.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{EA8F5104-6366-4CAB-88FE-97ED89772297}|Nat.API.csproj|solutionrelative:models\\br\\document.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{EA8F5104-6366-4CAB-88FE-97ED89772297}|Nat.API.csproj|c:\\users\\jaco2701\\documents\\visual studio projects\\nat\\nat.api\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{EA8F5104-6366-4CAB-88FE-97ED89772297}|Nat.API.csproj|solutionrelative:controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{EA8F5104-6366-4CAB-88FE-97ED89772297}|Nat.API.csproj|c:\\users\\jaco2701\\documents\\visual studio projects\\nat\\nat.api\\models\\br\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{EA8F5104-6366-4CAB-88FE-97ED89772297}|Nat.API.csproj|solutionrelative:models\\br\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{EA8F5104-6366-4CAB-88FE-97ED89772297}|Nat.API.csproj|c:\\users\\jaco2701\\documents\\visual studio projects\\nat\\nat.api\\controllers\\logincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{EA8F5104-6366-4CAB-88FE-97ED89772297}|Nat.API.csproj|solutionrelative:controllers\\logincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{EA8F5104-6366-4CAB-88FE-97ED89772297}|Nat.API.csproj|c:\\users\\jaco2701\\documents\\visual studio projects\\nat\\nat.api\\models\\dc\\identityprovidermodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{EA8F5104-6366-4CAB-88FE-97ED89772297}|Nat.API.csproj|solutionrelative:models\\dc\\identityprovidermodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{EA8F5104-6366-4CAB-88FE-97ED89772297}|Nat.API.csproj|c:\\users\\jaco2701\\documents\\visual studio projects\\nat\\nat.api\\controllers\\misccontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{EA8F5104-6366-4CAB-88FE-97ED89772297}|Nat.API.csproj|solutionrelative:controllers\\misccontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    }
-  ],
+  "Documents": [],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -34,7 +9,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 10,
+          "SelectedChildIndex": -1,
           "Children": [
             {
               "$type": "Bookmark",
@@ -75,79 +50,6 @@
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "Document.cs",
-              "DocumentMoniker": "C:\\Users\\Jaco2701\\Documents\\Visual Studio Projects\\Nat\\Nat.Api\\Models\\BR\\Document.cs",
-              "RelativeDocumentMoniker": "Models\\BR\\Document.cs",
-              "ToolTip": "C:\\Users\\Jaco2701\\Documents\\Visual Studio Projects\\Nat\\Nat.Api\\Models\\BR\\Document.cs",
-              "RelativeToolTip": "Models\\BR\\Document.cs",
-              "ViewState": "AgIAAFQBAAAAAAAAAIAwwNsAAABTAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-19T17:18:27.841Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "User.cs",
-              "DocumentMoniker": "C:\\Users\\Jaco2701\\Documents\\Visual Studio Projects\\Nat\\Nat.Api\\Models\\BR\\User.cs",
-              "RelativeDocumentMoniker": "Models\\BR\\User.cs",
-              "ToolTip": "C:\\Users\\Jaco2701\\Documents\\Visual Studio Projects\\Nat\\Nat.Api\\Models\\BR\\User.cs",
-              "RelativeToolTip": "Models\\BR\\User.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAAAEMAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-13T18:31:15.303Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "UserController.cs",
-              "DocumentMoniker": "C:\\Users\\Jaco2701\\Documents\\Visual Studio Projects\\Nat\\Nat.Api\\Controllers\\UserController.cs",
-              "RelativeDocumentMoniker": "Controllers\\UserController.cs",
-              "ToolTip": "C:\\Users\\Jaco2701\\Documents\\Visual Studio Projects\\Nat\\Nat.Api\\Controllers\\UserController.cs",
-              "RelativeToolTip": "Controllers\\UserController.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAuwCAAAABvAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-13T18:28:01.615Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "LoginController.cs",
-              "DocumentMoniker": "C:\\Users\\Jaco2701\\Documents\\Visual Studio Projects\\Nat\\Nat.Api\\Controllers\\LoginController.cs",
-              "RelativeDocumentMoniker": "Controllers\\LoginController.cs",
-              "ToolTip": "C:\\Users\\Jaco2701\\Documents\\Visual Studio Projects\\Nat\\Nat.Api\\Controllers\\LoginController.cs",
-              "RelativeToolTip": "Controllers\\LoginController.cs",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAABkAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-13T18:26:59.544Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "MiscController.cs",
-              "DocumentMoniker": "C:\\Users\\Jaco2701\\Documents\\Visual Studio Projects\\Nat\\Nat.Api\\Controllers\\MiscController.cs",
-              "RelativeDocumentMoniker": "Controllers\\MiscController.cs",
-              "ToolTip": "C:\\Users\\Jaco2701\\Documents\\Visual Studio Projects\\Nat\\Nat.Api\\Controllers\\MiscController.cs",
-              "RelativeToolTip": "Controllers\\MiscController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAfAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-13T13:20:11.337Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "IdentityProviderModel.cs",
-              "DocumentMoniker": "C:\\Users\\Jaco2701\\Documents\\Visual Studio Projects\\Nat\\Nat.Api\\Models\\DC\\IdentityProviderModel.cs",
-              "RelativeDocumentMoniker": "Models\\DC\\IdentityProviderModel.cs",
-              "ToolTip": "C:\\Users\\Jaco2701\\Documents\\Visual Studio Projects\\Nat\\Nat.Api\\Models\\DC\\IdentityProviderModel.cs",
-              "RelativeToolTip": "Models\\DC\\IdentityProviderModel.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-13T13:19:19.356Z"
             }
           ]
         },
@@ -181,6 +83,10 @@
           "DockedWidth": 1171,
           "SelectedChildIndex": -1,
           "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{a80febb4-e7e0-4147-b476-21aaf2453969}"
+            },
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"

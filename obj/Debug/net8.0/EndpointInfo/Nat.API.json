@@ -133,6 +133,146 @@
         }
       }
     },
+    "/CuitCuit/Get": {
+      "post": {
+        "tags": [
+          "CuitCuit"
+        ],
+        "parameters": [
+          {
+            "name": "aplicacionorigen",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "swagger"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Filter"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Filter"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Filter"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Filter"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/CuitCuit/Task": {
+      "post": {
+        "tags": [
+          "CuitCuit"
+        ],
+        "parameters": [
+          {
+            "name": "aplicacionorigen",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "swagger"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/CuitCuit"
+                }
+              }
+            },
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/CuitCuit"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/CuitCuit"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/CuitCuit"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/Document/Get": {
       "post": {
         "tags": [
@@ -1041,6 +1181,40 @@
             "items": {
               "$ref": "#/components/schemas/TemplateVersion"
             },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CuitCuit": {
+        "type": "object",
+        "properties": {
+          "ioDcModel": {
+            "$ref": "#/components/schemas/CuitCuitModel"
+          },
+          "ieTask": {
+            "$ref": "#/components/schemas/eTask"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CuitCuitModel": {
+        "type": "object",
+        "properties": {
+          "ivlngCuit": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "ivlngCuitReceptor": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "ivstrEmail": {
+            "type": "string",
+            "nullable": true
+          },
+          "ivstrRs": {
+            "type": "string",
             "nullable": true
           }
         },

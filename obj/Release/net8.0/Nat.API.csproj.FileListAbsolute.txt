@@ -116,9 +116,9 @@ C:\Users\jaco2701\Documents\Visual Studio Projects\Nat\Nat.API\obj\Release\net8.
 C:\Users\jaco2701\Documents\Visual Studio Projects\Nat\Nat.API\obj\Release\net8.0\staticwebassets.upToDateCheck.txt
 C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.API\bin\Release\net8.0\Connected Services\Applet.Nat.Afip.ServicesFEX\ConnectedService.json
 C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.API\obj\Release\net8.0\staticwebassets.build.json.cache
-C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.API\bin\Release\net8.0\System.Text.Encoding.CodePages.dll
-C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.API\bin\Release\net8.0\runtimes\win\lib\net8.0\System.Text.Encoding.CodePages.dll
 C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.API\obj\Release\net8.0\rpswa.dswa.cache.json
 C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.API\obj\Release\net8.0\rjimswa.dswa.cache.json
 C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.API\obj\Release\net8.0\rjsmrazor.dswa.cache.json
 C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.API\obj\Release\net8.0\rjsmcshtml.dswa.cache.json
+C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\bin\Release\net8.0\Connected Services\Applet.Nat.OracleCanonical.Get\ConnectedService.json
+C:\Users\Jaco2701\Documents\Visual Studio Projects\Nat\Nat.Api\bin\Release\net8.0\Connected Services\Applet.Nat.OracleCanonical.Update\ConnectedService.json

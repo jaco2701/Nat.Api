@@ -138,7 +138,21 @@ namespace Applet.Nat.Api.Static
                             }
                             else if (lioDocument.ioDcModel.ivnroStatus == 60)
                             {
-								lioDocument.ioDcModel.ivnroStatus= await lioDocument.Share(vioConfiguration);
+                                try
+                                {
+                                    await lioDocument.Share(vioConfiguration);
+                                    lioDocument.ioDcModel.ivnroStatus = 70;
+                                }
+                                catch (Exception lioE)
+                                {
+                                    lioDocument.ioDcModel.ivnroStatus = 80;
+                                    new DocumentTracking(lioContext, lioDocument.ioDcModel.ivlngDoc)
+                                    .addTrack(
+                                      lioDocument.ioDcModel.ivnroStatus,
+                                      lioE.ToString()
+                                    );
+                                    LogHelper.write(lioE);
+                                }
                             }
                             else if (lioDocument.ioDcModel.ivnroStatus == 80)
                             {

@@ -52,6 +52,58 @@
     ]
   },
   {
+    "ContainingType": "Applet.Nat.Api.Controllers.CuitCuitController",
+    "Method": "Get",
+    "RelativePath": "CuitCuit/Get",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "vioFilter",
+        "Type": "Applet.Nat.Api.Br.Models.Filter",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Applet.Nat.Api.Br.Response",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Applet.Nat.Api.Controllers.CuitCuitController",
+    "Method": "Task",
+    "RelativePath": "CuitCuit/Task",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "vcoCuitCuits",
+        "Type": "Applet.Nat.Api.Br.Models.CuitCuit[]",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Applet.Nat.Api.Br.Response",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
     "ContainingType": "Applet.Nat.Api.Controllers.DocumentController",
     "Method": "Export",
     "RelativePath": "Document/Export",

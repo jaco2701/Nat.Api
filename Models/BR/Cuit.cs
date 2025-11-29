@@ -1,17 +1,9 @@
 ﻿using Applet.Nat.Api.DC;
 using Applet.Nat.Api.Ifaces;
-using Applet.Nat.Api.Models;
 using Applet.Nat.Api.Static;
-using Azure.Core;
-using Microsoft.AspNetCore.Components.Server.Circuits;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
-using Microsoft.IdentityModel.Tokens;
 using Nat.API.Properties;
 using Nat.API.Models.BR;
 using Newtonsoft.Json;
-using OfficeOpenXml.FormulaParsing.Utilities;
-using System.Net.Http.Headers;
 using System.Text;
 namespace Applet.Nat.Api.Br.Models
 {

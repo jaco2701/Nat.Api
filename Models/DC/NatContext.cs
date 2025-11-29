@@ -22,8 +22,10 @@ namespace Applet.Nat.Api.DC
             modelBuilder.Entity<ListModel>().HasKey(x => new { x.ivcodType, x.ivcodId });
             modelBuilder.Entity<DocumentTrackingModel>().HasKey(x => new { x.ivlngDoc, x.ivnumTrack });
             modelBuilder.Entity<UserCuitModel>().HasKey(x => new { x.ivnumUser, x.ivlngCuit });
+            modelBuilder.Entity<CuitCuitModel>().HasKey(x => new { x.ivlngCuit, x.ivlngCuitReceptor });
         }
         public DbSet<IdentityProviderModel> IdentityProviders { get; set; }
+        public DbSet<CuitCuitModel> CuitCuits { get; set; }
         public DbSet<CuitModel> Cuits { get; set; }
         public DbSet<DocumentModel> Documents { get; set; }
         public DbSet<DocumentTrackingModel> DocumentTrackings { get; set; }

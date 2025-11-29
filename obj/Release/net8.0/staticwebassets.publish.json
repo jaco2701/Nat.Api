@@ -1,12 +1,1 @@
-{
-  "Version": 1,
-  "Hash": "YVYy3PFGqYlgzARsu7Do+7Ujab3wTRCUDLhaqLFAYSA=",
-  "Source": "Nat.Api",
-  "BasePath": "_content/Nat.Api",
-  "Mode": "Default",
-  "ManifestType": "Publish",
-  "ReferencedProjectsConfiguration": [],
-  "DiscoveryPatterns": [],
-  "Assets": [],
-  "Endpoints": []
-}
+{"Version":1,"Hash":"7r8gZxI0nkoo2EQCSSYQd/06Vf3loup2JKXbhug3wIc=","Source":"Nat.API","BasePath":"_content/Nat.API","Mode":"Default","ManifestType":"Publish","ReferencedProjectsConfiguration":[],"DiscoveryPatterns":[],"Assets":[],"Endpoints":[]}
