@@ -1,5 +1,5 @@
-.github/workflows/compile-and-package.yml
-name: Compile and Package
+.github/workflows/NatApi.yml
+name: NatApi
 
 on:
   push:
