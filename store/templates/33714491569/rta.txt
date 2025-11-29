@@ -1,8 +1,0 @@
-1000000000000000{ivdtmGen}
-200MSGSAS{ivdtmGen}
-210{ivlngDoc}{ivlngCuitEmisor}{ivlngDocReceptor}1{ivnroTipo}{ivnumPvta}{ivlngCbte}{ivdtmEmision}{ivstrIdCliente}
-220{ivdtmRec}{ivdtmAct}{ivstrFileName}
-230{ivstrAuthCode}{ivdtmNode}{ivdtmAuthVenc}{ivstrTrackId}{ivstr3o4}{ivstrAuthDsc}{ivdtmNode}{ivstrAuthObs}
-240{ivstr3o4}{ivstrAuthDsc}{ivdtmNode}{ivstrAuthObs}
-290{ivdblImporteTotal}
-9990000000000000{ivdtmGen}
