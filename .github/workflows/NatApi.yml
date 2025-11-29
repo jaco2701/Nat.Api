@@ -39,7 +39,7 @@ jobs:
 
     # Create artifact
     - name: Create deployment artifact
-      run: zip -r deployment-package.zip ./publish
+      run: dotnet publish ../../Nat.API.csproj --configuration Release --output ./publish
 
     # Upload artifact
     - name: Upload artifact
