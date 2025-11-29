@@ -35,15 +35,11 @@ jobs:
 
     # Publish the project
     - name: Publish project
-      run: dotnet publish --configuration Release --output ./publish
-
-    # Create artifact
-    - name: Create deployment artifact
       run: dotnet publish ../../Nat.API.csproj --configuration Release --output ./publish
 
-    # Upload artifact
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: deployment-package
-        path: deployment-package.zip
+     # Deploy to IIS using Web Deploy
+    - name: Deploy to IIS
+      run: |
+        msdeploy.exe -verb:sync -source:contentPath="./publish" -dest:contentPath="Default Web Site/NatApi",computerName="https://<IIS_SERVER>/MSDeployAgentService",userName="<USERNAME>",password="<PASSWORD>",authType="Basic"
+      env:
+        MSDEPLOY_RETRY_ATTEMPTS: 3
