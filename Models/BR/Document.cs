@@ -182,7 +182,6 @@ namespace Applet.Nat.Api.Br.Models
         }
         public async Task Share(IConfiguration vioConfiguration)
         {
-
             if (ioDocumentUser == null)
                 throw new Exception(Resources.lioE_Mail_No);
             List<string> lcvstrAddresses = new List<string>();
