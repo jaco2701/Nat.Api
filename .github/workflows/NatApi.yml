@@ -35,7 +35,7 @@ jobs:
 
     # Publish the project
     - name: Publish project
-      run: dotnet publish ../../../Nat.API.csproj --configuration Release --output ./publish
+      run: dotnet publish ../Nat.API.csproj --configuration Release --output ./publish
 
      # Deploy to IIS using Web Deploy
     - name: Deploy to IIS
