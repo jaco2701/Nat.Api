@@ -1,17 +1,8 @@
 ﻿using Applet.Nat.Api.DC;
 using Applet.Nat.Api.Models.BR;
-using Microsoft.Extensions.Configuration;
-using OfficeOpenXml.FormulaParsing.Excel.Functions.Numeric;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Net;
 using System.Net.Mail;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
-using System.ServiceModel.Channels;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Applet.Nat.Api.Static

@@ -1,6 +1,5 @@
 using Applet.Nat.Api.Br;
 using Applet.Nat.Api.DC;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Nat.API.Properties;
 using System.IdentityModel.Tokens.Jwt;
