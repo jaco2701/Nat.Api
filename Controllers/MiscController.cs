@@ -312,7 +312,30 @@ namespace Applet.Nat.Api.Controllers
                 return string.Empty;
             }
         }
+        [HttpPost("encdec")]
+        public IActionResult Endec([FromBody] EncDecRequest vivEncDecRequest)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(vivEncDecRequest.ivEncDec) || string.IsNullOrEmpty(vivEncDecRequest.ivstr))
+                    return BadRequest("String Invalido");
+                if (vivEncDecRequest.ivEncDec == "E")
+                    return Ok(Auth.Encrypt(vivEncDecRequest.ivstr));
+                if (vivEncDecRequest.ivEncDec == "D")
+                    return Ok(Auth.Decrypt(vivEncDecRequest.ivstr));
+                return BadRequest("Opcion Invalida");
+            }
+            catch (Exception lioE)
+            {
+                return BadRequest(lioE);
+            }
 
+        }
+        public class EncDecRequest
+        {
+            public string ivEncDec { get; set; }
+            public string ivstr { get; set; }
+        }
     }
 }
 
