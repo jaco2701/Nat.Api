@@ -83,7 +83,7 @@ namespace Applet.Nat.Api.Br.Models
                     coAsociados.Add(
                         new DocumentAsociado
                         {
-                            ivdtmFechaEmision = Format.DateFromUX(lioO.ivdtmFechaEmision, livstrApiDtmFormat),
+                            ivdtmFechaEmision = Format.DateFromUX(lioO.ivstrFechaEmision, livstrApiDtmFormat),
                             ivlngCbteCUIT = lioO.ivlngCbteCUIT,
                             ivlngCbteNro = lioO.ivlngCbteNro,
                             ivnumCbtePuntovta = lioO.ivnumCbtePuntovta,
@@ -504,25 +504,25 @@ namespace Applet.Nat.Api.Br.Models
             //if (this.mioDcModel.ivdblImporte == 0)
             //    livstrError += Resources.lioE_Importe_No + Environment.NewLine;
             if (!ListHelper.ContainKey("TEXP", ivnroTipoExpo.ToString(), mioContext))
-                livstrError += string.Format(Resources.lioE_ObjectNoM, "Tipo Expo", "o") + Environment.NewLine;
+                livstrError += $"Tipo Expo {Resources.lioE_ObjectNoM}" + Environment.NewLine;
             if (!string.IsNullOrEmpty(ivstrPermisoExistente) && ivstrPermisoExistente != "S" && ivstrPermisoExistente != "N")
-                livstrError += string.Format(Resources.lioE_ObjectNoM, "Permiso Existente", "o") + Environment.NewLine;
+                livstrError += $"Permiso Existente {Resources.lioE_ObjectNoM}" + Environment.NewLine;
             if (!ListHelper.ContainKey("PAISD", ivnroDestinoCmp.ToString(), mioContext))
-                livstrError += string.Format(Resources.lioE_ObjectNoM, "Pais Destinto", "o") + Environment.NewLine;
+                livstrError += $"Pais Destinto {Resources.lioE_ObjectNoM}" + Environment.NewLine;
             if (String.IsNullOrEmpty(ivstrRazonSocial))
-                livstrError += string.Format(Resources.lioE_ObjectNoM, "Cliente", "o") + Environment.NewLine;
+                livstrError += $"Cliente {Resources.lioE_ObjectNoM}" + Environment.NewLine;
             if (String.IsNullOrEmpty(ivstrDomicilioCliente))
-                livstrError += string.Format(Resources.lioE_ObjectNoM, "Domicilio Cliente", "o") + Environment.NewLine;
+                livstrError += $"Domicilio Cliente {Resources.lioE_ObjectNoM}" + Environment.NewLine;
             if (mioDcModel.ivlngCuitReceptor == 0)
-                livstrError += string.Format(Resources.lioE_ObjectNoM, "Cuit Receptor", "o") + Environment.NewLine;
+                livstrError += $"Cuit Receptor {Resources.lioE_ObjectNoM}" + Environment.NewLine;
             if (!ListHelper.ContainKey("MON", this.ivstrMoneda, mioContext))
-                livstrError += Resources.lioE_Moneda_No + Environment.NewLine;
+                livstrError += $"Moneda {Resources.lioE_ObjectNoF}" + Environment.NewLine;
             if (!ListHelper.ContainKey("INCOT", ivstrIncoterms, mioContext))
-                livstrError += string.Format(Resources.lioE_ObjectNoM, "Incoterms", "o") + Environment.NewLine;
+                livstrError += $"Incoterms {Resources.lioE_ObjectNoM}" + Environment.NewLine;
             if (!ListHelper.ContainKey("IDIO", this.ivnroIdioma.ToString(), mioContext))
-                livstrError += string.Format(Resources.lioE_ObjectNoM, "Idioma", "o") + Environment.NewLine;
+                livstrError += $"Idioma {Resources.lioE_ObjectNoM}" + Environment.NewLine;
             if (this.coItems.Count == 0)
-                livstrError += string.Format(Resources.lioE_ObjectNoM, "Items", "o") + Environment.NewLine;
+                livstrError += $"Items {Resources.lioE_ObjectNoM}" + Environment.NewLine;
             short index = 1;
             if (this.coAsociados != null && this.coAsociados.Count > 0)
                 foreach (DocumentAsociado item in this.coAsociados)

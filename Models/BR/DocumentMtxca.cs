@@ -67,9 +67,9 @@ namespace Applet.Nat.BR
             ivnroTipoReceptor = vioDocumentUser.ivnroTipoDocReceptor ?? 0;
             ivnroTipoResp = vioDocumentUser.ivnroTipoRespReceptor ?? 0;
             ivstrNroReceptor = vioDocumentUser.ivlngDocReceptor.ToString() ?? string.Empty;
-            ivdtmServdesde = Format.DateFromUX(vioDocumentUser.ivdtmServdesde, livstrApiDtmFormat);
-            ivdtmServhasta = Format.DateFromUX(vioDocumentUser.ivdtmServhasta, livstrApiDtmFormat);
-            ivdtmVtopago = Format.DateFromUX(vioDocumentUser.ivdtmVtopago, livstrApiDtmFormat);
+            ivdtmServdesde = Format.DateFromUX(vioDocumentUser.ivstrFechaServdesde, livstrApiDtmFormat);
+            ivdtmServhasta = Format.DateFromUX(vioDocumentUser.ivstrFechaServhasta, livstrApiDtmFormat);
+            ivdtmVtopago = Format.DateFromUX(vioDocumentUser.ivstrFechaVtopago, livstrApiDtmFormat);
             ivstrCanMisMonExt = vioDocumentUser.ivstrCanMisMonExt ?? string.Empty;
             if (vioDocumentUser.coAsociados != null && vioDocumentUser.coAsociados.Count > 0)
             {
@@ -78,7 +78,7 @@ namespace Applet.Nat.BR
                     coAsociados.Add(
                         new DocumentAsociado
                         {
-                            ivdtmFechaEmision = Format.DateFromUX(lioO.ivdtmFechaEmision, livstrApiDtmFormat),
+                            ivdtmFechaEmision = Format.DateFromUX(lioO.ivstrFechaEmision, livstrApiDtmFormat),
                             ivlngCbteCUIT = lioO.ivlngCbteCUIT,
                             ivlngCbteNro = lioO.ivlngCbteNro,
                             ivnumCbtePuntovta = lioO.ivnumCbtePuntovta,

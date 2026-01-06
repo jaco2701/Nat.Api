@@ -22,42 +22,46 @@ namespace Applet.Nat.Api.Static
             int livnumPrevPvta = 0;
             short livnroPrevTipo = 0;
             List<long> lcvlngDocsToTask = new List<long>();
-            foreach (DocumentModel lioDocumentModel in vioContext.Documents
+            if (ListHelper.CanRun(vioContext, "1"))
+            {
+                foreach (DocumentModel lioDocumentModel in vioContext.Documents
                 .Where(x => new short[] { 35, 10, 50, 70, 80, 60 }
                 .Contains(x.ivnroStatus))
                 .OrderBy(x => x.ivlngCuitEmisor).ThenBy(x => x.ivnroTipo).ThenBy(x => x.ivnumPvta)
                 )
-            {
-                try
                 {
-                    if (livlngPrevCuit == lioDocumentModel.ivlngCuitEmisor && livnumPrevPvta == lioDocumentModel.ivnumPvta && livnroPrevTipo == lioDocumentModel.ivnroTipo)
+                    try
                     {
+                        if (livlngPrevCuit == lioDocumentModel.ivlngCuitEmisor && livnumPrevPvta == lioDocumentModel.ivnumPvta && livnroPrevTipo == lioDocumentModel.ivnroTipo)
+                        {
+                            lcvlngDocsToTask.Add(lioDocumentModel.ivlngDoc);
+                            continue;
+                        }
+                        lcoTasks.Add(BuildTaskDocs(lcvlngDocsToTask, vioConfiguration));
+                        livlngPrevCuit = lioDocumentModel.ivlngCuitEmisor;
+                        livnumPrevPvta = lioDocumentModel.ivnumPvta;
+                        livnroPrevTipo = lioDocumentModel.ivnroTipo;
+                        lcvlngDocsToTask.Clear();
                         lcvlngDocsToTask.Add(lioDocumentModel.ivlngDoc);
-                        continue;
                     }
-                    lcoTasks.Add(BuildTaskDocs(lcvlngDocsToTask, vioConfiguration));
-                    livlngPrevCuit = lioDocumentModel.ivlngCuitEmisor;
-                    livnumPrevPvta = lioDocumentModel.ivnumPvta;
-                    livnroPrevTipo = lioDocumentModel.ivnroTipo;
-                    lcvlngDocsToTask.Clear();
-                    lcvlngDocsToTask.Add(lioDocumentModel.ivlngDoc);
+                    catch (Exception lioE)
+                    {
+                        LogHelper.write(lioE);
+                    }
                 }
-                catch (Exception lioE)
-                {
-                    LogHelper.write(lioE);
-                }
+                lcoTasks.Add(BuildTaskDocs(lcvlngDocsToTask, vioConfiguration));
             }
-            lcoTasks.Add(BuildTaskDocs(lcvlngDocsToTask, vioConfiguration));
-            lcoTasks.Add(BuildTaskUpLoad(vioConfiguration));
+            if (ListHelper.CanRun(vioContext, "2"))
+                lcoTasks.Add(BuildTaskUpLoad(vioConfiguration));
             //lcoTasks.Add(BuildTaskExtract(vioConfiguration));
             foreach (var lioTasks in lcoTasks)
                 await lioTasks;
         }
         private static async Task BuildTaskDocs(List<long> vcvlngDocsToTask, IConfiguration vioConfiguration)
         {
-            try
+            using NatContext lioContext = NatContext.GetContext(vioConfiguration);
             {
-                using NatContext lioContext = NatContext.GetContext(vioConfiguration);
+                try
                 {
                     short[] lcvnroStatusAuth = { 10, 35 };
                     bool livbln1st = true;
@@ -68,7 +72,7 @@ namespace Applet.Nat.Api.Static
                         DocumentModel lioDocumentModel = lioContext.Documents.Find(lcvlngDoc);
                         if (lioDocumentModel == null)
                             continue;
-                        lcoDocuments.Add(new Document(lioDocumentModel, lioContext));
+                        lcoDocuments.Add(new Document(lioDocumentModel, lioContext, vioConfiguration));
                     }
                     if (lcoDocuments.Count() == 0) return;
                     //documentos para autorizar
@@ -180,21 +184,24 @@ namespace Applet.Nat.Api.Static
                         }
                     }
                 }
-            }
-            catch (Exception lioE)
-            {
-                LogHelper.write(lioE);
+                catch (Exception lioE)
+                {
+                    LogHelper.write(lioE);
+                }
+                finally
+                {
+                    ListHelper.SetProccessEnd(lioContext, "1");
+                }
             }
         }
         private static async Task BuildTaskUpLoad(IConfiguration vioConfiguration)
         {
-            try
+
+            using NatContext lioContext = NatContext.GetContext(vioConfiguration);
             {
-                if (!vioConfiguration.GetValue<bool>("AutoUpload"))
-                    return;
-                Cuit lioCuit;
-                using NatContext lioContext = NatContext.GetContext(vioConfiguration);
+                try
                 {
+                    Cuit lioCuit;
                     foreach (CuitModel lioCuitModel in lioContext.Cuits)
                     {
                         try
@@ -206,7 +213,7 @@ namespace Applet.Nat.Api.Static
                             if (livnroLoadMethod == (short)eLoadMethod.Manual)
                                 continue;
                             IDocsIO liIDocsIO = lioCuit.getIDocsIO();
-                            await liIDocsIO.DocsI();
+                            await liIDocsIO.DocsGet();
                         }
                         catch (Exception lioE)
                         {
@@ -215,10 +222,14 @@ namespace Applet.Nat.Api.Static
                         }
                     }
                 }
-            }
-            catch (Exception lioE)
-            {
-                LogHelper.write(lioE);
+                catch (Exception lioE)
+                {
+                    LogHelper.write(lioE);
+                }
+                finally
+                {
+                    ListHelper.SetProccessEnd(lioContext, "2");
+                }
             }
         }
     }

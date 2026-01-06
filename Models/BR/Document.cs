@@ -27,7 +27,7 @@ namespace Applet.Nat.Api.Br.Models
                     iIRawDocument.ivstrRaw = ioDcModel.ivstrInData ?? string.Empty;
                     iIRawDocument.ivstrName = $"{ioDcModel.ivnroTipo}_0";
                     iIRawDocument.ivstrKey = ivstrKey;
-                    mioDocumentUser = iIRawDocument?.ToDocumentUser();
+                    mioDocumentUser = iIRawDocument?.GetDocuments()[0];
                 }
                 return mioDocumentUser;
             }
@@ -40,7 +40,7 @@ namespace Applet.Nat.Api.Br.Models
                 {
                     switch (ioDcModel.ivstrInType)
                     {
-                        case ".xml": miIRawDocument = new InDocumentXML(ioDcModel.ivlngCuitEmisor, mioContext); break;
+                        case ".xml": miIRawDocument = new InDocumentXMLNew(ioDcModel.ivlngCuitEmisor, mioContext); break;
                         case ".json": miIRawDocument = new InDocumentJSON(ioDcModel.ivlngCuitEmisor, mioContext); break;
                         case ".txt": miIRawDocument = new InDocumentTXT(ioDcModel.ivlngCuitEmisor, mioContext); break;
                         default: miIRawDocument = new InDocumentXML(ioDcModel.ivlngCuitEmisor, mioContext); break;
@@ -64,6 +64,7 @@ namespace Applet.Nat.Api.Br.Models
         private NatContext mioContext;
         private DocumentUser mioDocumentUser;
         private IRawDocument miIRawDocument;
+        private IConfiguration mioConfiguration;
         private string mivstrDisplay
         {
             get
@@ -74,33 +75,36 @@ namespace Applet.Nat.Api.Br.Models
         #endregion
         #region CONSTRUCT
         public Document() { }
-        public Document(long vivlngDoc, NatContext vioContext)
+        public Document(long vivlngDoc, NatContext vioContext,IConfiguration vioConfiguration)
         {
             mioContext = vioContext;
+            mioConfiguration = vioConfiguration;
             DocumentModel lioDocumentModel = mioContext.Documents.Find(vivlngDoc);
             if (lioDocumentModel == null)
                 throw new Exception(string.Format(Resources.lioE_ObjectNoM, "Documento", "o"));
             ioDcModel = lioDocumentModel;
             setIDocument();
         }
-        public Document(DocumentModel vioDocumentModel, NatContext vioContext)
+        public Document(DocumentModel vioDocumentModel, NatContext vioContext, IConfiguration vioConfiguration)
         {
             mioContext = vioContext;
+            mioConfiguration = vioConfiguration;
             if (vioDocumentModel == null)
                 throw new Exception(string.Format(Resources.lioE_ObjectNoM, "Documento", "o"));
             ioDcModel = vioDocumentModel;
             setIDocument();
         }
-        public Document(DocumentUser vioDocumentUser, NatContext vioContext)
+        public Document(DocumentUser vioDocumentUser, NatContext vioContext, IConfiguration vioConfiguration)
         {
             mioContext = vioContext;
+            mioConfiguration = vioConfiguration;
             ioDcModel = new DocumentModel
             {
                 ivlngCuitEmisor = vioDocumentUser.ivlngCuitEmisor ?? 0,
                 ivnroTipo = vioDocumentUser.ivnroTipoDoc ?? 0,
                 ivnumPvta = vioDocumentUser.ivnumPvta ?? 0,
                 ivlngCbte = vioDocumentUser.ivlngCbte ?? 0,
-                ivdtmEmision = Format.DateFromUX(vioDocumentUser.ivdtmEmision, ListHelper.GetValue("Format", "ApiDtm", mioContext)),
+                ivdtmEmision = Format.DateFromUX(vioDocumentUser.ivstrFechaEmision, ListHelper.GetValue("Format", "ApiDtm", mioContext)),
                 ivlngCuitReceptor = vioDocumentUser.ivlngDocReceptor ?? 0,
                 ivstrWs = vioDocumentUser.ivstrWs,
                 ivstrInData = Convert.ToBase64String(Encoding.UTF8.GetBytes(vioDocumentUser.ivstrInputData)),
@@ -109,6 +113,7 @@ namespace Applet.Nat.Api.Br.Models
                 ivstrMoneda = vioDocumentUser.ivstrMoneda ?? string.Empty,
                 ivstrRazonSocial = vioDocumentUser.ivstrRazonSocial ?? string.Empty
             };
+            mioDocumentUser = vioDocumentUser;
             setIDocument();
         }
         #endregion
@@ -126,7 +131,7 @@ namespace Applet.Nat.Api.Br.Models
             {
                 ioDcModel.ivnroStatus = 10;
                 ioDcModel.ivlngDoc = NN();
-                Cuit lioCuit = new Cuit(ioDcModel.ivlngCuitEmisor, mioContext);
+                Cuit lioCuit = new Cuit(ioDcModel.ivlngCuitEmisor, mioContext, mioConfiguration);
                 if (lioCuit.ioCnfg == null || lioCuit.ioCnfg.coTemplateVersions == null)
                     throw new Exception($"Version de Plantillas {Resources.lioE_ObjectNoM}");
                 TemplateVersion lioO = lioCuit.ioCnfg.coTemplateVersions.FirstOrDefault(x => x.ivnroTipo == ioDcModel.ivnroTipo);
@@ -137,7 +142,7 @@ namespace Applet.Nat.Api.Br.Models
             }
             else
             {
-                if (lioDBDocumentModel.ivnroStatus >= 50 && ivIDocument.AuthDataModified(new Document(lioDBDocumentModel, mioContext).ivIDocument))
+                if (lioDBDocumentModel.ivnroStatus >= 50 && ivIDocument.AuthDataModified(new Document(lioDBDocumentModel, mioContext, mioConfiguration).ivIDocument))
                     throw new Exception(Resources.lioE_Doc_AuthInfoMod);
                 lioDBDocumentModel.ivnroStatus = ioDcModel.ivnroStatus;
                 if (ioDcModel.ivdtmEmision != null)
@@ -191,7 +196,7 @@ namespace Applet.Nat.Api.Br.Models
                     if (MailHelper.IsValidEmail(livstrAddress) && !lcvstrAddresses.Contains(livstrAddress))
                         lcvstrAddresses.Add(livstrAddress);
             //correos del cuit emisor fijos
-            Cuit lioCuit = new Cuit(ioDcModel.ivlngCuitEmisor, mioContext);
+            Cuit lioCuit = new Cuit(ioDcModel.ivlngCuitEmisor, mioContext, vioConfiguration);
             if (lioCuit.ioCnfg?.coParameters.FirstOrDefault(x => x.ivstrId == "Email") != null)
                 foreach (string livstrAddress in lioCuit.ioCnfg?.coParameters?.FirstOrDefault(x => x.ivstrId == "Email")?.ivstrValue?.Split(";", StringSplitOptions.TrimEntries))
                     if (MailHelper.IsValidEmail(livstrAddress) && !lcvstrAddresses.Contains(livstrAddress))
@@ -275,20 +280,28 @@ namespace Applet.Nat.Api.Br.Models
             {
                 ioDcModel.ivnroStatus = await ivIDocument.Auth();
                 Save();
-                SendResponse();
+                await SendResponse();
             }
             catch (Exception lioE)
             {
                 LogHelper.write(lioE);
             }
         }
-        public string SendResponse()
+        public async Task<string> SendResponse()
         {
-            UxAuth lioUxAuth;
-            Cuit lioCuit = new Cuit(ioDcModel.ivlngCuitEmisor, mioContext);
-            IDocsIO liIDocsIO = lioCuit.getIDocsIO();
-            liIDocsIO.DocsO([this]);
-            return "OK";
+            try
+            {
+                UxAuth lioUxAuth;
+                Cuit lioCuit = new Cuit(ioDcModel.ivlngCuitEmisor, mioContext, mioConfiguration);
+                IDocsIO liIDocsIO = lioCuit.getIDocsIO();
+                await liIDocsIO.DocsUpdate([this]);
+                return "OK";
+            }
+            catch (Exception lioE)
+            {
+                LogHelper.write(lioE);
+                return null;
+            }
         }
         public async Task<string> Print()
         {

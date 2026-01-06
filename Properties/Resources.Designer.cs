@@ -475,6 +475,15 @@ namespace Nat.API.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error en envio de respuesta a Sistema Fecturados.
+        /// </summary>
+        internal static string lioE_RtaERP {
+            get {
+                return ResourceManager.GetString("lioE_RtaERP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Servicio Invalido.
         /// </summary>
         internal static string lioE_Svc_No {
@@ -696,6 +705,528 @@ namespace Nat.API.Properties {
         internal static string lioM_StartProc {
             get {
                 return ResourceManager.GetString("lioM_StartProc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lista de campos adicionales del documento.
+        /// </summary>
+        internal static string lioP_coAdicionales {
+            get {
+                return ResourceManager.GetString("lioP_coAdicionales", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lista de documentos asociados (ej. notas de crédito, débito, etc.).
+        /// </summary>
+        internal static string lioP_coAsociados {
+            get {
+                return ResourceManager.GetString("lioP_coAsociados", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lista de compradores del documento (en caso de ser un documento compartido).
+        /// </summary>
+        internal static string lioP_coCompradores {
+            get {
+                return ResourceManager.GetString("lioP_coCompradores", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lista de ítems del documento (productos o servicios facturados).
+        /// </summary>
+        internal static string lioP_coItems {
+            get {
+                return ResourceManager.GetString("lioP_coItems", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lista de ítems de tipo &quot;Código de Turismo&quot; (CT) del documento.
+        /// </summary>
+        internal static string lioP_coItemsCT {
+            get {
+                return ResourceManager.GetString("lioP_coItemsCT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lista de alícuotas de IVA aplicables al documento.
+        /// </summary>
+        internal static string lioP_coIvas {
+            get {
+                return ResourceManager.GetString("lioP_coIvas", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lista de campos opcionales del documento.
+        /// </summary>
+        internal static string lioP_coOpcionales {
+            get {
+                return ResourceManager.GetString("lioP_coOpcionales", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lista de otros tributos aplicables al documento.
+        /// </summary>
+        internal static string lioP_coOtrosTributos {
+            get {
+                return ResourceManager.GetString("lioP_coOtrosTributos", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lista de permisos de exportación asociados al documento.
+        /// </summary>
+        internal static string lioP_coPermisosExp {
+            get {
+                return ResourceManager.GetString("lioP_coPermisosExp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Domicilio del receptor del documento.
+        /// </summary>
+        internal static string lioP_ioDomicilioReceptor {
+            get {
+                return ResourceManager.GetString("lioP_ioDomicilioReceptor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cotización de la moneda del documento.
+        /// </summary>
+        internal static string lioP_ivdblCotizacion {
+            get {
+                return ResourceManager.GetString("lioP_ivdblCotizacion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Importe exento del documento.
+        /// </summary>
+        internal static string lioP_ivdblImporteExento {
+            get {
+                return ResourceManager.GetString("lioP_ivdblImporteExento", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Importe gravado del documento.
+        /// </summary>
+        internal static string lioP_ivdblImporteGravado {
+            get {
+                return ResourceManager.GetString("lioP_ivdblImporteGravado", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Importe total del IVA del documento.
+        /// </summary>
+        internal static string lioP_ivdblImporteIva {
+            get {
+                return ResourceManager.GetString("lioP_ivdblImporteIva", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Importe no gravado del documento.
+        /// </summary>
+        internal static string lioP_ivdblImporteNoGravado {
+            get {
+                return ResourceManager.GetString("lioP_ivdblImporteNoGravado", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Importe de otros tributos del documento.
+        /// </summary>
+        internal static string lioP_ivdblImporteOtrosTributos {
+            get {
+                return ResourceManager.GetString("lioP_ivdblImporteOtrosTributos", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Importe total del documento.
+        /// </summary>
+        internal static string lioP_ivdblImporteTotal {
+            get {
+                return ResourceManager.GetString("lioP_ivdblImporteTotal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Número del comprobante.
+        /// </summary>
+        internal static string lioP_ivlngCbte {
+            get {
+                return ResourceManager.GetString("lioP_ivlngCbte", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CUIT del emisor del documento.
+        /// </summary>
+        internal static string lioP_ivlngCuitEmisor {
+            get {
+                return ResourceManager.GetString("lioP_ivlngCuitEmisor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CUIT del país del cliente asociado al documento.
+        /// </summary>
+        internal static string lioP_ivlngCuitPaisCliente {
+            get {
+                return ResourceManager.GetString("lioP_ivlngCuitPaisCliente", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Número de documento del receptor.
+        /// </summary>
+        internal static string lioP_ivlngDocReceptor {
+            get {
+                return ResourceManager.GetString("lioP_ivlngDocReceptor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Id Impositivo Expo.
+        /// </summary>
+        internal static string lioP_ivlngIDImpositivo {
+            get {
+                return ResourceManager.GetString("lioP_ivlngIDImpositivo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Número interno del documento.
+        /// </summary>
+        internal static string lioP_ivlngInt {
+            get {
+                return ResourceManager.GetString("lioP_ivlngInt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Concepto del documento (1: Productos, 2: Servicios, 3: Productos y Servicios).
+        /// </summary>
+        internal static string lioP_ivnroConcepto {
+            get {
+                return ResourceManager.GetString("lioP_ivnroConcepto", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Destino del comprobante (ej. Mercado Interno, Exportación, etc.).
+        /// </summary>
+        internal static string lioP_ivnroDestinoCmp {
+            get {
+                return ResourceManager.GetString("lioP_ivnroDestinoCmp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Idioma del documento (ej. Español, Inglés, etc.).
+        /// </summary>
+        internal static string lioP_ivnroIdioma {
+            get {
+                return ResourceManager.GetString("lioP_ivnroIdioma", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tipo de documento (ej. Factura A, Factura B, etc.).
+        /// </summary>
+        internal static string lioP_ivnroTipoDoc {
+            get {
+                return ResourceManager.GetString("lioP_ivnroTipoDoc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tipo de documento del receptor (ej. CUIT, CUIL, DNI, etc.).
+        /// </summary>
+        internal static string lioP_ivnroTipoDocReceptor {
+            get {
+                return ResourceManager.GetString("lioP_ivnroTipoDocReceptor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tipo de exportación del documento (ej. Definitiva, Temporal, etc.).
+        /// </summary>
+        internal static string lioP_ivnroTipoExpo {
+            get {
+                return ResourceManager.GetString("lioP_ivnroTipoExpo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tipo de responsable del receptor (ej. Responsable Inscripto, Monotributista, etc.).
+        /// </summary>
+        internal static string lioP_ivnroTipoRespReceptor {
+            get {
+                return ResourceManager.GetString("lioP_ivnroTipoRespReceptor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Punto de venta del documento.
+        /// </summary>
+        internal static string lioP_ivnumPvta {
+            get {
+                return ResourceManager.GetString("lioP_ivnumPvta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Atributo Integracion 1.
+        /// </summary>
+        internal static string lioP_ivstrAttr1 {
+            get {
+                return ResourceManager.GetString("lioP_ivstrAttr1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Atributo Integracion 2.
+        /// </summary>
+        internal static string lioP_ivstrAttr2 {
+            get {
+                return ResourceManager.GetString("lioP_ivstrAttr2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Atributo Integracion 3.
+        /// </summary>
+        internal static string lioP_ivstrAttr3 {
+            get {
+                return ResourceManager.GetString("lioP_ivstrAttr3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Atributo Integracion 4.
+        /// </summary>
+        internal static string lioP_ivstrAttr4 {
+            get {
+                return ResourceManager.GetString("lioP_ivstrAttr4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Atributo Integracion 5.
+        /// </summary>
+        internal static string lioP_ivstrAttr5 {
+            get {
+                return ResourceManager.GetString("lioP_ivstrAttr5", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Atributo Integracion 6.
+        /// </summary>
+        internal static string lioP_ivstrAttr6 {
+            get {
+                return ResourceManager.GetString("lioP_ivstrAttr6", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Atributo Integracion 7.
+        /// </summary>
+        internal static string lioP_ivstrAttr7 {
+            get {
+                return ResourceManager.GetString("lioP_ivstrAttr7", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cantidad de monedas extranjeras utilizadas en el documento.
+        /// </summary>
+        internal static string lioP_ivstrCanMisMonExt {
+            get {
+                return ResourceManager.GetString("lioP_ivstrCanMisMonExt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nombre del cliente asociado al documento.
+        /// </summary>
+        internal static string lioP_ivstrCliente {
+            get {
+                return ResourceManager.GetString("lioP_ivstrCliente", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Condiciones de pago del documento (ej. Contado, Crédito, etc.).
+        /// </summary>
+        internal static string lioP_ivstrCondPago {
+            get {
+                return ResourceManager.GetString("lioP_ivstrCondPago", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email del receptor del documento.
+        /// </summary>
+        internal static string lioP_ivstrEmail {
+            get {
+                return ResourceManager.GetString("lioP_ivstrEmail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fecha de emisión del documento.
+        /// </summary>
+        internal static string lioP_ivstrFechaEmision {
+            get {
+                return ResourceManager.GetString("lioP_ivstrFechaEmision", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fecha de inicio del servicio (si aplica).
+        /// </summary>
+        internal static string lioP_ivstrFechaServdesde {
+            get {
+                return ResourceManager.GetString("lioP_ivstrFechaServdesde", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fecha de fin del servicio (si aplica).
+        /// </summary>
+        internal static string lioP_ivstrFechaServhasta {
+            get {
+                return ResourceManager.GetString("lioP_ivstrFechaServhasta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fecha de vencimiento del pago.
+        /// </summary>
+        internal static string lioP_ivstrFechaVtopago {
+            get {
+                return ResourceManager.GetString("lioP_ivstrFechaVtopago", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Identificador interno del cliente asociado al documento.
+        /// </summary>
+        internal static string lioP_ivstrIdCliente {
+            get {
+                return ResourceManager.GetString("lioP_ivstrIdCliente", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Identificador interno de la sucursal.
+        /// </summary>
+        internal static string lioP_ivstrIdSucursal {
+            get {
+                return ResourceManager.GetString("lioP_ivstrIdSucursal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Incoterms aplicables al documento (ej. FOB, CIF, etc.).
+        /// </summary>
+        internal static string lioP_ivstrIncoterms {
+            get {
+                return ResourceManager.GetString("lioP_ivstrIncoterms", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Descripción de los Incoterms aplicables al documento.
+        /// </summary>
+        internal static string lioP_ivstrIncotermsDs {
+            get {
+                return ResourceManager.GetString("lioP_ivstrIncotermsDs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Datos de entrada del documento.
+        /// </summary>
+        internal static string lioP_ivstrInputData {
+            get {
+                return ResourceManager.GetString("lioP_ivstrInputData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Errores de carga del documento.
+        /// </summary>
+        internal static string lioP_ivstrLoadErrors {
+            get {
+                return ResourceManager.GetString("lioP_ivstrLoadErrors", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Moneda del documento (ej. ARS, USD, etc.).
+        /// </summary>
+        internal static string lioP_ivstrMoneda {
+            get {
+                return ResourceManager.GetString("lioP_ivstrMoneda", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Observaciones del documento.
+        /// </summary>
+        internal static string lioP_ivstrObs {
+            get {
+                return ResourceManager.GetString("lioP_ivstrObs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Observaciones comerciales del documento.
+        /// </summary>
+        internal static string lioP_ivstrObsComerciales {
+            get {
+                return ResourceManager.GetString("lioP_ivstrObsComerciales", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Permiso existente para la emisión del documento (si aplica).
+        /// </summary>
+        internal static string lioP_ivstrPermisoExistente {
+            get {
+                return ResourceManager.GetString("lioP_ivstrPermisoExistente", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Razón social del receptor del documento.
+        /// </summary>
+        internal static string lioP_ivstrRazonSocial {
+            get {
+                return ResourceManager.GetString("lioP_ivstrRazonSocial", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Web service utilizado para la emisión del documento.
+        /// </summary>
+        internal static string lioP_ivstrWs {
+            get {
+                return ResourceManager.GetString("lioP_ivstrWs", resourceCulture);
             }
         }
     }

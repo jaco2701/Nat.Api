@@ -35,7 +35,7 @@ namespace Nat.API.Models.BR
         public ServiceMapper ioMapper { get; set; }
         #endregion
         #region PUBLIC METHODS  
-        public async Task DocsI()
+        public async Task DocsGet()
         {
             List<DocumentUploadResponse> lcoUDocumentsUploadResponse;
             List<DocumentUploadRequest> locDocumentUploadRequests = new List<DocumentUploadRequest>();
@@ -69,7 +69,7 @@ namespace Nat.API.Models.BR
                 LogHelper.write(lioE);
             }
         }
-        public async Task DocsO(Document[] vcoDocuments)
+        public async Task DocsUpdate(Document[] vcoDocuments)
         {
             foreach (Document lioDocument in vcoDocuments)
             {
@@ -102,7 +102,7 @@ namespace Nat.API.Models.BR
                         case "ivlngCbte":
                             livstr = lioDocument.ioDcModel.ivlngCbte.ToString();
                             break;
-                        case "ivdtmEmision":
+                        case "ivstrFechaEmision":
                             if (lioDocument.ioDcModel.ivdtmEmision == null)
                                 throw new Exception(string.Format(Resources.lioE_ObjectNoM, "DtmEmision", "a"));
                             livstr = (lioDocument.ioDcModel.ivdtmEmision ?? DateTime.MinValue).ToString(lioServiceMapperItem.ivstrformat);

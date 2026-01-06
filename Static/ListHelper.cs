@@ -43,7 +43,7 @@ namespace Applet.Nat.Api.Static
         //    }
         //    return scoStatus.GetValueOrDefault(vistrStatus);
         //}
-        public static void DocsProcces(NatContext vioContext, string vivstr )
+        public static void SetQueueRunning(NatContext vioContext, string vivstr )
         {
             ListModel? lioO = vioContext.Lists.Find("DOCPROC", "0");
             if (lioO == null)
@@ -51,6 +51,52 @@ namespace Applet.Nat.Api.Static
             lioO.ivstrDesc = vivstr;
             vioContext.Lists.Update(lioO);
             vioContext.SaveChanges();
+        }
+        public static void SetProccessEnd(NatContext vioContext, string vivstrProcess)
+        {
+            ListModel? lioO = vioContext.Lists.Find("DOCPROC", vivstrProcess);
+            if (lioO == null)
+                throw new Exception("Tipo de Lista de Valores Invalido");
+            lioO.ivstrDesc = Format.TimestampFromDate(DateTime.UtcNow).ToString();
+            vioContext.Lists.Update(lioO);
+            vioContext.SaveChanges();
+        }
+        public static bool CanRun(NatContext vioContext, string vivstrProcess)
+        {
+            string livstr="Secs";
+            if (vivstrProcess == "1")
+                livstr += "Docs";
+            else if (vivstrProcess == "2")
+                livstr += "Uploads";
+            else if (vivstrProcess == "2")
+                return false;
+            ListModel? lioO = vioContext.Lists.Find("FORMAT", livstr);
+            if (lioO == null)
+            {
+                LogHelper.write(new Exception($"Tipo de Lista de Valores FORMAT:{livstr} Invalido"));
+                return false;
+            }
+            if (!int.TryParse(lioO.ivstrDesc, out int livnumSecs))
+            {
+                LogHelper.write(new Exception($"Valor de Lista FORMAT:{livstr} no es numerico"));
+                return false;
+            }
+            if (livnumSecs < 0)
+                return false;
+            lioO = vioContext.Lists.Find("DOCPROC", vivstrProcess);
+            if (lioO == null)
+            {
+                LogHelper.write(new Exception($"Tipo de Lista de Valores DOCPROC:{vivstrProcess} Invalido"));
+                return false;
+            }
+            if (string.IsNullOrEmpty(lioO.ivstrDesc.Trim()))
+                return true;
+            if (!long.TryParse(lioO.ivstrDesc, out long livlngTnsLastRun))
+            {
+                LogHelper.write(new Exception($"Valor de Lista DOCPROC:{vivstrProcess} no es numerico"));
+                return false;
+            }
+            return (livlngTnsLastRun + livnumSecs ) < Format.TimestampFromDate(DateTime.UtcNow);
         }
     }
 

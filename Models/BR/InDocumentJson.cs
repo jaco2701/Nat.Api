@@ -24,12 +24,12 @@ namespace Applet.Nat.Api.Br.Models
         public string? ivstrName { get; set; }
         public string ivstrKey { get; set; }
         #region PUBLIC METHODS
-        public DocumentUser ToDocumentUser()
+        public DocumentUser[] GetDocuments()
         {
             DocumentUser lioDocumentUser = new DocumentUser();
             try
             {
-                Cuit lioCuit = new Cuit(mivlngCuit, mioContext);
+                Cuit lioCuit = new Cuit(mivlngCuit, mioContext, null);
                 if (string.IsNullOrEmpty(lioCuit.ioDcModel.ivstrCnfg))
                     throw new Exception("Mapeador no encontrado o con formato erroneo");
                 string livstr = lioCuit.GetEncoding().GetString(Convert.FromBase64String(Format.UnCompress(ivstrRaw ?? string.Empty, lioCuit.GetEncoding()))),
@@ -93,13 +93,13 @@ namespace Applet.Nat.Api.Br.Models
                             }
                             lioDocumentUser.ivlngCbte = livlng;
                             break;
-                        case "ivdtmEmision":
+                        case "ivstrFechaEmision":
                             if (lioJToken == null || !DateTime.TryParse(lioJToken.ToString().Replace("T00:00:00", string.Empty), out livdtm))
                             {
                                 lioSbErrors.AppendLine($"Fecha de Comprobante INVALIDA ({livstrXmlDtmFormat})");
                                 continue;
                             }
-                            lioDocumentUser.ivdtmEmision = livdtm.ToString(livstrApiDtmFormat);
+                            lioDocumentUser.ivstrFechaEmision = livdtm.ToString(livstrApiDtmFormat);
                             break;
                         case "ivstrCondPago":
                             if (lioJToken == null)
@@ -107,15 +107,15 @@ namespace Applet.Nat.Api.Br.Models
                             else
                                 lioDocumentUser.ivstrCondPago = lioJToken.ToString();
                             break;
-                        case "ivdtmVtopago":
+                        case "ivstrFechaVtopago":
                             if (lioJToken == null || !DateTime.TryParse(lioJToken.ToString().Replace("T00:00:00", string.Empty), out livdtm))
                             {
                                 lioSbErrors.AppendLine($"FECHA de Vencimiento de Pago INVALIDA ({livstrXmlDtmFormat})");
                                 continue;
                             }
-                            lioDocumentUser.ivdtmVtopago = livdtm.ToString(livstrApiDtmFormat);
+                            lioDocumentUser.ivstrFechaVtopago = livdtm.ToString(livstrApiDtmFormat);
                             break;
-                        case "ivdtmServdesde":
+                        case "ivstrFechaServdesde":
                             if (lioJToken != null)
                             {
                                 if (!DateTime.TryParse(lioJToken.ToString().Replace("T00:00:00", string.Empty), out livdtm))
@@ -123,10 +123,10 @@ namespace Applet.Nat.Api.Br.Models
                                     lioSbErrors.AppendLine($"FECHA de Inicio de Servicios INVALIDA ({livstrXmlDtmFormat})");
                                     continue;
                                 }
-                                lioDocumentUser.ivdtmServdesde = livdtm.ToString(livstrApiDtmFormat);
+                                lioDocumentUser.ivstrFechaServdesde = livdtm.ToString(livstrApiDtmFormat);
                             }
                             break;
-                        case "ivdtmServhasta":
+                        case "ivstrFechaServhasta":
                             if (lioJToken != null)
                             {
                                 if (!DateTime.TryParse(lioJToken.ToString().Replace("T00:00:00", string.Empty), out livdtm))
@@ -134,7 +134,7 @@ namespace Applet.Nat.Api.Br.Models
                                     lioSbErrors.AppendLine($"FECHA de Finalizacion de Servicios INVALIDA ({livstrXmlDtmFormat})");
                                     continue;
                                 }
-                                lioDocumentUser.ivdtmServdesde = livdtm.ToString(livstrApiDtmFormat);
+                                lioDocumentUser.ivstrFechaServdesde = livdtm.ToString(livstrApiDtmFormat);
                             }
                             break;
                         case "ivstrMoneda":
@@ -374,13 +374,13 @@ namespace Applet.Nat.Api.Br.Models
                                     continue;
                                 }
                                 lioUxDocumentAsociado.ivnroCbtetipo = lioO.SelectToken(lioMapperItem1.coXPaths[0].ivstrData)?.ToObject<short>();
-                                lioMapperItem1 = lioMapper.coItems.FirstOrDefault(x => x.ivstrProperty == "coAsociados.ivdtmFechaEmision");
+                                lioMapperItem1 = lioMapper.coItems.FirstOrDefault(x => x.ivstrProperty == "coAsociados.ivstrFechaEmision");
                                 if (lioMapperItem1 == null)
                                 {
                                     lioSbErrors.AppendLine($"Doc.Asociado {livnroI} Fecha de Emision no encontrada o con formato erroneo");
                                     continue;
                                 }
-                                lioUxDocumentAsociado.ivdtmFechaEmision = lioO.SelectToken(lioMapperItem1.coXPaths[0].ivstrData)?.ToString();
+                                lioUxDocumentAsociado.ivstrFechaEmision = lioO.SelectToken(lioMapperItem1.coXPaths[0].ivstrData)?.ToString();
                                 lioMapperItem1 = lioMapper.coItems.FirstOrDefault(x => x.ivstrProperty == "coAsociados.ivlngCbteCUIT");
                                 if (lioMapperItem1 == null)
                                 {
@@ -582,12 +582,12 @@ namespace Applet.Nat.Api.Br.Models
                 if (lioSbErrors.Length > 0)
                     throw new Exception(lioSbErrors.ToString());
                 lioDocumentUser.ivstrLoadErrors = string.Empty;
-                return lioDocumentUser;
+                return [lioDocumentUser];
             }
             catch (Exception lioEx)
             {
                 lioDocumentUser.ivstrLoadErrors = lioEx.Message;
-                return lioDocumentUser;
+                return [lioDocumentUser];
             }
 
         }
@@ -597,7 +597,7 @@ namespace Applet.Nat.Api.Br.Models
         {
             if (string.IsNullOrEmpty(ivstrRaw))
                 return string.Empty;
-            Cuit lioCuit = new Cuit(mivlngCuit, mioContext);
+            Cuit lioCuit = new Cuit(mivlngCuit, mioContext,null);
             if (string.IsNullOrEmpty(lioCuit.ioDcModel.ivstrCnfg))
                 throw new Exception("Mapeador no encontrado o con formato erroneo");
             string livstr = lioCuit.GetEncoding().GetString(Convert.FromBase64String(Format.UnCompress(ivstrRaw, lioCuit.GetEncoding()))), livstrExtNode;

@@ -330,4 +330,181 @@
   <data name="lioM_StartProc" xml:space="preserve">
     <value>Inicio de procesamiento de Documentos</value>
   </data>
+  <data name="lioP_ivlngCuitEmisor" xml:space="preserve">
+    <value>CUIT del emisor del documento</value>
+  </data>
+  <data name="lioP_ivnroTipoDocReceptor" xml:space="preserve">
+    <value>Tipo de documento del receptor (ej. CUIT, CUIL, DNI, etc.)</value>
+  </data>
+  <data name="lioP_ivlngDocReceptor" xml:space="preserve">
+    <value>Número de documento del receptor</value>
+  </data>
+  <data name="lioP_ivnroTipoRespReceptor" xml:space="preserve">
+    <value>Tipo de responsable del receptor (ej. Responsable Inscripto, Monotributista, etc.)</value>
+  </data>
+  <data name="lioP_ivnumPvta" xml:space="preserve">
+    <value>Punto de venta del documento</value>
+  </data>
+  <data name="lioP_ivnroTipoDoc" xml:space="preserve">
+    <value>Tipo de documento (ej. Factura A, Factura B, etc.)</value>
+  </data>
+  <data name="lioP_ivlngCbte" xml:space="preserve">
+    <value>Número del comprobante</value>
+  </data>
+  <data name="lioP_ivlngInt" xml:space="preserve">
+    <value>Número interno del documento</value>
+  </data>
+  <data name="lioP_ivnroConcepto" xml:space="preserve">
+    <value>Concepto del documento (1: Productos, 2: Servicios, 3: Productos y Servicios)</value>
+  </data>
+  <data name="lioP_ivstrFechaEmision" xml:space="preserve">
+    <value>Fecha de emisión del documento</value>
+  </data>
+  <data name="lioP_ivstrFechaServdesde" xml:space="preserve">
+    <value>Fecha de inicio del servicio (si aplica)</value>
+  </data>
+  <data name="lioP_ivstrFechaServhasta" xml:space="preserve">
+    <value>Fecha de fin del servicio (si aplica)</value>
+  </data>
+  <data name="lioP_ivstrFechaVtopago" xml:space="preserve">
+    <value>Fecha de vencimiento del pago</value>
+  </data>
+  <data name="lioP_ivdblImporteTotal" xml:space="preserve">
+    <value>Importe total del documento</value>
+  </data>
+  <data name="lioP_ivdblImporteGravado" xml:space="preserve">
+    <value>Importe gravado del documento</value>
+  </data>
+  <data name="lioP_ivdblImporteNoGravado" xml:space="preserve">
+    <value>Importe no gravado del documento</value>
+  </data>
+  <data name="lioP_ivdblImporteExento" xml:space="preserve">
+    <value>Importe exento del documento</value>
+  </data>
+  <data name="lioP_ivdblImporteOtrosTributos" xml:space="preserve">
+    <value>Importe de otros tributos del documento</value>
+  </data>
+  <data name="lioP_ivdblImporteIva" xml:space="preserve">
+    <value>Importe total del IVA del documento</value>
+  </data>
+  <data name="lioP_ivstrMoneda" xml:space="preserve">
+    <value>Moneda del documento (ej. ARS, USD, etc.)</value>
+  </data>
+  <data name="lioP_ivdblCotizacion" xml:space="preserve">
+    <value>Cotización de la moneda del documento</value>
+  </data>
+  <data name="lioP_ivstrRazonSocial" xml:space="preserve">
+    <value>Razón social del receptor del documento</value>
+  </data>
+  <data name="lioP_ivstrCondPago" xml:space="preserve">
+    <value>Condiciones de pago del documento (ej. Contado, Crédito, etc.)</value>
+  </data>
+  <data name="lioP_ivstrObs" xml:space="preserve">
+    <value>Observaciones del documento</value>
+  </data>
+  <data name="lioP_ioDomicilioReceptor" xml:space="preserve">
+    <value>Domicilio del receptor del documento</value>
+  </data>
+  <data name="lioP_ivstrWs" xml:space="preserve">
+    <value>Web service utilizado para la emisión del documento</value>
+  </data>
+  <data name="lioP_ivstrIdCliente" xml:space="preserve">
+    <value>Identificador interno del cliente asociado al documento</value>
+  </data>
+  <data name="lioP_ivstrIdSucursal" xml:space="preserve">
+    <value>Identificador interno de la sucursal</value>
+  </data>
+  <data name="lioP_coAsociados" xml:space="preserve">
+    <value>Lista de documentos asociados (ej. notas de crédito, débito, etc.)</value>
+  </data>
+  <data name="lioP_coOtrosTributos" xml:space="preserve">
+    <value>Lista de otros tributos aplicables al documento</value>
+  </data>
+  <data name="lioP_coIvas" xml:space="preserve">
+    <value>Lista de alícuotas de IVA aplicables al documento</value>
+  </data>
+  <data name="lioP_coOpcionales" xml:space="preserve">
+    <value>Lista de campos opcionales del documento</value>
+  </data>
+  <data name="lioP_coAdicionales" xml:space="preserve">
+    <value>Lista de campos adicionales del documento</value>
+  </data>
+  <data name="lioP_coCompradores" xml:space="preserve">
+    <value>Lista de compradores del documento (en caso de ser un documento compartido)</value>
+  </data>
+  <data name="lioP_coItems" xml:space="preserve">
+    <value>Lista de ítems del documento (productos o servicios facturados)</value>
+  </data>
+  <data name="lioP_coItemsCT" xml:space="preserve">
+    <value>Lista de ítems de tipo "Código de Turismo" (CT) del documento</value>
+  </data>
+  <data name="lioP_ivstrCanMisMonExt" xml:space="preserve">
+    <value>Cantidad de monedas extranjeras utilizadas en el documento</value>
+  </data>
+  <data name="lioP_ivstrPermisoExistente" xml:space="preserve">
+    <value>Permiso existente para la emisión del documento (si aplica)</value>
+  </data>
+  <data name="lioP_ivstrCliente" xml:space="preserve">
+    <value>Nombre del cliente asociado al documento</value>
+  </data>
+  <data name="lioP_ivlngCuitPaisCliente" xml:space="preserve">
+    <value>CUIT del país del cliente asociado al documento</value>
+  </data>
+  <data name="lioP_ivstrObsComerciales" xml:space="preserve">
+    <value>Observaciones comerciales del documento</value>
+  </data>
+  <data name="lioP_ivstrIncoterms" xml:space="preserve">
+    <value>Incoterms aplicables al documento (ej. FOB, CIF, etc.)</value>
+  </data>
+  <data name="lioP_ivnroIdioma" xml:space="preserve">
+    <value>Idioma del documento (ej. Español, Inglés, etc.)</value>
+  </data>
+  <data name="lioP_ivstrIncotermsDs" xml:space="preserve">
+    <value>Descripción de los Incoterms aplicables al documento</value>
+  </data>
+  <data name="lioP_ivstrEmail" xml:space="preserve">
+    <value>Email del receptor del documento</value>
+  </data>
+  <data name="lioP_ivnroTipoExpo" xml:space="preserve">
+    <value>Tipo de exportación del documento (ej. Definitiva, Temporal, etc.)</value>
+  </data>
+  <data name="lioP_ivnroDestinoCmp" xml:space="preserve">
+    <value>Destino del comprobante (ej. Mercado Interno, Exportación, etc.)</value>
+  </data>
+  <data name="lioP_coPermisosExp" xml:space="preserve">
+    <value>Lista de permisos de exportación asociados al documento</value>
+  </data>
+  <data name="lioP_ivstrLoadErrors" xml:space="preserve">
+    <value>Errores de carga del documento</value>
+  </data>
+  <data name="lioP_ivstrInputData" xml:space="preserve">
+    <value>Datos de entrada del documento</value>
+  </data>
+  <data name="lioP_ivlngIDImpositivo" xml:space="preserve">
+    <value>Id Impositivo Expo</value>
+  </data>
+  <data name="lioP_ivstrAttr1" xml:space="preserve">
+    <value>Atributo Integracion 1</value>
+  </data>
+  <data name="lioP_ivstrAttr2" xml:space="preserve">
+    <value>Atributo Integracion 2</value>
+  </data>
+  <data name="lioP_ivstrAttr3" xml:space="preserve">
+    <value>Atributo Integracion 3</value>
+  </data>
+  <data name="lioP_ivstrAttr4" xml:space="preserve">
+    <value>Atributo Integracion 4</value>
+  </data>
+  <data name="lioP_ivstrAttr5" xml:space="preserve">
+    <value>Atributo Integracion 5</value>
+  </data>
+  <data name="lioP_ivstrAttr6" xml:space="preserve">
+    <value>Atributo Integracion 6</value>
+  </data>
+  <data name="lioP_ivstrAttr7" xml:space="preserve">
+    <value>Atributo Integracion 7</value>
+  </data>
+  <data name="lioE_RtaERP" xml:space="preserve">
+    <value>Error en envio de respuesta a Sistema Fecturados</value>
+  </data>
 </root>

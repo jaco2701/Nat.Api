@@ -144,7 +144,7 @@ namespace Applet.Nat.Api.Br.Models
             Cuit lioCuit;
             foreach (UserCuitModel lioO in coCuitsModels)
             {
-                lioCuit= new Cuit(lioO.ivlngCuit,mioContext);
+                lioCuit= new Cuit(lioO.ivlngCuit,mioContext,null);
                 lioO.ivstrRS = lioCuit.ioDcModel.ivstrCuitRS;
                 lioO.ivstrEncoding = lioCuit.ioCnfg?.coParameters.FirstOrDefault(x => x.ivstrId == "Encoding")?.ivstrValue ??string.Empty;
             }

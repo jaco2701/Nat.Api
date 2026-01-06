@@ -25,12 +25,12 @@ namespace Applet.Nat.Api.Br.Models
         public string ivstrKey { get; set; }
         #endregion
         #region PUBLIC METHODS
-        public DocumentUser ToDocumentUser()
+        public DocumentUser[] GetDocuments()
         {
             DocumentUser lioDocumentUser = new DocumentUser();
             try
             {
-                if (string.IsNullOrEmpty(ivstrRaw)) return lioDocumentUser;
+                if (string.IsNullOrEmpty(ivstrRaw)) return [lioDocumentUser];
                 string livstr = Encoding.UTF8.GetString(Convert.FromBase64String(Format.UnCompress(ivstrRaw ?? string.Empty,Encoding.UTF8))),
                     livstrPath,
                     livstrXmlDtmFormat = ListHelper.GetValue("FORMAT", "XmlDtm", mioContext),
@@ -47,7 +47,7 @@ namespace Applet.Nat.Api.Br.Models
                 lioDocumentUser.ivstrWs = xmlDocumentNode.InnerXml;
                 lioDocumentUser.ivstrInputData = ivstrRaw;
                 //MAPEADOR               
-                Cuit lioCuit = new Cuit(mivlngCuit, mioContext);
+                Cuit lioCuit = new Cuit(mivlngCuit, mioContext, null);
                 if (string.IsNullOrEmpty(lioCuit.ioDcModel.ivstrCnfg))
                     throw new Exception($"Mapeador {Resources.lioE_ObjectNoM}");
                 ServiceMapper lioMapper = lioCuit.ioCnfg?.coServiceMappers.FirstOrDefault(x => x.ivstrInputType=="xml" && x.ivstrWs == lioDocumentUser.ivstrWs);
@@ -96,14 +96,14 @@ namespace Applet.Nat.Api.Br.Models
                         lioDocumentUser.ivlngCbte = livlng;
                 }
                 //
-                livstrPath = lioMapper.coItems.FirstOrDefault(x => x.ivstrProperty == "ivdtmEmision")?.coXPaths[0].ivstrData;
+                livstrPath = lioMapper.coItems.FirstOrDefault(x => x.ivstrProperty == "ivstrFechaEmision")?.coXPaths[0].ivstrData;
                 if (!string.IsNullOrEmpty(livstrPath))
                 {
                     lioxmlNodeField = xmlDocumentNode.SelectSingleNode(livstrPath, lioNsMngr);
                     if (lioxmlNodeField == null || !DateTime.TryParseExact(lioxmlNodeField.InnerXml.Replace("T00:00:00", string.Empty), livstrXmlDtmFormat, null, System.Globalization.DateTimeStyles.None, out livdtm))
                         lioSbErrors.AppendLine($"Fecha de Comprobante INVALIDA ({livstrXmlDtmFormat}");
                     else
-                        lioDocumentUser.ivdtmEmision = livdtm.ToString(livstrApiDtmFormat);
+                        lioDocumentUser.ivstrFechaEmision = livdtm.ToString(livstrApiDtmFormat);
                 }
                 //
                 livstrPath = lioMapper.coItems.FirstOrDefault(x => x.ivstrProperty == "ivstrCondPago")?.coXPaths[0].ivstrData;
@@ -116,7 +116,7 @@ namespace Applet.Nat.Api.Br.Models
                         lioDocumentUser.ivstrCondPago = lioxmlNodeField.InnerXml;
                 }
                 //
-                livstrPath = lioMapper.coItems.FirstOrDefault(x => x.ivstrProperty == "ivdtmVtopago")?.coXPaths[0].ivstrData;
+                livstrPath = lioMapper.coItems.FirstOrDefault(x => x.ivstrProperty == "ivstrFechaVtopago")?.coXPaths[0].ivstrData;
                 if (!string.IsNullOrEmpty(livstrPath))
                 {
                     lioxmlNodeField = xmlDocumentNode.SelectSingleNode(livstrPath, lioNsMngr);
@@ -125,7 +125,7 @@ namespace Applet.Nat.Api.Br.Models
                         if (!DateTime.TryParseExact(lioxmlNodeField.InnerXml, livstrXmlDtmFormat, null, System.Globalization.DateTimeStyles.None, out livdtm))
                             lioSbErrors.AppendLine($"FECHA de Vencimiento de Pago {Resources.lioE_ObjectNoF} ({livstrXmlDtmFormat})");
                         else
-                            lioDocumentUser.ivdtmVtopago = livdtm.ToString(livstrApiDtmFormat);
+                            lioDocumentUser.ivstrFechaVtopago = livdtm.ToString(livstrApiDtmFormat);
                     }
                 }
                 //
@@ -149,7 +149,7 @@ namespace Applet.Nat.Api.Br.Models
                         lioDocumentUser.ivnroConcepto = livnro;
                 }
                 //
-                livstrPath = lioMapper.coItems.FirstOrDefault(x => x.ivstrProperty == "ivdtmServdesde")?.coXPaths[0].ivstrData;
+                livstrPath = lioMapper.coItems.FirstOrDefault(x => x.ivstrProperty == "ivstrFechaServdesde")?.coXPaths[0].ivstrData;
                 if (!string.IsNullOrEmpty(livstrPath))
                 {
                     lioxmlNodeField = xmlDocumentNode.SelectSingleNode(livstrPath, lioNsMngr);
@@ -158,11 +158,11 @@ namespace Applet.Nat.Api.Br.Models
                         if (!DateTime.TryParseExact(lioxmlNodeField.InnerXml, livstrXmlDtmFormat, null, System.Globalization.DateTimeStyles.None, out livdtm))
                             lioSbErrors.AppendLine($"FECHA de Inicio de Servicios {Resources.lioE_ObjectNoF} ({livstrXmlDtmFormat})");
                         else
-                            lioDocumentUser.ivdtmServdesde = livdtm.ToString(livstrApiDtmFormat); ;
+                            lioDocumentUser.ivstrFechaServdesde = livdtm.ToString(livstrApiDtmFormat); ;
                     }
                 }
                 //
-                livstrPath = lioMapper.coItems.FirstOrDefault(x => x.ivstrProperty == "ivdtmServhasta")?.coXPaths[0].ivstrData;
+                livstrPath = lioMapper.coItems.FirstOrDefault(x => x.ivstrProperty == "ivstrFechaServhasta")?.coXPaths[0].ivstrData;
                 if (!string.IsNullOrEmpty(livstrPath))
                 {
                     lioxmlNodeField = xmlDocumentNode.SelectSingleNode(livstrPath, lioNsMngr);
@@ -171,7 +171,7 @@ namespace Applet.Nat.Api.Br.Models
                         if (!DateTime.TryParseExact(lioxmlNodeField.InnerXml, livstrXmlDtmFormat, null, System.Globalization.DateTimeStyles.None, out livdtm))
                             lioSbErrors.AppendLine($"FECHA de Finalizacion de Servicios {Resources.lioE_ObjectNoF} ({livstrXmlDtmFormat})");
                         else
-                            lioDocumentUser.ivdtmServhasta = livdtm.ToString(livstrApiDtmFormat);
+                            lioDocumentUser.ivstrFechaServhasta = livdtm.ToString(livstrApiDtmFormat);
                     }
                 }
                 //
@@ -510,7 +510,7 @@ namespace Applet.Nat.Api.Br.Models
                                     }
                                 }
                                 //
-                                livstrPath = lioMapper.coItems.FirstOrDefault(x => x.ivstrProperty == "coAsociados.ivdtmFechaEmision")?.coXPaths[0].ivstrData;
+                                livstrPath = lioMapper.coItems.FirstOrDefault(x => x.ivstrProperty == "coAsociados.ivstrFechaEmision")?.coXPaths[0].ivstrData;
                                 if (!string.IsNullOrEmpty(livstrPath))
                                 {
                                     lioxmlNodeField = lioXmlNode.SelectSingleNode(livstrPath, lioNsMngr);
@@ -519,7 +519,7 @@ namespace Applet.Nat.Api.Br.Models
                                         if (!DateTime.TryParseExact(lioxmlNodeField.InnerXml, livstrXmlDtmFormat, null, System.Globalization.DateTimeStyles.None, out livdtm))
                                             lioSbErrors.AppendLine($"FECHA de Emision Comprobante Asociado {livnroI} {Resources.lioE_ObjectNoF} ({livstrXmlDtmFormat})");
                                         else
-                                            lioUxDocumentAsociado.ivdtmFechaEmision = livdtm.ToString(livstrApiDtmFormat);
+                                            lioUxDocumentAsociado.ivstrFechaEmision = livdtm.ToString(livstrApiDtmFormat);
                                     }
                                 }
                                 lioDocumentUser.coAsociados.Add(lioUxDocumentAsociado);
@@ -881,13 +881,13 @@ namespace Applet.Nat.Api.Br.Models
                 if (lioSbErrors.Length > 0)
                     throw new Exception(lioSbErrors.ToString());
                 lioDocumentUser.ivstrLoadErrors = string.Empty;
-                return lioDocumentUser;
+                return [lioDocumentUser];
             }
             catch (Exception lioE)
             {
                 LogHelper.write(lioE);
                 lioDocumentUser.ivstrLoadErrors = lioE.Message;
-                return lioDocumentUser;
+                return [lioDocumentUser];
             }
         }
         public string ToPrint()

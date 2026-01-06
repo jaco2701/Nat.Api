@@ -1,11 +1,13 @@
 ﻿using Applet.Nat.Api.DC;
 using Applet.Nat.Api.Ifaces;
+using Applet.Nat.Api.Models.BR;
 using Applet.Nat.Api.Static;
 using Applet.Nat.OracleCanonical.Get;
 using Applet.Nat.OracleCanonical.Update;
+using Nat.API.Properties;
+using Newtonsoft.Json;
 using System.Net;
 using System.Text;
-using System.Xml;
 
 namespace Applet.Nat.Api.Br.Models
 {
@@ -35,22 +37,23 @@ namespace Applet.Nat.Api.Br.Models
         public short ivnroRows { get; set; }
         #endregion
         #region PUBLIC METHODS  
-        public async Task DocsI()
+        public async Task DocsGet()
         {
             using NatContext lioContext = NatContext.GetContext(mioConfiguration);
             {
                 ServicePointManager.SecurityProtocol = (SecurityProtocolType)int.Parse(ListHelper.GetValue("FORMAT", "TLS", lioContext));
-                PublicReportServiceClient lioClient = new PublicReportServiceClient();
+            }
+            PublicReportServiceClient lioReportClient = new PublicReportServiceClient();
 
-                lioClient.Endpoint.Address = new System.ServiceModel.EndpointAddress(ivstrPathIn);
-                //lioClient.ClientCredentials.UserName.UserName = ivstrUser;
-                //lioClient.ClientCredentials.UserName.Password = ivstrPass;
-                ReportRequest lioRequest = new ReportRequest();
-                lioRequest.attributeFormat = "text";
-                lioRequest.reportAbsolutePath = "/Custom/Local Solution/AR/E-INVOICE/Process/E-INVOICE Send.xdo";
-                lioRequest.sizeOfDataChunkDownload = -1;
-                lioRequest.parameterNameValues = new ParamNameValue[3]
-                {
+            lioReportClient.Endpoint.Address = new System.ServiceModel.EndpointAddress(ivstrPathIn.Split("==>")[0]);
+            //lioReportClient.ClientCredentials.UserName.UserName = ivstrUser;
+            //lioReportClient.ClientCredentials.UserName.Password = ivstrPass;
+            ReportRequest lioRequest = new ReportRequest();
+            lioRequest.attributeFormat = "text";
+            lioRequest.reportAbsolutePath = ivstrPathIn.Split("==>")[1];
+            lioRequest.sizeOfDataChunkDownload = -1;
+            lioRequest.parameterNameValues = new ParamNameValue[3]
+            {
                     new ParamNameValue
                     {
                         name = "P_LEGAL_ENTITY_ID",
@@ -66,70 +69,170 @@ namespace Applet.Nat.Api.Br.Models
                         name = "P_ROWNUM_LIMIT",
                         values = new string[1] { ivnroRows.ToString() }
                     }
-                };
-                ReportResponse lioResponse = await lioClient.runReportAsync(lioRequest, ivstrUser, ivstrPass);
-                string livstrRawResponse = lioResponse.reportBytes != null ? System.Text.Encoding.UTF8.GetString(lioResponse.reportBytes) : string.Empty;
-                XmlDocument lioXmlResponse = new XmlDocument();
-                lioXmlResponse.LoadXml(livstrRawResponse);
-                DocumentUploadRequest lioDocumentsUploadRequest;
-                foreach (XmlNode lioXmlNodeDocument in lioXmlResponse.SelectNodes("//DATA_DS/Invoice"))
+            };
+            ReportResponse lioResponse = await lioReportClient.runReportAsync(lioRequest, ivstrUser, ivstrPass);
+            string livstrRawResponse = lioResponse.reportBytes != null ? System.Text.Encoding.UTF8.GetString(lioResponse.reportBytes) : string.Empty;
+            DocumentUploadRequest lioDocumentsUploadRequest = new DocumentUploadRequest
+            {
+                ivstrName = $"{Guid.NewGuid().ToString("N").Substring(0, 5)}.xml",
+                ivstrData = Convert.ToBase64String(Encoding.UTF8.GetBytes(livstrRawResponse)),
+                ivblnComp = false,
+                ivlngCuit = ivlngCuit
+            };
+            List<DocumentUploadResponse> lcoUDocumentsUploadResponse = DocHelper.UploadDocument(lioDocumentsUploadRequest, mioConfiguration);
+            //Documentos Cargados
+            List<Document> lcoDocumentsToUpdate = new List<Document>();
+            foreach (DocumentUploadResponse lioDocumentUploadResponse in lcoUDocumentsUploadResponse.Where(x => x.ivnroStatus == 1))
+                lcoDocumentsToUpdate.Add(new Document(lioDocumentUploadResponse.ivlngDoc ?? 0, lioContext, mioConfiguration));
+            if (lcoDocumentsToUpdate.Count > 0)
+                await DocsUpdate(lcoDocumentsToUpdate.ToArray());
+            //Documentos con errores de carga
+            UxDocumentIntegracion lioUxDocumentIntegracion;
+            string livsrtDFFAttributes;
+            foreach (DocumentUploadResponse lioDocumentUploadResponse in lcoUDocumentsUploadResponse.Where(x => x.ivnroStatus != 1))
+            {
+                lioUxDocumentIntegracion = JsonConvert.DeserializeObject<UxDocumentIntegracion>(lioDocumentUploadResponse.ivstrIntegracion);
+                livsrtDFFAttributes = $"{{\"{lioUxDocumentIntegracion.ivstrEfdStatusAtt}\" : \"ERROR\",\"{lioUxDocumentIntegracion.ivstrEfdMessageAtt}\" : \"{lioUxDocumentIntegracion.ivstrEfdMessage}\"}}";
+                try
                 {
-                    lioDocumentsUploadRequest = new DocumentUploadRequest
-                    {
-                        ivstrName = lioXmlNodeDocument.SelectSingleNode("//Header/InvoiceId")?.InnerText,
-                        ivstrData = Convert.ToBase64String(Encoding.UTF8.GetBytes(lioXmlNodeDocument.OuterXml)),
-                        ivblnComp = false,
-                        ivlngCuit = ivlngCuit
-                    };
-                    //List<DocumentUploadResponse> lcoUDocumentsUploadResponse = DocHelper.UploadDocument(lioDocumentsUploadRequest, mioConfiguration);
-                    //if (lcoUDocumentsUploadResponse.Count == 0)
-                    //    continue;
+                    await UpdateOracleStatus(livsrtDFFAttributes, lioUxDocumentIntegracion);
+                }
+                catch (Exception lioE)
+                {
+                    LogHelper.write(lioE);
                 }
             }
         }
-        public async Task DocsO(Document[] vcoDocuments)
+        public async Task DocsUpdate(Document[] vcoDocuments)
         {
-            ServicePointManager.SecurityProtocol = (SecurityProtocolType)int.Parse(ListHelper.GetValue("FORMAT", "TLS", mioContext));
-            ErpObjectDFFUpdateServiceClient lioClient = new ErpObjectDFFUpdateServiceClient
+            ErpObjectDetails lioErpObjectDetails;
+            string livsrtDFFAttributes = string.Empty;
+            UxAuth lioUxAuth;
+            UxDocumentIntegracion lioUxDocumentIntegracion;
+            foreach (Document lioDocument in vcoDocuments)
+            {
+                if (lioDocument.ioDcModel == null)
+                    continue;
+                if (lioDocument.ioDcModel.ivnroStatus == 0) //documentos que no se pudieron cargar
+                    lioUxDocumentIntegracion = JsonConvert.DeserializeObject<UxDocumentIntegracion>(lioDocument.ioDcModel.ivstrRazonSocial ?? string.Empty);
+                else
+                    lioUxDocumentIntegracion = lioDocument.ioDocumentUser.ioIntegracion;
+                switch (lioDocument.ioDcModel.ivnroStatus)
+                {
+                    case 10:
+                    case 30:
+                        livsrtDFFAttributes = $"{{\"{lioUxDocumentIntegracion.ivstrEfdStatusAtt}\" : \"SENT\"}}";
+                        break;
+                    case 0:
+                    case 20:
+                        livsrtDFFAttributes = $"{{\"{lioUxDocumentIntegracion.ivstrEfdStatusAtt}\" : \"null\"}}";
+                        break;
+                    case 35:
+                    case 40:
+                        lioUxAuth = lioDocument.ivIDocument.GetAuth();
+                        livsrtDFFAttributes = $"{{\"{lioUxDocumentIntegracion.ivstrEfdStatusAtt}\" : \"ERROR\",\"{lioUxDocumentIntegracion.ivstrEfdMessageAtt}\" : \"{lioUxAuth.ivstrErrors}\"}}";
+                        break;
+                    case 50:
+                    case 55:
+                    case 60:
+                    case 65:
+                    case 70:
+                    case 80:
+                    case 100:
+                        lioUxAuth = lioDocument.ivIDocument.GetAuth();
+                        livsrtDFFAttributes = $"{{\"{lioUxDocumentIntegracion.ivstrEfdStatusAtt}\" : \"FINISHED\"}},{{\"{lioUxDocumentIntegracion.ivstrEfdKeyNumberAtt}\" : \"{lioUxAuth.ivstrAuthCode}\"}},{{\"{lioUxDocumentIntegracion.ivstrEfdKeyDateAtt}\" : \"{lioUxAuth.ivdtmAuthVenc}\"}},{{\"{lioUxDocumentIntegracion.ivstrEfdMessageAtt}\" : \"{lioUxAuth.ivstrObs}\"}}";
+                        break;
+                    default:
+                        livsrtDFFAttributes = string.Empty;
+                        break;
+                }
+                try
+                {
+                    await UpdateOracleStatus(livsrtDFFAttributes, lioUxDocumentIntegracion);
+                    using NatContext lioContext = NatContext.GetContext(mioConfiguration);
+                    {
+                        new DocumentTracking(lioContext, lioDocument.ioDcModel.ivlngDoc).addTrack(
+                            55,
+                            $"{Resources.lioE_RtaERP}: {livsrtDFFAttributes}"
+                        );
+                    }
+                }
+                catch (Exception lioE)
+                {
+                    LogHelper.write(lioE);
+                    using NatContext lioContext = NatContext.GetContext(mioConfiguration);
+                    {
+                        new DocumentTracking(lioContext, lioDocument.ioDcModel.ivlngDoc).addTrack(
+                            56,
+                            $"{Resources.lioE_RtaERP}: {lioE.Message}"
+                        );
+                    }
+
+                }
+            }
+        }
+        #endregion
+        #region PRIVATE METHODS  
+        private async Task UpdateOracleStatus(string vivsrtDFFAttributes, UxDocumentIntegracion lioUxDocumentIntegracion)
+        {
+            using ErpObjectDFFUpdateServiceClient lioClient = new ErpObjectDFFUpdateServiceClient
             (
                 new System.ServiceModel.BasicHttpBinding(System.ServiceModel.BasicHttpSecurityMode.Transport)
                 {
                     MaxReceivedMessageSize = 2147483647,
-                    ReaderQuotas = System.Xml.XmlDictionaryReaderQuotas.Max
+                    ReaderQuotas = System.Xml.XmlDictionaryReaderQuotas.Max,
+                    Security =
+                    {
+                        Transport = new System.ServiceModel.HttpTransportSecurity
+                        {
+                            ClientCredentialType = System.ServiceModel.HttpClientCredentialType.Basic
+                        }
+                    }
                 },
                 new System.ServiceModel.EndpointAddress(ivstrPathOut)
             );
-            string livstrDFFAttributes = "{";
-            ErpObjectDetails lioErpObjectDetails;
-            foreach (Document lioDocument in vcoDocuments)
             {
-                livstrDFFAttributes = "{";
-                lioErpObjectDetails = new ErpObjectDetails
+                vivsrtDFFAttributes = vivsrtDFFAttributes
+                .Replace("'", string.Empty)
+                .Replace("[", string.Empty)
+                .Replace("]", string.Empty)
+                .Replace("(", string.Empty)
+                .Replace(")", string.Empty)
+                .Replace(Environment.NewLine, string.Empty);
+                lioClient.ClientCredentials.UserName.UserName = ivstrUser;
+                lioClient.ClientCredentials.UserName.Password = ivstrPass;
+                if (string.IsNullOrEmpty(lioUxDocumentIntegracion.ivstrAttributeCategory))
+                    throw new Exception($"{Resources.ResourceManager.GetString("lioP_ioIntegracion.ivstrAttributeCategory")} [ioIntegracion.ivstrAttributeCategory] {Resources.lioE_ObjectNoM}");
+                if (string.IsNullOrEmpty(lioUxDocumentIntegracion.ivstrInvoiceId))
+                    throw new Exception($"{Resources.ResourceManager.GetString("lioP_ioIntegracion.ivstrInvoiceId")} [ioIntegracion.ivstrInvoiceId] {Resources.lioE_ObjectNoM}");
+                if (string.IsNullOrEmpty(lioUxDocumentIntegracion.ivstrInvoiceNumber))
+                    throw new Exception($"{Resources.ResourceManager.GetString("lioP_ioIntegracion.ivstrInvoiceNumber")} [ioIntegracion.ivstrInvoiceNumber] {Resources.lioE_ObjectNoM}");
+                ErpObjectDetails lioErpObjectDetails = new ErpObjectDetails
                 {
                     EntityName = "Receivables Invoice",
-                    ContextValue = "Value of tag <Invoice>/<Header>/<Integration>/<AttributeCategory>",
-                    UserKeyA = "Value of tag <Invoice>/<Header>/<InvoiceNumber>",
+                    ContextValue = lioUxDocumentIntegracion.ivstrAttributeCategory,
+                    UserKeyA = lioUxDocumentIntegracion.ivstrInvoiceNumber,
                     UserKeyB = "#NULL",
                     UserKeyC = "#NULL",
-                    UserKeyD = "Value of tag <Invoice>/<Header>/<InvoiceId>",
+                    UserKeyD = lioUxDocumentIntegracion.ivstrInvoiceId,
                     UserKeyE = "#NULL",
                     UserKeyF = "#NULL",
                     UserKeyG = "#NULL",
                     UserKeyH = "#NULL",
-                    DFFAttributes = livstrDFFAttributes
+                    DFFAttributes = vivsrtDFFAttributes
                 };
-
                 updateDffEntityDetailsResponse lioResponse = await lioClient.updateDffEntityDetailsAsync(
                     null,
                     "SINGLE",
                     lioErpObjectDetails,
-                    "NotificationCode",
-                    null
+                    "10",
+                    "#NULL"
                 );
-
+                if (lioResponse != null && lioResponse.result != "1")
+                    throw new Exception($"Response <> 0 {JsonConvert.SerializeObject(lioErpObjectDetails)}");
             }
-
         }
-        #endregion
     }
+    #endregion
+
 }

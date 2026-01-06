@@ -5,7 +5,7 @@ namespace Applet.Nat.Api.Ifaces
 {
     public interface IRawDocument
     {
-        DocumentUser ToDocumentUser();
+        DocumentUser[] GetDocuments();
         string? ivstrRaw { get; set; }
         string? ivstrName { get; set; }
         public string ivstrKey { get; set; }

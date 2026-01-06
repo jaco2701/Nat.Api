@@ -5,8 +5,8 @@ namespace Applet.Nat.Api.Ifaces
 {
     public interface IDocsIO
     {
-        Task DocsI();
-        Task DocsO(Document[] vcoDocuments);
+        Task DocsGet();
+        Task DocsUpdate(Document[] vcoDocuments);
     }
 }
 

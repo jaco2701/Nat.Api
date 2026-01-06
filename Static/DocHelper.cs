@@ -3,6 +3,7 @@ using Applet.Nat.Api.DC;
 using Applet.Nat.Api.Ifaces;
 using Applet.Nat.Api.Models.BR;
 using Nat.API.Properties;
+using Newtonsoft.Json;
 
 namespace Applet.Nat.Api.Static
 {
@@ -27,7 +28,7 @@ namespace Applet.Nat.Api.Static
                         lioRawDocument = new InDocumentJSON(vioDocumentsUpload.ivlngCuit, lioContext);
                         break;
                     case ".xml":
-                        lioRawDocument = new InDocumentXML(vioDocumentsUpload.ivlngCuit, lioContext);
+                        lioRawDocument = new InDocumentXMLNew(vioDocumentsUpload.ivlngCuit, lioContext);
                         break;
                     case ".txt":
                         lioRawDocument = new InDocumentTXT(vioDocumentsUpload.ivlngCuit, lioContext);
@@ -39,67 +40,71 @@ namespace Applet.Nat.Api.Static
                     vioDocumentsUpload.ivstrData = Format.Compress(vioDocumentsUpload.ivstrData);
                 lioRawDocument.ivstrRaw = vioDocumentsUpload.ivstrData;
                 lioRawDocument.ivstrName = vioDocumentsUpload.ivstrName;
-                DocumentUser lioDocumentUser = lioRawDocument.ToDocumentUser();
-                if (!string.IsNullOrEmpty(lioDocumentUser.ivstrLoadErrors))
+                DocumentUser[] lcoDocumentUsers = lioRawDocument.GetDocuments();
+                foreach (DocumentUser lioDocumentUser in lcoDocumentUsers)
                 {
-                    lcoDocumentUserResponse.Add(
-                        new DocumentUploadResponse
-                        {
-                            ivlngCuitEmisor = lioDocumentUser.ivlngCuitEmisor,
-                            ivlngCbte = lioDocumentUser.ivlngCbte,
-                            ivnumPvta = lioDocumentUser.ivnumPvta,
-                            ivnroTipoDoc = lioDocumentUser.ivnroTipoDoc,
-                            ivnroStatus = 2,
-                            ivstrDescStatus = lioDocumentUser.ivstrLoadErrors
-                        });
-                    lioDocumentUser.ivstrLoadErrors = string.Empty;
-                }
-                else
-                {
-                    if (lioDocumentUser.ivlngCuitEmisor != vioDocumentsUpload.ivlngCuit)
-                        throw new Exception($"Cuit Emisor {Resources.lioE_ObjectNoM}");
-                    lioDocument = new Document(lioDocumentUser, lioContext);
-                    lioDocument.ioDcModel.ivstrInData = lioDocumentUser.ivstrInputData;
-                    lioDocument.ioDcModel.ivstrInType = lioFileInfo.Extension.ToLower();
-                    lioDocumentUser.ivstrInputData = string.Empty;
-                    lioDocument.ioDcModel.ivnroStatus = 10;
-                    try
+                    if (!string.IsNullOrEmpty(lioDocumentUser.ivstrLoadErrors))
                     {
-                        lioDocument.Save();
                         lcoDocumentUserResponse.Add(
                             new DocumentUploadResponse
                             {
-                                ivlngDoc = lioDocument.ioDcModel.ivlngDoc,
                                 ivlngCuitEmisor = lioDocumentUser.ivlngCuitEmisor,
                                 ivlngCbte = lioDocumentUser.ivlngCbte,
                                 ivnumPvta = lioDocumentUser.ivnumPvta,
                                 ivnroTipoDoc = lioDocumentUser.ivnroTipoDoc,
-                                ivnroStatus = 1,
-                                ivstrDescStatus = "OK"
+                                ivnroStatus = 2,
+                                ivstrDescStatus = lioDocumentUser.ivstrLoadErrors,
+                                ivstrIntegracion = JsonConvert.SerializeObject(lioDocumentUser.ioIntegracion)
                             });
-                        new DocumentTracking(lioContext, lioDocument.ioDcModel.ivlngDoc).addTrack(
-                            10,
-                            string.Empty
-                        );
+                        lioDocumentUser.ivstrLoadErrors = string.Empty;
                     }
-                    catch (Exception lioE)
+                    else
                     {
-                        lcoDocumentUserResponse.Add(
-                             new DocumentUploadResponse
-                             {
-                                 ivlngDoc = lioDocument.ioDcModel.ivlngDoc,
-                                 ivlngCuitEmisor = lioDocumentUser.ivlngCuitEmisor,
-                                 ivlngCbte = lioDocumentUser.ivlngCbte,
-                                 ivnumPvta = lioDocumentUser.ivnumPvta,
-                                 ivnroTipoDoc = lioDocumentUser.ivnroTipoDoc,
-                                 ivnroStatus = 2,
-                                 ivstrDescStatus = lioE.Message
-                             });
-                        LogHelper.write(lioE);
+                        if (lioDocumentUser.ivlngCuitEmisor != vioDocumentsUpload.ivlngCuit)
+                            throw new Exception($"Cuit Emisor {Resources.lioE_ObjectNoM}");
+                        lioDocument = new Document(lioDocumentUser, lioContext, vioConfiguration);
+                        lioDocument.ioDcModel.ivstrInData = lioDocumentUser.ivstrInputData;
+                        lioDocument.ioDcModel.ivstrInType = lioFileInfo.Extension.ToLower();
+                        lioDocumentUser.ivstrInputData = string.Empty;
+                        lioDocument.ioDcModel.ivnroStatus = 10;
+                        try
+                        {
+                            lioDocument.Save();
+                            lcoDocumentUserResponse.Add(
+                                new DocumentUploadResponse
+                                {
+                                    ivlngDoc = lioDocument.ioDcModel.ivlngDoc,
+                                    ivlngCuitEmisor = lioDocumentUser.ivlngCuitEmisor,
+                                    ivlngCbte = lioDocumentUser.ivlngCbte,
+                                    ivnumPvta = lioDocumentUser.ivnumPvta,
+                                    ivnroTipoDoc = lioDocumentUser.ivnroTipoDoc,
+                                    ivnroStatus = 1,
+                                    ivstrDescStatus = "OK",
+                                    ivstrIntegracion = JsonConvert.SerializeObject(lioDocumentUser.ioIntegracion)
+                                });
+                            new DocumentTracking(lioContext, lioDocument.ioDcModel.ivlngDoc).addTrack(
+                                10,
+                                string.Empty
+                            );
+                        }
+                        catch (Exception lioE)
+                        {
+                            lcoDocumentUserResponse.Add(
+                                 new DocumentUploadResponse
+                                 {
+                                     ivlngDoc = lioDocument.ioDcModel.ivlngDoc,
+                                     ivlngCuitEmisor = lioDocumentUser.ivlngCuitEmisor,
+                                     ivlngCbte = lioDocumentUser.ivlngCbte,
+                                     ivnumPvta = lioDocumentUser.ivnumPvta,
+                                     ivnroTipoDoc = lioDocumentUser.ivnroTipoDoc,
+                                     ivnroStatus = 2,
+                                     ivstrDescStatus = lioE.Message
+                                 });
+                            LogHelper.write(lioE);
+                        }
                     }
                 }
                 return lcoDocumentUserResponse;
-
             }
         }
 

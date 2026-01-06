@@ -143,16 +143,18 @@ namespace Applet.Nat.Api.Controllers
                 lioUser.Task();
                 //EJECUCION
                 if (ListHelper.GetValue("DOCPROC", "0", mioContext) == "1")
-                    throw new Exception(Resources.lioE_ProcRun);
-                ListHelper.DocsProcces(mioContext, "1");
+                {
+                    LogHelper.write(new Exception(Resources.lioE_ProcRun));
+                    return ResponseHelper.Get("OK");
+                }
+                ListHelper.SetQueueRunning(mioContext, "1");
                 await Static.Queue.Run(mioContext, mioConfiguration);
-                ListHelper.DocsProcces(mioContext, "0");
+                ListHelper.SetQueueRunning(mioContext, "0");
                 return ResponseHelper.Get("OK");
             }
             catch (Exception lioE)
             {
-                LogHelper.write(lioE);
-                ListHelper.DocsProcces(mioContext, "0");
+                ListHelper.SetQueueRunning(mioContext, "0");
                 return ResponseHelper.Get(-1, lioE);
             }
         }
@@ -212,7 +214,7 @@ namespace Applet.Nat.Api.Controllers
         //                if (lcoDocumentUsers != null && lcoDocumentUsers.Length > 0)
         //                {
         //                    lioDoc.ivdblImporte = lcoDocumentUsers[0].ivdblImporteTotal ?? 0;
-        //                    lioDoc.ivdtmEmision = DateTime.ParseExact(lcoDocumentUsers[0].ivdtmEmision, "yyyyMMdd", null, System.Globalization.DateTimeStyles.None);
+        //                    lioDoc.ivstrFechaEmision = DateTime.ParseExact(lcoDocumentUsers[0].ivstrFechaEmision, "yyyyMMdd", null, System.Globalization.DateTimeStyles.None);
         //                    lioDoc.ivstrInData = livstrRaw;
         //                    mioContext.Documents.Update(lioDoc);
         //                }
@@ -298,7 +300,7 @@ namespace Applet.Nat.Api.Controllers
                 IRawDocument liiInDocument;
                 foreach (DocumentModel lioDocumentModel in mioContext.Documents.Where(x => string.IsNullOrEmpty(x.ivstrMoneda) || string.IsNullOrEmpty(x.ivstrRazonSocial)))
                 {
-                    lioDocument = new Document(lioDocumentModel, mioContext);
+                    lioDocument = new Document(lioDocumentModel, mioContext, mioConfiguration);
                     lioDocument.ioDcModel.ivstrMoneda = lioDocument.ioDocumentUser?.ivstrMoneda ?? string.Empty;
                     lioDocument.ioDcModel.ivstrRazonSocial = lioDocument.ioDocumentUser?.ivstrRazonSocial ?? string.Empty;
                     mioContext.Documents.Update(lioDocument.ioDcModel);

@@ -11,9 +11,11 @@ namespace Applet.Nat.Api.Br.Models
     {
         #region CONSTRUCT
         public Cuit() { }
-        public Cuit(long vivlngCuit, NatContext vioContext)
+        public Cuit(long vivlngCuit, NatContext vioContext, IConfiguration vioConfiguration)
         {
             mioContext = vioContext;
+            if (vioConfiguration != null)
+                mioConfiguration = vioConfiguration;
             CuitModel lioCuitModel = mioContext.Cuits.Find(vivlngCuit);
             if (lioCuitModel == null)
                 throw new Exception(string.Format(Resources.lioE_ObjectNoM, "C.U.I.T.", "a"));

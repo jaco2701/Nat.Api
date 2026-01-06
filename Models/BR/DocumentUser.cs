@@ -12,10 +12,10 @@ namespace Applet.Nat.Api.Br.Models
         public long? ivlngCbte { get; set; } // Número del comprobante
         public long? ivlngInt { get; set; } // Número interno del documento
         public short? ivnroConcepto { get; set; } // Concepto del documento (1: Productos, 2: Servicios, 3: Productos y Servicios)
-        public string? ivdtmEmision { get; set; } // Fecha de emisión del documento
-        public string? ivdtmServdesde { get; set; } // Fecha de inicio del servicio (si aplica)
-        public string? ivdtmServhasta { get; set; } // Fecha de fin del servicio (si aplica)
-        public string? ivdtmVtopago { get; set; } // Fecha de vencimiento del pago
+        public string? ivstrFechaEmision { get; set; } // Fecha de emisión del documento
+        public string? ivstrFechaServdesde { get; set; } // Fecha de inicio del servicio (si aplica)
+        public string? ivstrFechaServhasta { get; set; } // Fecha de fin del servicio (si aplica)
+        public string? ivstrFechaVtopago { get; set; } // Fecha de vencimiento del pago
         public double? ivdblImporteTotal { get; set; } // Importe total del documento
         public double? ivdblImporteGravado { get; set; } // Importe gravado del documento
         public double? ivdblImporteNoGravado { get; set; } // Importe no gravado del documento
@@ -54,7 +54,7 @@ namespace Applet.Nat.Api.Br.Models
         public string? ivstrLoadErrors { get; set; }
         public string? ivstrInputData { get; set; }
         public long? ivlngIDImpositivo { get; set; } // Id Impositivo Expo
-        
+        public UxDocumentIntegracion ioIntegracion { get; set; } // Datos de integración del documento
     }
     public class UxDomicilio
     {
@@ -86,7 +86,7 @@ namespace Applet.Nat.Api.Br.Models
         public int? ivnumCbtePuntovta { get; set; } // Punto de venta del documento asociado
         public long? ivlngCbteNro { get; set; } // Número del documento asociado
         public long? ivlngCbteCUIT { get; set; } // CUIT del emisor del documento asociado
-        public string? ivdtmFechaEmision { get; set; } // Fecha de emisión del documento asociado
+        public string? ivstrFechaEmision { get; set; } // Fecha de emisión del documento asociado
         #endregion
     }
     public class UxDocumentOtroTributo
@@ -141,7 +141,7 @@ namespace Applet.Nat.Api.Br.Models
         public double? ivdblCantidad { get; set; }  // Cantidad del ítem
         public double? ivdblPrecioUnitario { get; set; } // Precio unitario del ítem
         public double? ivdblBonificaion { get; set; } // Bonificación aplicada al ítem (si aplica)
-        public int? ivnroUM { get; set; } // Unidad de medida del ítem (ej. Kilos, Litros, Unidades, etc.)
+        public short? ivnroUM { get; set; } // Unidad de medida del ítem (ej. Kilos, Litros, Unidades, etc.)
         public double? ivdblImporteTotal { get; set; }  // Importe total del ítem (Cantidad * Precio Unitario - Bonificación)
         public short? ivnroTipoIVA { get; set; } // Tipo de IVA aplicable al ítem (ej. IVA General, IVA Reducido, etc.)
         public double? ivdblImporteIVA { get; set; } // Importe total del IVA calculado para el ítem
@@ -177,6 +177,21 @@ namespace Applet.Nat.Api.Br.Models
 
         #endregion
     }
+    public class UxDocumentIntegracion
+    {
+        public string? ivstrAttributeCategory { get; set; }
+        public string? ivstrEfdKeyNumber { get; set; }
+        public string? ivstrEfdKeyDate { get; set; }
+        public string? ivstrEfdStatus { get; set; }
+        public string? ivstrEfdMessage { get; set; }
+        public string? ivstrEfdKeyNumberAtt { get; set; }
+        public string? ivstrEfdKeyDateAtt { get; set; }
+        public string? ivstrEfdStatusAtt { get; set; }
+        public string? ivstrEfdMessageAtt { get; set; }
+        public string? ivstrInvoiceNumber { get; set; }
+        public string? ivstrInvoiceId { get; set; }
+    }
+
     public class DocumentUploadResponse
     {
         [JsonProperty("Id.Nat")]
@@ -193,6 +208,8 @@ namespace Applet.Nat.Api.Br.Models
         public short? ivnroStatus { get; set; }
         [JsonProperty("Descripcion")]
         public string? ivstrDescStatus { get; set; }
+        [JsonProperty("Integracion")]
+        public string? ivstrIntegracion { get; set; }
     }
     public class DocumentUploadRequest
     {

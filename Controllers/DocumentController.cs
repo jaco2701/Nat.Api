@@ -77,7 +77,7 @@ namespace Applet.Nat.Api.Controllers
                 UxAuth? lioUxAuth;
                 foreach (DocumentModel lioDocumentModel in mioContext.Documents.Where(vioFilter.Build<DocumentModel>()))
                 {
-                    lioDocument = new Document(lioDocumentModel, mioContext);
+                    lioDocument = new Document(lioDocumentModel, mioContext, mioConfiguration);
                     try
                     {
                         lioUxAuth = lioDocument.GetAuth();
@@ -154,7 +154,7 @@ namespace Applet.Nat.Api.Controllers
                 {
                     if (!lioUser.coCuitsModels.Any(x => x.ivlngCuit == lioDocumentModel.ivlngCuitEmisor))
                         continue;
-                    Document lioDocument = new Document(lioDocumentModel, mioContext);
+                    Document lioDocument = new Document(lioDocumentModel, mioContext, mioConfiguration);
                     lioDocumentTaskResponse = new DocumentTaskResponse
                     {
                         ivlngDoc = lioDocumentModel.ivlngDoc,
@@ -203,7 +203,7 @@ namespace Applet.Nat.Api.Controllers
                             lioDocumentTaskResponse.ioData = "OK";
                             break;
                         case eTask.Rta:
-                            lioDocumentTaskResponse.ioData = lioDocument.SendResponse();
+                            lioDocumentTaskResponse.ioData = await lioDocument.SendResponse();
                             break;
                     }
                     lcoDocumentTaskResponses.Add(lioDocumentTaskResponse);
