@@ -316,6 +316,41 @@ namespace Applet.Nat.Api.Br.Models
                         }
                     }
                     #endregion
+                    #region Permisos
+                    livstr = lioServiceMapper.coItems.FirstOrDefault(x => x.ivstrProperty == "coPermisosExp")?.coXPaths[0].ivstrData;
+                    if (!string.IsNullOrEmpty(livstr))
+                    {
+                        UxDocumentPermisoExp lioUxDocumentPermisoExp;
+                        lioXmlNodeList = lioXmlDocument.SelectNodes(livstr);
+                        lioDocumentUser.coPermisosExp = new List<UxDocumentPermisoExp>();
+                        livnumIdx = 1;
+                        foreach (XmlNode lioXmlNode in lioXmlNodeList)
+                        {
+                            lioUxDocumentPermisoExp = new UxDocumentPermisoExp();
+                            livblnLoadChild = false;
+                            foreach (ServiceMapperItem lioServiceMapperItem in lioServiceMapper.coItems.Where(x => x.ivstrProperty.StartsWith("coPermisoExpes.")))
+                            {
+                                try
+                                {
+                                    lioObj = GetItemValue(lioServiceMapperItem, lioXmlDocument, livnumIdx.ToString());
+                                    if (lioObj != null)
+                                    {
+                                        typeof(UxDocumentPermisoExp).GetProperty(lioServiceMapperItem.ivstrProperty.Split(".").Last())?.SetValue(lioUxDocumentPermisoExp, lioObj);
+                                        livblnLoadChild = true;
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    lioSbErrors.AppendLine(ex.Message);
+                                    continue;
+                                }
+                            }
+                            if (livblnLoadChild)
+                                lioDocumentUser.coPermisosExp.Add(lioUxDocumentPermisoExp);
+                            livnumIdx++;
+                        }
+                    }
+                    #endregion
                     #region Integracion
                     lioDocumentUser.ioIntegracion = new UxDocumentIntegracion();
                     foreach (ServiceMapperItem lioServiceMapperItem in lioServiceMapper.coItems.Where(x => x.ivstrProperty.StartsWith("ioIntegracion")))
