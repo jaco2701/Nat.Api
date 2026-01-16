@@ -61,6 +61,13 @@ namespace Applet.Nat.Api.Static
             vioContext.Lists.Update(lioO);
             vioContext.SaveChanges();
         }
+        public static bool Verbose(NatContext vioContext)
+        {
+            ListModel? lioO = vioContext.Lists.Find("FORMAT", "VERBOSE");
+            if (lioO == null || lioO.ivstrDesc == null)
+                return false;
+            return lioO.ivstrDesc =="1";
+        }
         public static bool CanRun(NatContext vioContext, string vivstrProcess)
         {
             string livstr="Secs";

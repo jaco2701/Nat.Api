@@ -405,5 +405,35 @@ namespace Applet.Nat.Api.Static
             var lioJson = JsonConvert.DeserializeObject(vivstrJson);
             return JsonConvert.SerializeObject(lioJson, Newtonsoft.Json.Formatting.None);
         }
+
+        public static string SanitizeBase64String(string base64String)
+        {
+            // Remove any whitespace or invalid characters
+            base64String = base64String.Trim();
+            base64String = base64String.Replace(" ", "").Replace("\n", "").Replace("\r", "");
+
+            // Ensure proper padding
+            while (base64String.Length % 4 != 0)
+            {
+                base64String += "=";
+            }
+
+            return base64String;
+        }
+        public static string RemoveOracleAttrInvalidChars(string vivstr)
+        {
+            return vivstr.Replace("'", " ")
+                        .Replace("[", " ")
+                        .Replace("]", " ")
+                        .Replace("(", " ")
+                        .Replace(")", " ")
+                        .Replace("=", " ")
+                        .Replace("+", " ")
+                        .Replace("-", " ")
+                        .Replace(":", " ")
+                        .Replace(",", " ")
+                        .Replace(".", " ")
+                        .Replace(Environment.NewLine, " ");
+        }
     }
 }

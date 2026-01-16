@@ -109,6 +109,12 @@ namespace Applet.Nat.Api.Br.Models
                     lioOracleCanonical.ivnroRows = short.Parse(ioCnfg?.coParameters?.FirstOrDefault(x => x.ivstrId == "Rows")?.ivstrValue ?? "0");
                     liIDocsIO = lioOracleCanonical;
                     break;
+                case eLoadMethod.Api:
+                    ApiIO lioApiIO = new ApiIO(mioConfiguration, mioContext);
+                    lioApiIO.ivlngCuit = ioDcModel.ivlngCuit;
+                    lioApiIO.ioMapper = ioCnfg.coServiceMappers.FirstOrDefault(x => x.ivstrWs == "rta");
+                    liIDocsIO = lioApiIO;
+                    break;
                 default:
                     break;
             }

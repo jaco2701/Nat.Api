@@ -24,7 +24,8 @@ namespace Applet.Nat.Api.Br.Models
     {
         Manual = 0,
         File = 1,
-        OracleCanonical = 2
+        OracleCanonical = 2,
+        Api = 3,
     }
 
 }

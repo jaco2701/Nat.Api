@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Nat.API.Properties;
 using System.Net.Http.Headers;
+using Newtonsoft.Json;
 
 namespace Applet.Nat.Api.Controllers
 {
@@ -41,12 +42,14 @@ namespace Applet.Nat.Api.Controllers
                 lioUser.ieTask=eTask.Auth;
                 lioUser.Task();
                 lioUser.ivstrPass = null;
-                return ResponseHelper.Get(
+                var lioO= ResponseHelper.Get(
                     new Login
                     {
                         ioUser = lioUser,
                         ivstrToken = Auth.Get(lioUser.ioDcModel.ivnumUser, mioContext, lcvstrCreds[0]),
                     });
+                LogHelper.writeinfo($"User {lioUser.ioDcModel.ivstrUserName} authenticated successfully. Response: {JsonConvert.SerializeObject(lioO)}", ListHelper.Verbose(mioContext));
+                return (lioO);
             }
             catch (Exception lioE)
             {

@@ -121,6 +121,7 @@ namespace Applet.Nat.Api.Br.Models
                                 }
                                 lioDocumentUser.ivlngCbte = livlng;
                                 break;
+                            case "ivdtmEmision":
                             case "ivstrFechaEmision":
                                 if (!GetDateFromProp(lioMapperItem, livstrPropertyValue, out livdtm))
                                 {

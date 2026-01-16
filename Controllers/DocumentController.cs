@@ -169,6 +169,8 @@ namespace Applet.Nat.Api.Controllers
                     switch (vioDocumentTask.ieTask)
                     {
                         case eTask.GetPdf:
+                            if (!lioDocument.ivblPrintable)
+                                throw new Exception(Resources.lioE_DocNoPrint);
                             lioDocumentTaskResponse.ioData = await lioDocument.Print();
                             if (lioDocument.ioDcModel.ivnroStatus == 65)
                             {
@@ -182,6 +184,8 @@ namespace Applet.Nat.Api.Controllers
                                 );
                             break;
                         case eTask.Share:
+                            if (!lioDocument.ivblPrintable)
+                                throw new Exception(Resources.lioE_DocNoPrint);
                             await lioDocument.Share(mioConfiguration);
                             lioDocumentTaskResponse.ioData = "OK";
                             break;

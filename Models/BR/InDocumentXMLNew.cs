@@ -2,6 +2,7 @@
 using Applet.Nat.Api.Ifaces;
 using Applet.Nat.Api.Static;
 using Nat.API.Properties;
+using System.Linq;
 using System.Text;
 using System.Xml;
 namespace Applet.Nat.Api.Br.Models
@@ -33,11 +34,20 @@ namespace Applet.Nat.Api.Br.Models
             int livnumIdx;
             Object lioObj;
             StringBuilder lioSbErrors = new StringBuilder();
-            ServiceMapper lioServiceMapper = GetMapper();
+            ServiceMapper lioServiceMapper;
+            List<DocumentUser> lcoDocumentsUser = new List<DocumentUser>();
+            try
+            {                
+                lioServiceMapper = GetMapper();
+            }
+            catch (Exception lioE)
+            {
+                LogHelper.writeinfo($"Documento Exceptuado: {mioXmlDocument.OuterXml}", ListHelper.Verbose(mioContext));
+                return lcoDocumentsUser.ToArray();
+            }
             if (string.IsNullOrEmpty(lioServiceMapper.ivstrSplitter))
                 throw new Exception($"Separador de Documentos {Resources.lioE_ObjectNoM}");
-            List<DocumentUser> lcoDocumentsUser = new List<DocumentUser>();
-            XmlDocument lioXmlDocument;
+            XmlDocument lioXmlDocument, lioXmlNodeDocument;
             DocumentUser lioDocumentUser = null;
             XmlNodeList lcoNodes = mioXmlDocument.SelectNodes(lioServiceMapper.ivstrSplitter);
             XmlNode lioCurrentNode, lioImportedNode;
@@ -60,6 +70,7 @@ namespace Applet.Nat.Api.Br.Models
                     }
                     lioDocumentUser = new DocumentUser();
                     lioDocumentUser.ivstrWs = lioServiceMapper.ivstrWs;
+                    lioDocumentUser.ivblnTaxInLines = lioServiceMapper.ivblnTaxInLines ?? false;
                     lioDocumentUser.ivstrInputData = Format.Compress(Convert.ToBase64String(Encoding.UTF8.GetBytes(lioXmlDocument.OuterXml)));
                     //Mapeo de valores
                     lioSbErrors.Clear();
@@ -72,9 +83,11 @@ namespace Applet.Nat.Api.Br.Models
                             if (lioObj != null)
                                 typeof(DocumentUser).GetProperty(lioServiceMapperItem.ivstrProperty)?.SetValue(lioDocumentUser, lioObj);
                         }
-                        catch (Exception ex)
+                        catch (Exception lioE)
                         {
-                            lioSbErrors.AppendLine(ex.Message);
+                            LogHelper.writeinfo($"Prop: {lioServiceMapperItem.ivstrProperty}",true);
+                            LogHelper.write(lioE);
+                            lioSbErrors.AppendLine(lioE.Message);
                         }
                     }
                     #endregion
@@ -88,10 +101,11 @@ namespace Applet.Nat.Api.Br.Models
                             if (lioObj != null)
                                 typeof(UxDomicilio).GetProperty(lioServiceMapperItem.ivstrProperty.Split(".").Last())?.SetValue(lioDocumentUser.ioDomicilioReceptor, lioObj);
                         }
-                        catch (Exception ex)
+                        catch (Exception lioE)
                         {
-                            lioSbErrors.AppendLine(ex.Message);
-                            continue;
+                            LogHelper.writeinfo($"Prop: {lioServiceMapperItem.ivstrProperty}", true);
+                            LogHelper.write(lioE);
+                            lioSbErrors.AppendLine(lioE.Message);
                         }
                     }
                     #endregion
@@ -107,23 +121,26 @@ namespace Applet.Nat.Api.Br.Models
                         livnumIdx = 1;
                         foreach (XmlNode lioXmlNode in lioXmlNodeList)
                         {
+                            lioXmlNodeDocument = new XmlDocument();
+                            lioXmlNodeDocument.LoadXml(lioXmlNode.OuterXml);
                             lioUxDocumentAsociado = new UxDocumentAsociado();
                             livblnLoadChild = false;
                             foreach (ServiceMapperItem lioServiceMapperItem in lioServiceMapper.coItems.Where(x => x.ivstrProperty.StartsWith("coAsociados.")))
                             {
                                 try
                                 {
-                                    lioObj = GetItemValue(lioServiceMapperItem, lioXmlDocument, livnumIdx.ToString());
+                                    lioObj = GetItemValue(lioServiceMapperItem, lioXmlNodeDocument, livnumIdx.ToString());
                                     if (lioObj != null)
                                     {
                                         typeof(UxDocumentAsociado).GetProperty(lioServiceMapperItem.ivstrProperty.Split(".").Last())?.SetValue(lioUxDocumentAsociado, lioObj);
                                         livblnLoadChild = true;
                                     }
                                 }
-                                catch (Exception ex)
+                                catch (Exception lioE)
                                 {
-                                    lioSbErrors.AppendLine(ex.Message);
-                                    continue;
+                                    LogHelper.writeinfo($"Prop: {lioServiceMapperItem.ivstrProperty}", true);
+                                    LogHelper.write(lioE);
+                                    lioSbErrors.AppendLine(lioE.Message);
                                 }
                             }
                             if (livblnLoadChild)
@@ -142,30 +159,30 @@ namespace Applet.Nat.Api.Br.Models
                         livnumIdx = 1;
                         foreach (XmlNode lioXmlNode in lioXmlNodeList)
                         {
+                            lioXmlNodeDocument = new XmlDocument();
+                            lioXmlNodeDocument.LoadXml(lioXmlNode.OuterXml);
                             lioUxDocumentOtroTributo = new UxDocumentOtroTributo();
                             livblnLoadChild = false;
                             foreach (ServiceMapperItem lioServiceMapperItem in lioServiceMapper.coItems.Where(x => x.ivstrProperty.StartsWith("coOtrosTributos.")))
                             {
                                 try
                                 {
-                                    lioObj = GetItemValue(lioServiceMapperItem, lioXmlDocument, livnumIdx.ToString());
+                                    lioObj = GetItemValue(lioServiceMapperItem, lioXmlNodeDocument, livnumIdx.ToString());
                                     if (lioObj != null)
                                     {
                                         typeof(UxDocumentOtroTributo).GetProperty(lioServiceMapperItem.ivstrProperty.Split(".").Last())?.SetValue(lioUxDocumentOtroTributo, lioObj);
                                         livblnLoadChild = true;
                                     }
                                 }
-                                catch (Exception ex)
+                                catch (Exception lioE)
                                 {
-                                    lioSbErrors.AppendLine(ex.Message);
-                                    continue;
+                                    LogHelper.writeinfo($"Prop: {lioServiceMapperItem.ivstrProperty}", true);
+                                    LogHelper.write(lioE);
+                                    lioSbErrors.AppendLine(lioE.Message);
                                 }
                             }
                             if (livblnLoadChild)
-                            {
-                                lioDocumentUser.ivdblImporteOtrosTributos += lioUxDocumentOtroTributo.ivdblImporte;
                                 lioDocumentUser.coOtrosTributos.Add(lioUxDocumentOtroTributo);
-                            }
                             livnumIdx++;
                         }
                     }
@@ -178,30 +195,33 @@ namespace Applet.Nat.Api.Br.Models
                         lioXmlNodeList = lioXmlDocument.SelectNodes(livstr);
                         lioDocumentUser.coIvas = new List<UxDocumentIva>();
                         livnumIdx = 1;
+
                         foreach (XmlNode lioXmlNode in lioXmlNodeList)
                         {
+                            lioXmlNodeDocument = new XmlDocument();
+                            lioXmlNodeDocument.LoadXml(lioXmlNode.OuterXml);
                             lioUxDocumentIva = new UxDocumentIva();
                             livblnLoadChild = false;
                             foreach (ServiceMapperItem lioServiceMapperItem in lioServiceMapper.coItems.Where(x => x.ivstrProperty.StartsWith("coIvas.")))
                             {
                                 try
                                 {
-                                    lioObj = GetItemValue(lioServiceMapperItem, lioXmlDocument, livnumIdx.ToString());
+                                    lioObj = GetItemValue(lioServiceMapperItem, lioXmlNodeDocument, livnumIdx.ToString());
                                     if (lioObj != null)
                                     {
                                         typeof(UxDocumentIva).GetProperty(lioServiceMapperItem.ivstrProperty.Split(".").Last())?.SetValue(lioUxDocumentIva, lioObj);
                                         livblnLoadChild = true;
                                     }
                                 }
-                                catch (Exception ex)
+                                catch (Exception lioE)
                                 {
-                                    lioSbErrors.AppendLine(ex.Message);
-                                    continue;
+                                    LogHelper.writeinfo($"Prop: {lioServiceMapperItem.ivstrProperty}", true);
+                                    LogHelper.write(lioE);
+                                    lioSbErrors.AppendLine(lioE.Message);
                                 }
                             }
                             if (livblnLoadChild)
                             {
-                                lioDocumentUser.ivdblImporteIva += lioUxDocumentIva.ivdblImporte;
                                 lioDocumentUser.coIvas.Add(lioUxDocumentIva);
                             }
                             livnumIdx++;
@@ -209,32 +229,35 @@ namespace Applet.Nat.Api.Br.Models
                     }
                     #endregion
                     #region Opcionales
+                    UxDocumentOpcional lioUxDocumentOpcional;
                     livstr = lioServiceMapper.coItems.FirstOrDefault(x => x.ivstrProperty == "coOpcionales")?.coXPaths[0].ivstrData;
                     if (!string.IsNullOrEmpty(livstr))
                     {
-                        UxDocumentOpcional lioUxDocumentOpcional;
                         lioXmlNodeList = lioXmlDocument.SelectNodes(livstr);
                         lioDocumentUser.coOpcionales = new List<UxDocumentOpcional>();
                         livnumIdx = 1;
                         foreach (XmlNode lioXmlNode in lioXmlNodeList)
                         {
+                            lioXmlNodeDocument = new XmlDocument();
+                            lioXmlNodeDocument.LoadXml(lioXmlNode.OuterXml);
                             lioUxDocumentOpcional = new UxDocumentOpcional();
                             livblnLoadChild = false;
                             foreach (ServiceMapperItem lioServiceMapperItem in lioServiceMapper.coItems.Where(x => x.ivstrProperty.StartsWith("coOpcionales.")))
                             {
                                 try
                                 {
-                                    lioObj = GetItemValue(lioServiceMapperItem, lioXmlDocument, livnumIdx.ToString());
+                                    lioObj = GetItemValue(lioServiceMapperItem, lioXmlNodeDocument, livnumIdx.ToString());
                                     if (lioObj != null)
                                     {
                                         typeof(UxDocumentOpcional).GetProperty(lioServiceMapperItem.ivstrProperty.Split(".").Last())?.SetValue(lioUxDocumentOpcional, lioObj);
                                         livblnLoadChild = true;
                                     }
                                 }
-                                catch (Exception ex)
+                                catch (Exception lioE)
                                 {
-                                    lioSbErrors.AppendLine(ex.Message);
-                                    continue;
+                                    LogHelper.writeinfo($"Prop: {lioServiceMapperItem.ivstrProperty}", true);
+                                    LogHelper.write(lioE);
+                                    lioSbErrors.AppendLine(lioE.Message);
                                 }
                             }
                             if (livblnLoadChild)
@@ -253,23 +276,26 @@ namespace Applet.Nat.Api.Br.Models
                         livnumIdx = 1;
                         foreach (XmlNode lioXmlNode in lioXmlNodeList)
                         {
+                            lioXmlNodeDocument = new XmlDocument();
+                            lioXmlNodeDocument.LoadXml(lioXmlNode.OuterXml);
                             lioUxDocumentComprador = new UxDocumentComprador();
                             livblnLoadChild = false;
                             foreach (ServiceMapperItem lioServiceMapperItem in lioServiceMapper.coItems.Where(x => x.ivstrProperty.StartsWith("coCompradores.")))
                             {
                                 try
                                 {
-                                    lioObj = GetItemValue(lioServiceMapperItem, lioXmlDocument, livnumIdx.ToString());
+                                    lioObj = GetItemValue(lioServiceMapperItem, lioXmlNodeDocument, livnumIdx.ToString());
                                     if (lioObj != null)
                                     {
                                         typeof(UxDocumentComprador).GetProperty(lioServiceMapperItem.ivstrProperty.Split(".").Last())?.SetValue(lioUxDocumentComprador, lioObj);
                                         livblnLoadChild = true;
                                     }
                                 }
-                                catch (Exception ex)
+                                catch (Exception lioE)
                                 {
-                                    lioSbErrors.AppendLine(ex.Message);
-                                    continue;
+                                    LogHelper.writeinfo($"Prop: {lioServiceMapperItem.ivstrProperty}", true);
+                                    LogHelper.write(lioE);
+                                    lioSbErrors.AppendLine(lioE.Message);
                                 }
                             }
                             if (livblnLoadChild)
@@ -279,7 +305,6 @@ namespace Applet.Nat.Api.Br.Models
                     }
                     #endregion
                     #region Detalle
-                    lioDocumentUser.ivdblImporteIva = 0;
                     livstr = lioServiceMapper.coItems.FirstOrDefault(x => x.ivstrProperty == "coItems")?.coXPaths[0].ivstrData;
                     if (!string.IsNullOrEmpty(livstr))
                     {
@@ -289,23 +314,26 @@ namespace Applet.Nat.Api.Br.Models
                         livnumIdx = 1;
                         foreach (XmlNode lioXmlNode in lioXmlNodeList)
                         {
+                            lioXmlNodeDocument = new XmlDocument();
+                            lioXmlNodeDocument.LoadXml(lioXmlNode.OuterXml);
                             lioUxDocumentItem = new UxDocumentItem();
                             livblnLoadChild = false;
                             foreach (ServiceMapperItem lioServiceMapperItem in lioServiceMapper.coItems.Where(x => x.ivstrProperty.StartsWith("coItems.")))
                             {
                                 try
                                 {
-                                    lioObj = GetItemValue(lioServiceMapperItem, lioXmlDocument, livnumIdx.ToString());
+                                    lioObj = GetItemValue(lioServiceMapperItem, lioXmlNodeDocument, livnumIdx.ToString());
                                     if (lioObj != null)
                                     {
                                         typeof(UxDocumentItem).GetProperty(lioServiceMapperItem.ivstrProperty.Split(".").Last())?.SetValue(lioUxDocumentItem, lioObj);
                                         livblnLoadChild = true;
                                     }
                                 }
-                                catch (Exception ex)
+                                catch (Exception lioE)
                                 {
-                                    lioSbErrors.AppendLine(ex.Message);
-                                    continue;
+                                    LogHelper.writeinfo($"Prop: {lioServiceMapperItem.ivstrProperty}", true);
+                                    LogHelper.write(lioE);
+                                    lioSbErrors.AppendLine(lioE.Message);
                                 }
                             }
                             if (livblnLoadChild)
@@ -326,23 +354,26 @@ namespace Applet.Nat.Api.Br.Models
                         livnumIdx = 1;
                         foreach (XmlNode lioXmlNode in lioXmlNodeList)
                         {
+                            lioXmlNodeDocument = new XmlDocument();
+                            lioXmlNodeDocument.LoadXml(lioXmlNode.OuterXml);
                             lioUxDocumentPermisoExp = new UxDocumentPermisoExp();
                             livblnLoadChild = false;
                             foreach (ServiceMapperItem lioServiceMapperItem in lioServiceMapper.coItems.Where(x => x.ivstrProperty.StartsWith("coPermisoExpes.")))
                             {
                                 try
                                 {
-                                    lioObj = GetItemValue(lioServiceMapperItem, lioXmlDocument, livnumIdx.ToString());
+                                    lioObj = GetItemValue(lioServiceMapperItem, lioXmlNodeDocument, livnumIdx.ToString());
                                     if (lioObj != null)
                                     {
                                         typeof(UxDocumentPermisoExp).GetProperty(lioServiceMapperItem.ivstrProperty.Split(".").Last())?.SetValue(lioUxDocumentPermisoExp, lioObj);
                                         livblnLoadChild = true;
                                     }
                                 }
-                                catch (Exception ex)
+                                catch (Exception lioE)
                                 {
-                                    lioSbErrors.AppendLine(ex.Message);
-                                    continue;
+                                    LogHelper.writeinfo($"Prop: {lioServiceMapperItem.ivstrProperty}", true);
+                                    LogHelper.write(lioE);
+                                    lioSbErrors.AppendLine(lioE.Message);
                                 }
                             }
                             if (livblnLoadChild)
@@ -361,83 +392,90 @@ namespace Applet.Nat.Api.Br.Models
                             if (lioObj != null)
                                 typeof(UxDocumentIntegracion).GetProperty(lioServiceMapperItem.ivstrProperty.Split(".").Last())?.SetValue(lioDocumentUser.ioIntegracion, lioObj);
                         }
-                        catch (Exception ex)
+                        catch (Exception lioE)
                         {
-                            lioSbErrors.AppendLine(ex.Message);
-                            continue;
+                            LogHelper.writeinfo($"Prop: {lioServiceMapperItem.ivstrProperty}", true);
+                            LogHelper.write(lioE);
+                            lioSbErrors.AppendLine(lioE.Message);
                         }
                     }
                     #endregion
-                    #region Suma de Impuestos por linea
-                    if (lioServiceMapper.ivblnTaxInLines ?? false)
+                    #region Opcionales para FCredito
+                    if (lioDocumentUser.ivnroTipoDoc == 201)
                     {
-                        short livnroTaxType;
-                        lioDocumentUser.ivdblImporteIva = 0;
-                        lioDocumentUser.ivdblImporteOtrosTributos = 0;
-                        lioDocumentUser.ivdblImporteExento = 0;
-                        lioDocumentUser.ivdblImporteNoGravado = 0;
-                        List<UxDocumentIva> lcoDocumentIvas = new List<UxDocumentIva>();
-                        livnroTaxType = 0;
-                        foreach (UxDocumentIva lioDocumentIva in lioDocumentUser.coIvas?.OrderBy(x => x.ivnroTipo))
+                        if (!string.IsNullOrEmpty(lioDocumentUser.ivstrCBU))
                         {
-                            if (lioDocumentIva.ivdblImporte == null) continue;
-                            if (lioDocumentIva.ivdblBaseImponible == null) continue;
-
-                            if (livnroTaxType != lioDocumentIva.ivnroTipo)
+                            if (lioDocumentUser.coOpcionales == null)
+                                lioDocumentUser.coOpcionales = new List<UxDocumentOpcional>();
+                            lioUxDocumentOpcional = lioDocumentUser.coOpcionales.FirstOrDefault(x => x.ivstrId == "2101");
+                            if (lioUxDocumentOpcional == null)
                             {
-                                livnroTaxType = lioDocumentIva.ivnroTipo ?? 0;
-                                lcoDocumentIvas.Add(new UxDocumentIva()
+                                lioDocumentUser.coOpcionales.Add(new UxDocumentOpcional()
                                 {
-                                    ivnroTipo = livnroTaxType,
-                                    ivdblBaseImponible = 0,
-                                    ivdblImporte = 0
+                                    ivstrId = "2101",
+                                    ivstrValor = lioDocumentUser.ivstrCBU
                                 });
                             }
-                            lcoDocumentIvas.First(x => x.ivnroTipo == livnroTaxType).ivdblImporte += lioDocumentIva.ivdblImporte;
-                            lcoDocumentIvas.First(x => x.ivnroTipo == livnroTaxType).ivdblBaseImponible += lioDocumentIva.ivdblBaseImponible;
-                            switch (livnroTaxType)
-                            {
-                                case 1:
-                                    lioDocumentUser.ivdblImporteNoGravado += lioDocumentIva.ivdblBaseImponible;
-                                    break;
-                                case 2:
-                                    lioDocumentUser.ivdblImporteExento += lioDocumentIva.ivdblBaseImponible;
-                                    break;
-                                default:
-                                    lioDocumentUser.ivdblImporteIva += lioDocumentIva.ivdblBaseImponible;
-                                    break;
-                            }
+                            else
+                                lioUxDocumentOpcional.ivstrValor = lioDocumentUser.ivstrCBU;
                         }
-                        lioDocumentUser.coIvas = lcoDocumentIvas;
-                        livnroTaxType = 0;
-                        List<UxDocumentOtroTributo> lcoUxDocumentOtroTributos = new List<UxDocumentOtroTributo>();
-                        foreach (UxDocumentOtroTributo lioUxDocumentOtroTributo in lioDocumentUser.coOtrosTributos?.OrderBy(x => x.ivnroId))
+                        if (!string.IsNullOrEmpty(lioDocumentUser.ivstrTransferencia))
                         {
-                            if (livnroTaxType != lioUxDocumentOtroTributo.ivnroId)
+                            if (lioDocumentUser.coOpcionales == null)
+                                lioDocumentUser.coOpcionales = new List<UxDocumentOpcional>();
+                            lioUxDocumentOpcional = lioDocumentUser.coOpcionales.FirstOrDefault(x => x.ivstrId == "27");
+                            if (lioUxDocumentOpcional == null)
                             {
-                                livnroTaxType = lioUxDocumentOtroTributo.ivnroId ?? 0;
-                                lcoUxDocumentOtroTributos.Add(new UxDocumentOtroTributo()
+                                lioDocumentUser.coOpcionales.Add(new UxDocumentOpcional()
                                 {
-                                    ivnroId = livnroTaxType,
-                                    ivdblBaseImponible = 0,
-                                    ivdblAlicuota = lioUxDocumentOtroTributo.ivdblAlicuota,
-                                    ivdblImporte = 0
+                                    ivstrId = "27",
+                                    ivstrValor = lioDocumentUser.ivstrTransferencia
                                 });
                             }
-                            if (lioUxDocumentOtroTributo.ivdblImporte != null)
-                                lcoUxDocumentOtroTributos.First(x => x.ivnroId == livnroTaxType).ivdblImporte += lioUxDocumentOtroTributo.ivdblImporte;
-                            if (lioUxDocumentOtroTributo.ivdblBaseImponible != null)
-                                lcoUxDocumentOtroTributos.First(x => x.ivnroId == livnroTaxType).ivdblBaseImponible += lioUxDocumentOtroTributo.ivdblBaseImponible;
-                            lioDocumentUser.ivdblImporteOtrosTributos += lioUxDocumentOtroTributo.ivdblImporte;
+                            else
+                                lioUxDocumentOpcional.ivstrValor = lioDocumentUser.ivstrTransferencia;
                         }
-                        lioDocumentUser.coOtrosTributos = lcoUxDocumentOtroTributos;
                     }
+                    if (new short[] { 201, 202, 203 }.Contains(lioDocumentUser.ivnroTipoDoc ?? 0)) 
+                    {
+                        if (!string.IsNullOrEmpty(lioDocumentUser.ivstrAnulacion))
+                        {
+                            if (lioDocumentUser.coOpcionales == null)
+                                lioDocumentUser.coOpcionales = new List<UxDocumentOpcional>();
+                            lioUxDocumentOpcional = lioDocumentUser.coOpcionales.FirstOrDefault(x => x.ivstrId == "22");
+                            if (lioUxDocumentOpcional == null)
+                            {
+                                lioDocumentUser.coOpcionales.Add(new UxDocumentOpcional()
+                                {
+                                    ivstrId = "22",
+                                    ivstrValor = lioDocumentUser.ivstrAnulacion
+                                });
+                            }
+                            else
+                                lioUxDocumentOpcional.ivstrValor = lioDocumentUser.ivstrAnulacion;
+                        }
+                    }
+                    #endregion
+                    #region Permisos no iterativos
+                    if (new short[] { 19, 20, 21 }.Contains(lioDocumentUser.ivnroTipoDoc ?? 0))
+                        if (!string.IsNullOrEmpty(lioDocumentUser.ivstrPEId) && lioDocumentUser.ivnumPEDestMerc != null)
+                        {
+                            lioDocumentUser.coPermisosExp = new List<UxDocumentPermisoExp>
+                            {
+                                new UxDocumentPermisoExp()
+                                {
+                                    ivstrId = lioDocumentUser.ivstrPEId,
+                                    ivnumDestMerc = lioDocumentUser.ivnumPEDestMerc
+                                }
+                            };
+                        }
                     #endregion
                     if (lioSbErrors.Length > 0)
                     {
                         lioDocumentUser.ivstrLoadErrors = lioSbErrors.ToString();
                         lioDocumentUser.ioIntegracion.ivstrEfdMessage = lioSbErrors.ToString();
                         LogHelper.writeinfo($"Errores de carga en el documento [{lioDocumentUser.ivnroTipoDoc}-{lioDocumentUser.ivnumPvta}-{lioDocumentUser.ivlngCbte}]: {lioSbErrors.ToString()}", true);
+                        //LogHelper.writeinfo(mioXmlDocument.OuterXml, true);
                     }
                     lcoDocumentsUser.Add(lioDocumentUser);
                 }
@@ -503,8 +541,10 @@ namespace Applet.Nat.Api.Br.Models
                     { //Si tiene coordenadas, corto el string
                         livnumIdx = Convert.ToInt32(lioMapperItemXPath.ivstrCoord.Split(',')[0]);
                         livnumLen = Convert.ToInt32(lioMapperItemXPath.ivstrCoord.Split(',')[1]);
-                        if (livstrValue.Length < (livnumIdx + livnumLen))
+                        if (livstrValue.Length < livnumIdx)
                             throw new Exception($"{vioMapperItem.ivstrProperty} {Resources.lioE_ObjectNoM} en Mapeador");
+                        if (livstrValue.Length < (livnumIdx + livnumLen))
+                            livnumLen = livstrValue.Length - livnumIdx;
                         livstrValue = livstrValue.Substring(livnumIdx, livnumLen);
                     }
                     break;

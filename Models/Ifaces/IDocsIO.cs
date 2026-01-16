@@ -7,6 +7,7 @@ namespace Applet.Nat.Api.Ifaces
     {
         Task DocsGet();
         Task DocsUpdate(Document[] vcoDocuments);
+        string ivstrB64Rta { get; set; }
     }
 }
 

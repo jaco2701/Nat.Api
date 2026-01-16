@@ -55,6 +55,12 @@ namespace Applet.Nat.Api.Br.Models
         public string? ivstrInputData { get; set; }
         public long? ivlngIDImpositivo { get; set; } // Id Impositivo Expo
         public UxDocumentIntegracion ioIntegracion { get; set; } // Datos de integración del documento
+        public string? ivstrCBU { get; set; }
+        public string? ivstrTransferencia { get; set; }
+        public string? ivstrAnulacion { get; set; }
+        public string? ivstrPEId { get; set; }
+        public int? ivnumPEDestMerc { get; set; }
+        public bool? ivblnTaxInLines { get; set; }
     }
     public class UxDomicilio
     {

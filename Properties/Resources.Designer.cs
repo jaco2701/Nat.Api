@@ -196,6 +196,15 @@ namespace Nat.API.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No se ha configurado Impresion para el CUIT.
+        /// </summary>
+        internal static string lioE_DocNoPrint {
+            get {
+                return ResourceManager.GetString("lioE_DocNoPrint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to PDF No Encontrado.
         /// </summary>
         internal static string lioE_Document_NoPrint {
@@ -475,7 +484,7 @@ namespace Nat.API.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error en envio de respuesta a Sistema Fecturados.
+        ///   Looks up a localized string similar to Error en envio de respuesta a Sistema Facturador.
         /// </summary>
         internal static string lioE_RtaERP {
             get {

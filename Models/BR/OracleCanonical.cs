@@ -25,8 +25,10 @@ namespace Applet.Nat.Api.Br.Models
         #region PRIVATE PROPS
         private IConfiguration mioConfiguration { get; set; }
         private NatContext mioContext { get; set; }
+
         #endregion
         #region PUBLIC PROPS
+        public string ivstrB64Rta { get; set; }
         public long ivlngCuit { get; set; }
         public string ivstrPathIn { get; set; }
         public string ivstrPathOut { get; set; }
@@ -109,45 +111,92 @@ namespace Applet.Nat.Api.Br.Models
             string livsrtDFFAttributes = string.Empty;
             UxAuth lioUxAuth;
             UxDocumentIntegracion lioUxDocumentIntegracion;
+            int livnumIndex = 0;
+            string livstr;
+
+            Cuit lioCuit = new Cuit(ivlngCuit, mioContext, mioConfiguration);
+            ServiceMapper lioRtaMapper = lioCuit.ioCnfg.coServiceMappers.FirstOrDefault(x => x.ivstrWs == "rta");
+            if (lioRtaMapper == null)
+                throw new Exception($"Mapeador de Respuesta {Resources.lioE_ObjectNoM} para cuit {ivlngCuit}");
+            ServiceMapperItem lioServiceMapperItem;
             foreach (Document lioDocument in vcoDocuments)
             {
-                if (lioDocument.ioDcModel == null)
-                    continue;
-                if (lioDocument.ioDcModel.ivnroStatus == 0) //documentos que no se pudieron cargar
-                    lioUxDocumentIntegracion = JsonConvert.DeserializeObject<UxDocumentIntegracion>(lioDocument.ioDcModel.ivstrRazonSocial ?? string.Empty);
-                else
-                    lioUxDocumentIntegracion = lioDocument.ioDocumentUser.ioIntegracion;
-                switch (lioDocument.ioDcModel.ivnroStatus)
-                {
-                    case 10:
-                    case 30:
-                        livsrtDFFAttributes = $"{{\"{lioUxDocumentIntegracion.ivstrEfdStatusAtt}\" : \"SENT\"}}";
-                        break;
-                    case 0:
-                    case 20:
-                        livsrtDFFAttributes = $"{{\"{lioUxDocumentIntegracion.ivstrEfdStatusAtt}\" : \"null\"}}";
-                        break;
-                    case 35:
-                    case 40:
-                        lioUxAuth = lioDocument.ivIDocument.GetAuth();
-                        livsrtDFFAttributes = $"{{\"{lioUxDocumentIntegracion.ivstrEfdStatusAtt}\" : \"ERROR\",\"{lioUxDocumentIntegracion.ivstrEfdMessageAtt}\" : \"{lioUxAuth.ivstrErrors}\"}}";
-                        break;
-                    case 50:
-                    case 55:
-                    case 60:
-                    case 65:
-                    case 70:
-                    case 80:
-                    case 100:
-                        lioUxAuth = lioDocument.ivIDocument.GetAuth();
-                        livsrtDFFAttributes = $"{{\"{lioUxDocumentIntegracion.ivstrEfdStatusAtt}\" : \"FINISHED\"}},{{\"{lioUxDocumentIntegracion.ivstrEfdKeyNumberAtt}\" : \"{lioUxAuth.ivstrAuthCode}\"}},{{\"{lioUxDocumentIntegracion.ivstrEfdKeyDateAtt}\" : \"{lioUxAuth.ivdtmAuthVenc}\"}},{{\"{lioUxDocumentIntegracion.ivstrEfdMessageAtt}\" : \"{lioUxAuth.ivstrObs}\"}}";
-                        break;
-                    default:
-                        livsrtDFFAttributes = string.Empty;
-                        break;
-                }
                 try
                 {
+                    if (lioDocument.ioDcModel == null)
+                        continue;
+                    lioServiceMapperItem = lioRtaMapper.coItems.FirstOrDefault(x => x.coStatus.Contains(lioDocument.ioDcModel.ivnroStatus));
+                    if (lioServiceMapperItem == null || string.IsNullOrEmpty(lioServiceMapperItem.ivstrProperty))
+                        continue;
+                    if (lioDocument.ioDcModel.ivnroStatus == 0) //documentos que no se pudieron cargar
+                        lioUxDocumentIntegracion = JsonConvert.DeserializeObject<UxDocumentIntegracion>(lioDocument.ioDcModel.ivstrRazonSocial ?? string.Empty);
+                    else
+                        lioUxDocumentIntegracion = lioDocument.ioDocumentUser.ioIntegracion;
+                    livsrtDFFAttributes = lioServiceMapperItem.ivstrProperty
+                        .Replace("{StatusAtt}", lioUxDocumentIntegracion.ivstrEfdStatusAtt)
+                        .Replace("{MessageAtt}", lioUxDocumentIntegracion.ivstrEfdMessageAtt)
+                        .Replace("{NumberAtt}", lioUxDocumentIntegracion.ivstrEfdKeyNumberAtt)
+                        .Replace("{DateAtt}", lioUxDocumentIntegracion.ivstrEfdKeyDateAtt);
+                    switch (lioDocument.ioDcModel.ivnroStatus)
+                    {
+                        case 20:
+                            DocumentTracking lioDocumentTracking = lioDocument.LastTracOfStatus(20);
+                            if (lioDocumentTracking == null)
+                                throw new Exception($"Tracking {Resources.lioE_ObjectNoM} para estado {lioDocument.ioDcModel.ivnroStatus}");
+                            if (!string.IsNullOrEmpty(lioDocumentTracking.ioDcModel.ivstrData))
+                            {
+                                livstr = Format.RemoveOracleAttrInvalidChars(lioDocumentTracking.ioDcModel.ivstrData);
+                                livnumIndex = 0;
+                                while (livsrtDFFAttributes.Length < 190 && livnumIndex < livstr.Length)
+                                {
+                                    livsrtDFFAttributes += livstr.Substring(livnumIndex, 1);
+                                    livnumIndex++;
+                                }
+                            }
+                            livsrtDFFAttributes += "\"}";
+                            break;
+                        case 35:
+                        case 40:
+                            lioUxAuth = lioDocument.ivIDocument.GetAuth();
+                            if (!string.IsNullOrEmpty(lioUxAuth.ivstrErrors))
+                            {
+                                livstr = Format.RemoveOracleAttrInvalidChars(lioUxAuth.ivstrErrors);
+                                livnumIndex = 0;
+                                while (livsrtDFFAttributes.Length < 190 && livnumIndex < livstr.Length)
+                                {
+                                    livsrtDFFAttributes += livstr.Substring(livnumIndex, 1);
+                                    livnumIndex++;
+                                }
+                            }
+                            livsrtDFFAttributes += "\"}";
+                            break;
+                        case 50:
+                        case 55:
+                        case 60:
+                        case 65:
+                        case 70:
+                        case 80:
+                        case 100:
+                            lioUxAuth = lioDocument.ivIDocument.GetAuth();
+
+                            livsrtDFFAttributes = livsrtDFFAttributes
+                                .Replace("{ivstrAuthCode}", lioUxAuth.ivstrAuthCode)
+                                .Replace("{ivdtmAuthVenc}", lioUxAuth.ivdtmAuthVenc);
+                            if (!string.IsNullOrEmpty(lioUxAuth.ivstrObs))
+                            {
+                                livstr = Format.RemoveOracleAttrInvalidChars(lioUxAuth.ivstrObs);
+                                livnumIndex = 0;
+                                while (livsrtDFFAttributes.Length < 248 && livnumIndex < livstr.Length)
+                                {
+                                    livsrtDFFAttributes += livstr.Substring(livnumIndex, 1);
+                                    livnumIndex++;
+                                }
+                            }
+                            livsrtDFFAttributes += "\"}";
+                            break;
+                        default:
+                            break;
+                    }
                     await UpdateOracleStatus(livsrtDFFAttributes, lioUxDocumentIntegracion);
                     using NatContext lioContext = NatContext.GetContext(mioConfiguration);
                     {
@@ -167,10 +216,11 @@ namespace Applet.Nat.Api.Br.Models
                             $"{Resources.lioE_RtaERP}: {lioE.Message}"
                         );
                     }
-
                 }
             }
+            ivstrB64Rta = "OK";
         }
+
         #endregion
         #region PRIVATE METHODS  
         private async Task UpdateOracleStatus(string vivsrtDFFAttributes, UxDocumentIntegracion lioUxDocumentIntegracion)
@@ -192,13 +242,6 @@ namespace Applet.Nat.Api.Br.Models
                 new System.ServiceModel.EndpointAddress(ivstrPathOut)
             );
             {
-                vivsrtDFFAttributes = vivsrtDFFAttributes
-                .Replace("'", string.Empty)
-                .Replace("[", string.Empty)
-                .Replace("]", string.Empty)
-                .Replace("(", string.Empty)
-                .Replace(")", string.Empty)
-                .Replace(Environment.NewLine, string.Empty);
                 lioClient.ClientCredentials.UserName.UserName = ivstrUser;
                 lioClient.ClientCredentials.UserName.Password = ivstrPass;
                 if (string.IsNullOrEmpty(lioUxDocumentIntegracion.ivstrAttributeCategory))
@@ -229,9 +272,10 @@ namespace Applet.Nat.Api.Br.Models
                     "#NULL"
                 );
                 if (lioResponse != null && lioResponse.result != "1")
-                    throw new Exception($"Response <> 0 {JsonConvert.SerializeObject(lioErpObjectDetails)}");
+                    throw new Exception($"Response <> 1 {JsonConvert.SerializeObject(lioErpObjectDetails)} ATTRs: {vivsrtDFFAttributes}");
             }
         }
+
     }
     #endregion
 

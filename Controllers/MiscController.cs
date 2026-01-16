@@ -32,7 +32,7 @@ namespace Applet.Nat.Api.Controllers
         public async Task<Response> Statics()
         {
 
-            List<ListModel> lcoLists= new List<ListModel>();
+            List<ListModel> lcoLists = new List<ListModel>();
             string[] lcoTypes = ListHelper.GetValue("STATICS", "1", mioContext).Split(',');
             if (lcoTypes.Length == 0)
                 throw new Exception(Resources.lioE_NoStatics);
@@ -105,6 +105,8 @@ namespace Applet.Nat.Api.Controllers
                 string livstrCuitRS = string.Empty;
                 try
                 {
+                    bool livblnClear = vivFilename.StartsWith("CLEAR");
+                    vivFilename = vivFilename.Replace("CLEAR", "");
                     string livstrPath = "./log";
                     if (!Directory.Exists(livstrPath))
                         Directory.CreateDirectory(livstrPath);
@@ -113,6 +115,8 @@ namespace Applet.Nat.Api.Controllers
                     StringResponse lioStringResponse = new StringResponse();
                     if (!System.IO.File.Exists(livstrPath))
                         return ResponseHelper.Get(string.Empty);
+                    if (livblnClear)
+                        System.IO.File.WriteAllText(livstrPath, string.Empty);
                     return ResponseHelper.Get(Convert.ToBase64String(System.IO.File.ReadAllBytes(livstrPath)));
                 }
                 catch (Exception lioE)
@@ -166,7 +170,7 @@ namespace Applet.Nat.Api.Controllers
                 string livstr;
                 if (vioO.ivstrName.StartsWith("U"))
                 {
-                    livstr = Format.UnCompress(vioO.ivstrData,Encoding.UTF8);
+                    livstr = Format.UnCompress(vioO.ivstrData, Encoding.UTF8);
                     if (vioO.ivstrName.EndsWith("64"))
                         livstr = Encoding.UTF8.GetString(Convert.FromBase64String(livstr));
                 }

@@ -3,6 +3,8 @@ using Applet.Nat.Api.Ifaces;
 using Applet.Nat.Api.Models;
 using Applet.Nat.Api.Models.BR;
 using Applet.Nat.Api.Static;
+using Microsoft.AspNetCore.Components.Server.Circuits;
+using Microsoft.EntityFrameworkCore.Storage;
 using Nat.Api.Models.BR;
 using Nat.API.Properties;
 using Newtonsoft.Json;
@@ -52,6 +54,15 @@ namespace Applet.Nat.Api.Br.Models
             }
         }
         public IDocument ivIDocument { get; set; }
+        public bool ivblPrintable
+        {
+            get
+            {
+                string livstrTemplatePath = ListHelper.GetValue("PATH", "template", mioContext);
+                livstrTemplatePath += $"/{ioDcModel.ivlngCuitEmisor}";
+                return Directory.Exists(livstrTemplatePath);
+            }
+        }
         public string ivstrKey
         {
             get
@@ -65,6 +76,7 @@ namespace Applet.Nat.Api.Br.Models
         private DocumentUser mioDocumentUser;
         private IRawDocument miIRawDocument;
         private IConfiguration mioConfiguration;
+
         private string mivstrDisplay
         {
             get
@@ -75,7 +87,7 @@ namespace Applet.Nat.Api.Br.Models
         #endregion
         #region CONSTRUCT
         public Document() { }
-        public Document(long vivlngDoc, NatContext vioContext,IConfiguration vioConfiguration)
+        public Document(long vivlngDoc, NatContext vioContext, IConfiguration vioConfiguration)
         {
             mioContext = vioContext;
             mioConfiguration = vioConfiguration;
@@ -181,9 +193,12 @@ namespace Applet.Nat.Api.Br.Models
             mioContext.SaveChanges();
             return "OK";
         }
-        public void Validate()
+        public async Task Validate()
         {
             ivIDocument.Validate();
+            Cuit lioCuit = new Cuit(ioDcModel.ivlngCuitEmisor, mioContext, mioConfiguration);
+            IDocsIO liIDocsIO = lioCuit.getIDocsIO();
+            await liIDocsIO.DocsUpdate([this]);
         }
         public async Task Share(IConfiguration vioConfiguration)
         {
@@ -247,6 +262,13 @@ namespace Applet.Nat.Api.Br.Models
                 return "-1";
             }
         }
+        public DocumentTracking LastTracOfStatus(short vivnroStatus)
+        {
+            DocumentTrackingModel lioModel = mioContext.DocumentTrackings.Where(x => x.ivlngDoc == ioDcModel.ivlngDoc && x.ivnroStatus == vivnroStatus).FirstOrDefault();
+            if (lioModel != null)
+                return new DocumentTracking(mioContext, lioModel);
+            return null;
+        }
         public string Original()
         {
             try
@@ -295,7 +317,7 @@ namespace Applet.Nat.Api.Br.Models
                 Cuit lioCuit = new Cuit(ioDcModel.ivlngCuitEmisor, mioContext, mioConfiguration);
                 IDocsIO liIDocsIO = lioCuit.getIDocsIO();
                 await liIDocsIO.DocsUpdate([this]);
-                return "OK";
+                return liIDocsIO.ivstrB64Rta;
             }
             catch (Exception lioE)
             {

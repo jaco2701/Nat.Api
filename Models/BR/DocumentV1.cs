@@ -43,6 +43,7 @@ namespace Applet.Nat.Api.Br.Models
         public List<DocumentIva> coIvas { get; set; }
         public List<DocumentOpcional> coOpcionales { get; set; }
         public List<DocumentComprador> coCompradores { get; set; }
+        public bool? ivblnTaxInLines { get; set; }
         #endregion
         #region PRIVATE PROPS
         private NatContext mioContext { get; set; }
@@ -68,6 +69,7 @@ namespace Applet.Nat.Api.Br.Models
             ivdtmServhasta = Format.DateFromUX(vioDocumentUser.ivstrFechaServhasta, livstrApiDtmFormat);
             ivdtmVtopago = Format.DateFromUX(vioDocumentUser.ivstrFechaVtopago, livstrApiDtmFormat);
             ivstrCanMisMonExt = vioDocumentUser.ivstrCanMisMonExt ?? string.Empty;
+            ivblnTaxInLines = vioDocumentUser.ivblnTaxInLines;
             if (vioDocumentUser.coAsociados != null && vioDocumentUser.coAsociados.Count > 0)
             {
                 coAsociados = new List<DocumentAsociado>();
@@ -85,6 +87,7 @@ namespace Applet.Nat.Api.Br.Models
             short livnro;
             if (vioDocumentUser.coOtrosTributos != null && vioDocumentUser.coOtrosTributos.Count > 0)
             {
+                ivdblImporteOtrosTributos = 0;
                 coOtrosTributos = new List<DocumentOtroTributo>();
                 livnro = 0;
                 foreach (UxDocumentOtroTributo lioO in vioDocumentUser.coOtrosTributos.OrderBy(x => x.ivnroId))
@@ -107,6 +110,7 @@ namespace Applet.Nat.Api.Br.Models
                     coOtrosTributos.Last().ivdblImporte += lioO.ivdblImporte ?? 0;
                     ivdblImporteOtrosTributos += lioO.ivdblImporte ?? 0;
                 }
+
             }
             if (vioDocumentUser.coIvas != null && vioDocumentUser.coIvas.Count > 0)
             {
@@ -124,11 +128,34 @@ namespace Applet.Nat.Api.Br.Models
                                  ivdblImporte = 0
                              }
                         );
-                        livnro = lioO.ivnroTipo??0;
+                        livnro = lioO.ivnroTipo ?? 0;
                     }
                     coIvas.Last().ivdblImporte += lioO.ivdblImporte ?? 0;
                     coIvas.Last().ivdblBaseImponible += lioO.ivdblBaseImponible ?? 0;
-                    ivdblImporteIva += lioO.ivdblImporte ?? 0;
+                }
+            }
+            // Obtension de montos desde los impuestos
+            if (vioDocumentUser.ivblnTaxInLines ?? false)
+            {
+                ivdblImporteNoGravado = 0;
+                ivdblImporteGravado = 0;
+                ivdblImporteExento = 0;
+                ivdblImporteIva = 0;
+                foreach (UxDocumentIva lioO in vioDocumentUser.coIvas.OrderBy(x => x.ivnroTipo))
+                {
+                    switch (lioO.ivnroTipo)
+                    {
+                        case 1:
+                            ivdblImporteNoGravado += lioO.ivdblBaseImponible ?? 0;
+                            break;
+                        case 2:
+                            ivdblImporteExento += lioO.ivdblBaseImponible ?? 0;
+                            break;
+                        default:
+                            ivdblImporteGravado += lioO.ivdblBaseImponible ?? 0;
+                            ivdblImporteIva += lioO.ivdblImporte ?? 0;
+                            break;
+                    }
                 }
             }
             if (vioDocumentUser.coOpcionales != null && vioDocumentUser.coOpcionales.Count > 0)
@@ -154,6 +181,26 @@ namespace Applet.Nat.Api.Br.Models
                              ivlngDocNro = lioO.ivlngDocNro
                          });
             }
+            // borrado de iva no gravado y exento
+            coIvas.RemoveAll(x => x.ivnroTipo == 1 || x.ivnroTipo == 2);
+            //redondeos
+            ivdblImporteNoGravado = double.Round(ivdblImporteNoGravado, 2);
+            ivdblImporteGravado = double.Round(ivdblImporteGravado, 2);
+            ivdblImporteExento = double.Round(ivdblImporteExento, 2);
+            ivdblImporteIva = double.Round(ivdblImporteIva, 2);
+            ivdblImporteOtrosTributos = double.Round(ivdblImporteOtrosTributos, 2);
+            if (coIvas != null)
+                foreach (DocumentIva lioO in coIvas)
+                {
+                    lioO.ivdblBaseImponible = double.Round(lioO.ivdblBaseImponible ?? 0, 2);
+                    lioO.ivdblImporte = double.Round(lioO.ivdblImporte ?? 0, 2);
+                }
+            if (coOtrosTributos != null)
+                foreach (DocumentOtroTributo lioO in coOtrosTributos)
+                {
+                    lioO.ivdblBaseImp = double.Round(lioO.ivdblBaseImp ?? 0, 2);
+                    lioO.ivdblImporte = double.Round(lioO.ivdblImporte ?? 0, 2);
+                }
         }
         public async Task<short> Auth()
         {
@@ -654,12 +701,13 @@ namespace Applet.Nat.Api.Br.Models
                     livstr = string.Join(", ", lioFECAESolicitarResponse.Body.FECAESolicitarResult.Errors.Select(x => $"{x.Code}:{x.Msg}"));
                 lioUxAuth.ivstrErrors = livstr;
                 livstr = string.Empty;
-                if (lioFECAESolicitarResponse.Body.FECAESolicitarResult.FeDetResp[0].Observaciones != null)
-                    livstr = string.Join(", ", lioFECAESolicitarResponse.Body.FECAESolicitarResult.FeDetResp[0].Observaciones.Select(x => $"{x.Code}:{x.Msg}"));
+                if (lioFECAESolicitarResponse.Body.FECAESolicitarResult.FeDetResp != null && lioFECAESolicitarResponse.Body.FECAESolicitarResult.FeDetResp.Length > 0)
+                    for (int i = 0; i < lioFECAESolicitarResponse.Body.FECAESolicitarResult.FeDetResp.Length; i++)
+                        if (lioFECAESolicitarResponse.Body.FECAESolicitarResult.FeDetResp[i].Observaciones != null)
+                            livstr += string.Join(", ", lioFECAESolicitarResponse.Body.FECAESolicitarResult.FeDetResp[i].Observaciones.Select(x => $"{x.Code}:{x.Msg}"));
                 lioUxAuth.ivstrErrors += livstr;
-                livstr = string.Empty;
                 if (lioFECAESolicitarResponse.Body.FECAESolicitarResult.Events != null)
-                    livstr = string.Join(", ", lioFECAESolicitarResponse.Body.FECAESolicitarResult.Events.Select(x => $"{x.Code}:{x.Msg}"));
+                    livstr += string.Join(", ", lioFECAESolicitarResponse.Body.FECAESolicitarResult.Events.Select(x => $"{x.Code}:{x.Msg}"));
                 lioUxAuth.ivstrObs = livstr;
                 return lioUxAuth;
             }
@@ -681,9 +729,8 @@ namespace Applet.Nat.Api.Br.Models
             if (lioFECompConsultarResponse.Body.FECompConsultarResult.ResultGet.Observaciones != null)
                 livstr = string.Join(", ", lioFECompConsultarResponse.Body.FECompConsultarResult.ResultGet.Observaciones.Select(x => $"{x.Code}:{x.Msg}"));
             lioUxAuth.ivstrErrors += livstr;
-            livstr = string.Empty;
             if (lioFECompConsultarResponse.Body.FECompConsultarResult.Events != null)
-                livstr = string.Join(", ", lioFECompConsultarResponse.Body.FECompConsultarResult.Events.Select(x => $"{x.Code}:{x.Msg}"));
+                livstr += string.Join(", ", lioFECompConsultarResponse.Body.FECompConsultarResult.Events.Select(x => $"{x.Code}:{x.Msg}"));
             lioUxAuth.ivstrObs = livstr;
             return lioUxAuth;
         }

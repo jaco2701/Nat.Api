@@ -1,7 +1,9 @@
-﻿using Applet.Nat.Api.Br.Models;
+﻿using Applet.Nat.Api.Br;
+using Applet.Nat.Api.Br.Models;
 using Applet.Nat.Api.DC;
 using Applet.Nat.Api.Ifaces;
 using Applet.Nat.Api.Models.BR;
+using Microsoft.Extensions.Configuration;
 using Nat.API.Properties;
 using Newtonsoft.Json;
 
@@ -107,6 +109,113 @@ namespace Applet.Nat.Api.Static
                 return lcoDocumentUserResponse;
             }
         }
-
+        public static string BuildDocumentResponse(Document vioDocument, IConfiguration vioConfiguration, ServiceMapper vioServiceMapper)
+        {
+            using NatContext lioContext = NatContext.GetContext(vioConfiguration);
+            {
+                string livstrRta = File.ReadAllText($"{ListHelper.GetValue("PATH", "template", lioContext)}/{vioDocument.ioDcModel.ivlngCuitEmisor}/{vioServiceMapper.ivstrTemplate}"), livstr, livstrPropInFile;
+                DocumentTrackingModel lioDocumentTrackingModel;
+                UxAuth mioAuthNode = vioDocument.ivIDocument.GetAuth();
+                foreach (ServiceMapperItem lioServiceMapperItem in vioServiceMapper.coItems)
+                {
+                    livstr = string.Empty;
+                    switch (lioServiceMapperItem.ivstrProperty)
+                    {
+                        case "ivdtmGen":
+                            livstr = DateTime.Now.ToString(lioServiceMapperItem.ivstrformat);
+                            break;
+                        case "ivnroTipo":
+                            livstr = vioDocument.ioDcModel.ivnroTipo.ToString();
+                            break;
+                        case "ivlngDoc":
+                            livstr = vioDocument.ioDcModel.ivlngDoc.ToString();
+                            break;
+                        case "ivnumPvta":
+                            livstr = vioDocument.ioDcModel.ivnumPvta.ToString();
+                            break;
+                        case "ivlngCbte":
+                            livstr = vioDocument.ioDcModel.ivlngCbte.ToString();
+                            break;
+                        case "ivstrFechaEmision":
+                            if (vioDocument.ioDcModel.ivdtmEmision == null)
+                                throw new Exception(string.Format(Resources.lioE_ObjectNoM, "DtmEmision", "a"));
+                            livstr = (vioDocument.ioDcModel.ivdtmEmision ?? DateTime.MinValue).ToString(lioServiceMapperItem.ivstrformat);
+                            break;
+                        case "ivdblImporte":
+                            livstr = vioDocument.ioDcModel.ivdblImporte.ToString();
+                            break;
+                        case "ivlngCuitEmisor":
+                            livstr = vioDocument.ioDcModel.ivlngCuitEmisor.ToString();
+                            break;
+                        case "ivlngDocReceptor":
+                            livstr = vioDocument.ioDocumentUser.ivlngDocReceptor.ToString();
+                            break;
+                        case "ivstrIdCliente":
+                            livstr = vioDocument.ioDocumentUser.ivstrIdCliente;
+                            break;
+                        case "ivdtmRec":
+                            lioDocumentTrackingModel = lioContext.DocumentTrackings.OrderByDescending(x => x.ivnumTrack).FirstOrDefault(x => x.ivlngDoc == vioDocument.ioDcModel.ivlngDoc && x.ivnroStatus == 10);
+                            if (lioDocumentTrackingModel == null)
+                                throw new Exception(string.Format(Resources.lioE_ObjectNoM, "DtmRec", "a"));
+                            livstr = lioDocumentTrackingModel.ivdtmTrack.ToString(lioServiceMapperItem.ivstrformat);
+                            break;
+                        case "ivdtmAct":
+                            lioDocumentTrackingModel = lioContext.DocumentTrackings.OrderByDescending(x => x.ivnumTrack).FirstOrDefault(x => x.ivlngDoc == vioDocument.ioDcModel.ivlngDoc);
+                            if (lioDocumentTrackingModel == null)
+                                throw new Exception(string.Format(Resources.lioE_ObjectNoM, "dtmAct", "a"));
+                            livstr = lioDocumentTrackingModel.ivdtmTrack.ToString(lioServiceMapperItem.ivstrformat);
+                            break;
+                        case "ivstrFileName":
+                            livstr = $"{vioDocument.ivstrKey}_{vioDocument.ioDcModel.ivnroTemplateVersion}.pdf";
+                            break;
+                        case "ivstrAuthCode":
+                            livstr = mioAuthNode?.ivstrAuthCode ?? string.Empty;
+                            break;
+                        case "ivdtmNode":
+                            if (mioAuthNode?.ivdtmNode == null)
+                                throw new Exception(string.Format(Resources.lioE_ObjectNoM, "DtmEmision", "a"));
+                            livstr = (mioAuthNode?.ivdtmNode ?? DateTime.MinValue).ToString(lioServiceMapperItem.ivstrformat);
+                            break;
+                        case "ivdtmAuthVenc":
+                            if (mioAuthNode?.ivdtmAuthVenc == null)
+                                throw new Exception(string.Format(Resources.lioE_ObjectNoM, "DtmAuthVenc", "a"));
+                            livstr = string.Empty;
+                            if (DateTime.TryParseExact(mioAuthNode?.ivdtmAuthVenc, "yyyyMMdd", null, System.Globalization.DateTimeStyles.None, out DateTime livdtm))
+                                livstr = livdtm.ToString(lioServiceMapperItem.ivstrformat);
+                            break;
+                        case "ivnumTrack":
+                            livstr = mioAuthNode?.ivnumtrack.ToString() ?? string.Empty; ;
+                            break;
+                        case "ivstr3o4":
+                            livstr = string.IsNullOrEmpty(mioAuthNode?.ivstrAuthCode) ? "3" : "4";
+                            break;
+                        case "ivstrAuthDsc":
+                            livstr = mioAuthNode?.ivtrStatusDesc ?? string.Empty; ;
+                            break;
+                        case "ivstrAuthObs":
+                            livstr = mioAuthNode?.ivstrErrors ?? string.Empty; ;
+                            break;
+                        case "ivstrTrackId":
+                            livstr = string.Empty;
+                            break;
+                        default:
+                            livstr = string.Empty;
+                            break;
+                    }
+                    if (livstr?.Length > lioServiceMapperItem.ivnumLen)
+                        livstr = livstr.Substring(0, lioServiceMapperItem.ivnumLen ?? 0);
+                    if (livstr?.Length < lioServiceMapperItem.ivnumLen)
+                    {
+                        if (!string.IsNullOrEmpty(lioServiceMapperItem.ivstrLPad))
+                            livstr = livstr.PadLeft(lioServiceMapperItem.ivnumLen ?? 0, lioServiceMapperItem.ivstrLPad[0]);
+                        else if (!string.IsNullOrEmpty(lioServiceMapperItem.ivstrRPad))
+                            livstr = livstr.PadRight(lioServiceMapperItem.ivnumLen ?? 0, lioServiceMapperItem.ivstrRPad[0]);
+                    }
+                    livstrPropInFile = "{" + lioServiceMapperItem.ivstrProperty + "}";
+                    livstrRta = livstrRta.Replace(livstrPropInFile, livstr);
+                }
+                return livstrRta;
+            }
+        }
     }
 }

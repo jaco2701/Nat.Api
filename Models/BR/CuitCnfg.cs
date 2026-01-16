@@ -23,6 +23,7 @@ namespace Applet.Nat.Api.Br
     {
         public string? ivstrProperty { get; set; }
         public ServiceMapperItemXPath[]? coXPaths { get; set; }
+        public short[]? coStatus { get; set; }
         public Dictionary<string,string>? coConversion { get; set; }
         public int? ivnumLen { get; set; }
         public string? ivstrLPad { get; set; }
@@ -30,7 +31,7 @@ namespace Applet.Nat.Api.Br
         public string? ivstrformat { get; set; }
         public string? ivstrCoord { get; set; }
         public bool? ivblnRequired { get; set; }
-        public bool ivblnIsNumeric { get { return ivstrProperty.Contains("ivnro") || ivstrProperty.Contains("ivnum") || ivstrProperty.Contains("ivlng") || ivstrProperty.Contains("ivdbl"); } }
+        public bool ivblnIsNumeric { get { return !string.IsNullOrEmpty(ivstrProperty) && (ivstrProperty.Contains("ivnro") || ivstrProperty.Contains("ivnum") || ivstrProperty.Contains("ivlng") || ivstrProperty.Contains("ivdbl")); } }
         public string? ivstrDefault { get; set; }
     }
     public class ServiceMapperItemXPath

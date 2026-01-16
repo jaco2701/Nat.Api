@@ -137,7 +137,7 @@ namespace Applet.Nat.Api.Static
             if (vioAuthenticationHeaderValue == null)
                 throw new Exception("Cabecera de Autorizacion invalida");
             string livstrCreds = vioAuthenticationHeaderValue.Parameter ?? string.Empty;
-            if (string.IsNullOrEmpty(livstrCreds))
+            if (string.IsNullOrEmpty(Format.SanitizeBase64String(livstrCreds)))
                 throw new Exception("Cabecera de Autorizacion invalida");
             Encoding encoding = Encoding.GetEncoding("iso-8859-1");
             if (vioAuthenticationHeaderValue.Scheme == "NatAuth" || vioAuthenticationHeaderValue.Scheme == "VwAuth" || vioAuthenticationHeaderValue.Scheme == "NatSvc")
@@ -145,7 +145,7 @@ namespace Applet.Nat.Api.Static
                 List<string> lcvstrRet = new List<string>();
                 lcvstrRet.Add(vioAuthenticationHeaderValue.Scheme);
                 string[] lcvstr;
-                lcvstr = encoding.GetString(Convert.FromBase64String(livstrCreds)).Split(':');
+                lcvstr = encoding.GetString(Convert.FromBase64String(Format.SanitizeBase64String(livstrCreds))).Split(':');
                 if (lcvstr.Length != 2)
                     throw new Exception("Cabecera de Autorizacion invalida");
                 lcvstrRet.Add(lcvstr[0]);

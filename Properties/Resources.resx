@@ -505,6 +505,9 @@
     <value>Atributo Integracion 7</value>
   </data>
   <data name="lioE_RtaERP" xml:space="preserve">
-    <value>Error en envio de respuesta a Sistema Fecturados</value>
+    <value>Error en envio de respuesta a Sistema Facturador</value>
+  </data>
+  <data name="lioE_DocNoPrint" xml:space="preserve">
+    <value>No se ha configurado Impresion para el CUIT</value>
   </data>
 </root>

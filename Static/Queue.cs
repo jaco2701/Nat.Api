@@ -122,12 +122,17 @@ namespace Applet.Nat.Api.Static
                         try
                         {
                             //  LogHelper.write($"{DateTime.Now} {Resources.lioM_ProcDoc} {lioDocument.ivstrKey}");
-                            if (lioDocument.ioDcModel.ivnroStatus == 50)
+                            if (lioDocument.ioDcModel.ivnroStatus == 50)  //Aprobado
                             {
                                 try
                                 {
-                                    await lioDocument.Print();
-                                    lioDocument.ioDcModel.ivnroStatus = 60;
+                                    if (!lioDocument.ivblPrintable)
+                                        lioDocument.ioDcModel.ivnroStatus = 100;
+                                    else
+                                    {
+                                        await lioDocument.Print();
+                                        lioDocument.ioDcModel.ivnroStatus = 60;
+                                    }
                                 }
                                 catch (Exception lioE)
                                 {
@@ -140,12 +145,17 @@ namespace Applet.Nat.Api.Static
                                     LogHelper.write(lioE);
                                 }
                             }
-                            else if (lioDocument.ioDcModel.ivnroStatus == 60)
+                            else if (lioDocument.ioDcModel.ivnroStatus == 60) //Impreso
                             {
                                 try
                                 {
-                                    await lioDocument.Share(vioConfiguration);
-                                    lioDocument.ioDcModel.ivnroStatus = 70;
+                                    if (!lioDocument.ivblPrintable)
+                                        lioDocument.ioDcModel.ivnroStatus = 100;
+                                    else
+                                    {
+                                        await lioDocument.Share(vioConfiguration);
+                                        lioDocument.ioDcModel.ivnroStatus = 70;
+                                    }
                                 }
                                 catch (Exception lioE)
                                 {
@@ -158,7 +168,7 @@ namespace Applet.Nat.Api.Static
                                     LogHelper.write(lioE);
                                 }
                             }
-                            else if (lioDocument.ioDcModel.ivnroStatus == 80)
+                            else if (lioDocument.ioDcModel.ivnroStatus == 70) //Distribuido
                             {
                                 lioDocument.ioDcModel.ivnroStatus = 100;
                                 new DocumentTracking(lioContext, lioDocument.ioDcModel.ivlngDoc)
@@ -167,7 +177,7 @@ namespace Applet.Nat.Api.Static
                                   string.Empty
                                );
                             }
-                            else if (lioDocument.ioDcModel.ivnroStatus == 70)
+                            else if (lioDocument.ioDcModel.ivnroStatus == 80) //NoDistribuido
                             {
                                 lioDocument.ioDcModel.ivnroStatus = 100;
                                 new DocumentTracking(lioContext, lioDocument.ioDcModel.ivlngDoc)
