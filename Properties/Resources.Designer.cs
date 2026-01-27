@@ -259,6 +259,33 @@ namespace Nat.API.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &quot;Id. de Lista de Valores Invalido&quot;.
+        /// </summary>
+        internal static string lioE_ListIdNo {
+            get {
+                return ResourceManager.GetString("lioE_ListIdNo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tipo de Lista de Valores Invalido.
+        /// </summary>
+        internal static string lioE_ListTypeNo {
+            get {
+                return ResourceManager.GetString("lioE_ListTypeNo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Valor de Lista {0}:{1} no encontrado.
+        /// </summary>
+        internal static string lioE_ListValNo {
+            get {
+                return ResourceManager.GetString("lioE_ListValNo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Correo Electronico Invalido.
         /// </summary>
         internal static string lioE_Mail_No {

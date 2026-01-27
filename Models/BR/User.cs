@@ -111,7 +111,7 @@ namespace Applet.Nat.Api.Br.Models
                             }
                             mioContext.Users.Update(ioDcModel);
                             mioContext.SaveChanges();
-                            throw new Exception(Resources.lioE_NoCreds);
+                            throw new Exception(Resources.lioE_NoCreds + $" numuser={ioDcModel.ivnumUser} pass={ivstrPass}");
                         }
                         ioDcModel.ivblnEnable = true;
                         ioDcModel.ivnrologonFails = 0;

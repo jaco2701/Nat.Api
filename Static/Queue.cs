@@ -22,8 +22,10 @@ namespace Applet.Nat.Api.Static
             int livnumPrevPvta = 0;
             short livnroPrevTipo = 0;
             List<long> lcvlngDocsToTask = new List<long>();
-            if (ListHelper.CanRun(vioContext, "1"))
+            if (ListHelper.CanRun(vioContext, "0"))
             {
+                ListHelper.SetProcessRunning(vioContext, "0");
+                LogHelper.writeinfo($"{DateTime.Now} Procesando Documentos", ListHelper.Verbose(vioContext));
                 foreach (DocumentModel lioDocumentModel in vioContext.Documents
                 .Where(x => new short[] { 35, 10, 50, 70, 80, 60 }
                 .Contains(x.ivnroStatus))
@@ -50,10 +52,9 @@ namespace Applet.Nat.Api.Static
                     }
                 }
                 lcoTasks.Add(BuildTaskDocs(lcvlngDocsToTask, vioConfiguration));
+                ListHelper.SetProccessEnd(vioContext, "0");
             }
-            if (ListHelper.CanRun(vioContext, "2"))
-                lcoTasks.Add(BuildTaskUpLoad(vioConfiguration));
-            //lcoTasks.Add(BuildTaskExtract(vioConfiguration));
+            lcoTasks.Add(BuildTaskUpLoad(vioConfiguration));
             foreach (var lioTasks in lcoTasks)
                 await lioTasks;
         }
@@ -198,31 +199,44 @@ namespace Applet.Nat.Api.Static
                 {
                     LogHelper.write(lioE);
                 }
-                finally
-                {
-                    ListHelper.SetProccessEnd(lioContext, "1");
-                }
             }
         }
         private static async Task BuildTaskUpLoad(IConfiguration vioConfiguration)
         {
-
             using NatContext lioContext = NatContext.GetContext(vioConfiguration);
             {
                 try
                 {
+                    List<Tuple<short,Cuit>> lcoCuitsByLoadMethod = new List<Tuple<short,Cuit>>();
                     Cuit lioCuit;
+                    short livnroLoadMethod = 0;
                     foreach (CuitModel lioCuitModel in lioContext.Cuits)
+                    {
+                        lioCuit = new Cuit(lioCuitModel, lioContext, vioConfiguration);
+                        CuitParameter lioCuitParameter = lioCuit.ioCnfg?.coParameters?.FirstOrDefault(x => x.ivstrId == "LoadMethod");
+                        if (lioCuitParameter == null || string.IsNullOrEmpty(lioCuitParameter.ivstrValue) || !short.TryParse(lioCuitParameter.ivstrValue, out  livnroLoadMethod))
+                            continue;
+                        if (livnroLoadMethod == (short)eLoadMethod.Manual || livnroLoadMethod==(short)eLoadMethod.Api)
+                            continue;
+                        lcoCuitsByLoadMethod.Add(new Tuple<short, Cuit>(livnroLoadMethod, lioCuit));
+                    }
+                    livnroLoadMethod=0;
+                    foreach (Tuple<short, Cuit> lioO in lcoCuitsByLoadMethod.OrderBy(x=>x.Item1))
                     {
                         try
                         {
-                            lioCuit = new Cuit(lioCuitModel, lioContext, vioConfiguration);
-                            CuitParameter lioCuitParameter = lioCuit.ioCnfg?.coParameters?.FirstOrDefault(x => x.ivstrId == "LoadMethod");
-                            if (lioCuitParameter == null || string.IsNullOrEmpty(lioCuitParameter.ivstrValue) || !short.TryParse(lioCuitParameter.ivstrValue, out short livnroLoadMethod))
-                                continue;
-                            if (livnroLoadMethod == (short)eLoadMethod.Manual)
-                                continue;
-                            IDocsIO liIDocsIO = lioCuit.getIDocsIO();
+                            if (livnroLoadMethod != lioO.Item1)
+                            {
+                                if (livnroLoadMethod!= 0)
+                                {
+                                    ListHelper.SetProccessEnd(lioContext, livnroLoadMethod.ToString());
+                                }
+                                if (!ListHelper.CanRun(lioContext, lioO.Item1.ToString())) continue;
+                                livnroLoadMethod = lioO.Item1;
+                                ListHelper.SetProcessRunning(lioContext, livnroLoadMethod.ToString());
+                                LogHelper.writeinfo($"{DateTime.Now} Cargando Documentos para metodo de ingreso {livnroLoadMethod}", ListHelper.Verbose(lioContext));
+                            }
+                            IDocsIO liIDocsIO = lioO.Item2.getIDocsIO();
                             await liIDocsIO.DocsGet();
                         }
                         catch (Exception lioE)
@@ -231,15 +245,16 @@ namespace Applet.Nat.Api.Static
                             continue;
                         }
                     }
+                    if (livnroLoadMethod != 0)
+                    {
+                        ListHelper.SetProccessEnd(lioContext, livnroLoadMethod.ToString());
+                    }
                 }
                 catch (Exception lioE)
                 {
                     LogHelper.write(lioE);
                 }
-                finally
-                {
-                    ListHelper.SetProccessEnd(lioContext, "2");
-                }
+
             }
         }
     }

@@ -13,11 +13,11 @@ using System.Text.Unicode;
 
 namespace Nat.API.Models.BR
 {
-    public class ApiIO: IDocsIO
+    public class ApiIO : IDocsIO
     {
         #region CONS
         public ApiIO() { }
-        public ApiIO(IConfiguration vioConfiguration, NatContext vioContext )
+        public ApiIO(IConfiguration vioConfiguration, NatContext vioContext)
         {
             mioConfiguration = vioConfiguration;
             if (vioContext != null)
@@ -42,7 +42,8 @@ namespace Nat.API.Models.BR
         {
             foreach (Document lioDocument in vcoDocuments)
             {
-                ivstrB64Rta = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(DocHelper.BuildDocumentResponse(lioDocument, mioConfiguration, ioMapper))));
+                if (ioMapper != null)
+                    ivstrB64Rta = DocHelper.BuildDocumentResponse(lioDocument, mioConfiguration, ioMapper);
                 break; // Solo procesa de a un documento
             }
         }

@@ -510,4 +510,13 @@
   <data name="lioE_DocNoPrint" xml:space="preserve">
     <value>No se ha configurado Impresion para el CUIT</value>
   </data>
+  <data name="lioE_ListTypeNo" xml:space="preserve">
+    <value>Tipo de Lista de Valores Invalido</value>
+  </data>
+  <data name="lioE_ListIdNo" xml:space="preserve">
+    <value>"Id. de Lista de Valores Invalido"</value>
+  </data>
+  <data name="lioE_ListValNo" xml:space="preserve">
+    <value>Valor de Lista {0}:{1} no encontrado</value>
+  </data>
 </root>

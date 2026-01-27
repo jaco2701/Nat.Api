@@ -53,7 +53,7 @@ namespace Applet.Nat.Api.Br.Models
                 return miIRawDocument;
             }
         }
-        public IDocument ivIDocument { get; set; }
+        public ITribDocument iTribDocument { get; set; }
         public bool ivblPrintable
         {
             get
@@ -76,7 +76,6 @@ namespace Applet.Nat.Api.Br.Models
         private DocumentUser mioDocumentUser;
         private IRawDocument miIRawDocument;
         private IConfiguration mioConfiguration;
-
         private string mivstrDisplay
         {
             get
@@ -95,7 +94,7 @@ namespace Applet.Nat.Api.Br.Models
             if (lioDocumentModel == null)
                 throw new Exception(string.Format(Resources.lioE_ObjectNoM, "Documento", "o"));
             ioDcModel = lioDocumentModel;
-            setIDocument();
+            setITribDocument();
         }
         public Document(DocumentModel vioDocumentModel, NatContext vioContext, IConfiguration vioConfiguration)
         {
@@ -104,7 +103,7 @@ namespace Applet.Nat.Api.Br.Models
             if (vioDocumentModel == null)
                 throw new Exception(string.Format(Resources.lioE_ObjectNoM, "Documento", "o"));
             ioDcModel = vioDocumentModel;
-            setIDocument();
+            setITribDocument();
         }
         public Document(DocumentUser vioDocumentUser, NatContext vioContext, IConfiguration vioConfiguration)
         {
@@ -120,13 +119,13 @@ namespace Applet.Nat.Api.Br.Models
                 ivlngCuitReceptor = vioDocumentUser.ivlngDocReceptor ?? 0,
                 ivstrWs = vioDocumentUser.ivstrWs,
                 ivstrInData = Convert.ToBase64String(Encoding.UTF8.GetBytes(vioDocumentUser.ivstrInputData)),
-                ivdblImporte = vioDocumentUser.ivdblImporteTotal ?? 0,
+                ivdblImporte = Math.Abs(Math.Round(vioDocumentUser.ivdblImporteTotal ?? 0, 2)),
                 ivstrIdCliente = vioDocumentUser.ivstrIdCliente ?? string.Empty,
                 ivstrMoneda = vioDocumentUser.ivstrMoneda ?? string.Empty,
                 ivstrRazonSocial = vioDocumentUser.ivstrRazonSocial ?? string.Empty
             };
             mioDocumentUser = vioDocumentUser;
-            setIDocument();
+            setITribDocument();
         }
         #endregion
         #region PUBLICS METHODS
@@ -154,7 +153,7 @@ namespace Applet.Nat.Api.Br.Models
             }
             else
             {
-                if (lioDBDocumentModel.ivnroStatus >= 50 && ivIDocument.AuthDataModified(new Document(lioDBDocumentModel, mioContext, mioConfiguration).ivIDocument))
+                if (lioDBDocumentModel.ivnroStatus >= 50 && iTribDocument.AuthDataModified(new Document(lioDBDocumentModel, mioContext, mioConfiguration).iTribDocument))
                     throw new Exception(Resources.lioE_Doc_AuthInfoMod);
                 lioDBDocumentModel.ivnroStatus = ioDcModel.ivnroStatus;
                 if (ioDcModel.ivdtmEmision != null)
@@ -195,7 +194,7 @@ namespace Applet.Nat.Api.Br.Models
         }
         public async Task Validate()
         {
-            ivIDocument.Validate();
+            iTribDocument.Validate();
             Cuit lioCuit = new Cuit(ioDcModel.ivlngCuitEmisor, mioContext, mioConfiguration);
             IDocsIO liIDocsIO = lioCuit.getIDocsIO();
             await liIDocsIO.DocsUpdate([this]);
@@ -300,7 +299,7 @@ namespace Applet.Nat.Api.Br.Models
         {
             try
             {
-                ioDcModel.ivnroStatus = await ivIDocument.Auth();
+                ioDcModel.ivnroStatus = await iTribDocument.Auth();
                 Save();
                 await SendResponse();
             }
@@ -333,7 +332,7 @@ namespace Applet.Nat.Api.Br.Models
                 string livstrXml, livstr, livstrQR;
                 livstrXml = iIRawDocument.ToPrint();
                 //QR
-                UxAuth lioUxAuth = ivIDocument.GetAuth();
+                UxAuth lioUxAuth = iTribDocument.GetAuth();
                 QRData lioQRData = new QRData
                 {
                     ver = 1,
@@ -386,21 +385,21 @@ namespace Applet.Nat.Api.Br.Models
         }
         public UxAuth GetAuth()
         {
-            return ivIDocument.GetAuth();
+            return iTribDocument.GetAuth();
         }
         #endregion
         #region PRIVATE METHODS
-        private void setIDocument()
+        private void setITribDocument()
         {
             switch (ioDcModel.ivstrWs)
             {
                 case "wsfev1":
                 case "wsfe":
-                case "wsmtxca": { ivIDocument = new DocumentV1(ioDcModel, mioContext); break; }
-                case "wsfexv1": { ivIDocument = new DocumentExp(ioDcModel, mioContext); break; }
+                case "wsmtxca": { iTribDocument = new TribDocumentV1(ioDcModel, mioContext); break; }
+                case "wsfexv1": { iTribDocument = new TribDocumentExp(ioDcModel, mioContext); break; }
                 default: throw new Exception(Resources.lioE_Svc_No);
             }
-            ivIDocument.SetData(ioDocumentUser);
+            iTribDocument.SetData(ioDocumentUser);
         }
         private long NN()
         {

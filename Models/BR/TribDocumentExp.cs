@@ -18,10 +18,10 @@ using ServiceSoapClient = Applet.Nat.Afip.ServicesFEX.ServiceSoapClient;
 
 namespace Applet.Nat.Api.Br.Models
 {
-    public class DocumentExp : IDocument
+    public class TribDocumentExp : ITribDocument
     {
         #region CONSTRUCT
-        public DocumentExp(DocumentModel vioDocumentModel, NatContext vioContext)
+        public TribDocumentExp(DocumentModel vioDocumentModel, NatContext vioContext)
         {
             mioDcModel = vioDocumentModel;
             mioContext = vioContext;
@@ -48,6 +48,7 @@ namespace Applet.Nat.Api.Br.Models
         public string ivstrIncotermsds { get; set; }
         public short ivnroIdioma { get; set; }
         public string? ivstrCanMisMonExt { get; set; }
+        public DateTime? ivdtmVtopago { get; set; }
         List<DocumentPermisoExp> coPermisos { get; set; }
         List<DocumentItem> coItems { get; set; }
         #endregion
@@ -60,6 +61,7 @@ namespace Applet.Nat.Api.Br.Models
         public void SetData(DocumentUser vioDocumentUser)
         {
             string livstrApiDtmFormat = ListHelper.GetValue("Format", "ApiDtm", mioContext);
+            vioDocumentUser.FormatAmounts();
             ivnroTipoExpo = vioDocumentUser.ivnroTipoExpo ?? 0;
             ivstrPermisoExistente = vioDocumentUser.ivstrPermisoExistente ?? string.Empty;
             ivnroDestinoCmp = vioDocumentUser.ivnroDestinoCmp ?? 0;
@@ -76,6 +78,7 @@ namespace Applet.Nat.Api.Br.Models
             ivstrIncotermsds = vioDocumentUser.ivstrIncotermsDs ?? string.Empty;
             ivnroIdioma = vioDocumentUser.ivnroIdioma ?? 0;
             ivstrCanMisMonExt = vioDocumentUser.ivstrCanMisMonExt ?? string.Empty;
+            ivdtmVtopago = Format.DateFromUX(vioDocumentUser.ivstrFechaVtopago, livstrApiDtmFormat);
             if (vioDocumentUser.coAsociados != null && vioDocumentUser.coAsociados.Count > 0)
             {
                 coAsociados = new List<DocumentAsociado>();
@@ -99,9 +102,9 @@ namespace Applet.Nat.Api.Br.Models
                          {
                              ivdblBonificaion = lioO.ivdblBonificaion,
                              ivdblCantidad = lioO.ivdblCantidad,
-                             ivdblImporteIVA = lioO.ivdblImporteIVA,
-                             ivdblImporteTotal = lioO.ivdblImporteTotal,
-                             ivdblPrecioUnitario = lioO.ivdblPrecioUnitario,
+                             ivdblImporteIVA = lioO.ivdblImporteIVA ?? 0,
+                             ivdblImporteTotal = lioO.ivdblImporteTotal ?? 0,
+                             ivdblPrecioUnitario = lioO.ivdblPrecioUnitario ?? 0,
                              ivnroTipoIVA = lioO.ivnroTipoIVA,
                              ivnroUM = lioO.ivnroUM,
                              ivstrCodigo = lioO.ivstrId.ToString(),
@@ -119,6 +122,21 @@ namespace Applet.Nat.Api.Br.Models
                              ivstrIdPermiso = lioO.ivstrId
                          });
             }
+            if (vioDocumentUser.ivblnCalcPermisoExistente ?? false)
+                ivstrPermisoExistente =
+                    ivnroTipoExpo == 1
+                    ?
+                        mioDcModel.ivnroTipo == 19
+                        ?
+                            (coPermisos != null && coPermisos.Count > 0)
+                            ?
+                                "S"
+                            :
+                                "N"
+                        :
+                            string.Empty
+                    :
+                        string.Empty;
             if (vioDocumentUser.coOpcionales != null && vioDocumentUser.coOpcionales.Count > 0)
             {
                 coOpcionales = new List<DocumentOpcional>();
@@ -143,7 +161,7 @@ namespace Applet.Nat.Api.Br.Models
             };
             ServiceSoapClient lioService = new ServiceSoapClient(ServiceSoapClient.EndpointConfiguration.ServiceSoap);
             short livnroIntento = 0;
-            FEXResponse_Ctz lioFEXResponse_Ctz=null;
+            FEXResponse_Ctz lioFEXResponse_Ctz = null;
             while (true)
             {
                 livnroIntento++;
@@ -184,7 +202,7 @@ namespace Applet.Nat.Api.Br.Models
             short livnroNextStatus = 40; ;
             DocumentTracking lioDocumentTracking = new DocumentTracking(mioContext, mioDcModel.ivlngDoc);
             AfipService lioAfipService = new AfipService { ivstrName = ivstrDocWs, ioContext = mioContext };
-            ServicePointManager.SecurityProtocol = (SecurityProtocolType)int.Parse(ListHelper.GetValue("FORMAT","TLS",mioContext));
+            ServicePointManager.SecurityProtocol = (SecurityProtocolType)int.Parse(ListHelper.GetValue("FORMAT", "TLS", mioContext));
             AfipLoginResponse lioAfipLoginResponse = await lioAfipService.GetAfipLogin();
             ClsFEXAuthRequest lioAutRequest = new ClsFEXAuthRequest
             {
@@ -339,9 +357,17 @@ namespace Applet.Nat.Api.Br.Models
                 Incoterms_Ds = ivstrIncotermsds,
                 Idioma_cbte = ivnroIdioma,
                 Moneda_ctzSpecified = ivdblCotizacion != 0,
-                CanMisMonExt = string.IsNullOrEmpty(ivstrCanMisMonExt) ? null : ivstrCanMisMonExt
+                CanMisMonExt = string.IsNullOrEmpty(ivstrCanMisMonExt) ? null : ivstrCanMisMonExt,
             };
             short livnro = 0;
+            //
+            // Fecha de pago
+            if (new short[] { 20, 21 }.Contains(this.mioDcModel.ivnroTipo))
+                lioClsFEXRequest.Fecha_pago = null;
+            else if (this.ivnroTipoExpo == 1)
+                lioClsFEXRequest.Fecha_pago = null;
+            else
+                lioClsFEXRequest.Fecha_pago = this.ivdtmVtopago?.ToString(lioAfipService.ivstrDateformat);
             if (this.coPermisos != null && this.coPermisos.Count > 0)
             {
                 lioClsFEXRequest.Permisos = new Permiso[coPermisos.Count()];
@@ -463,18 +489,18 @@ namespace Applet.Nat.Api.Br.Models
                 throw new Exception(Resources.lioE_CAEQry_Err);
             dynamic lioTrackData = JsonConvert.DeserializeObject(lioTrack.ivstrData);
             FEXResponseAuthorize lioFEXResponseAuthorize = JsonConvert.DeserializeObject<FEXResponseAuthorize>(lioTrackData.Response.ToString());
-            if (lioFEXResponseAuthorize != null && lioFEXResponseAuthorize.FEXResultAuth != null)
+            if (lioFEXResponseAuthorize != null && (lioFEXResponseAuthorize.FEXResultAuth != null || (lioFEXResponseAuthorize.FEXErr != null && lioFEXResponseAuthorize.FEXErr.ErrCode != 0)))
             {
                 return new UxAuth
                 {
                     ivdtmNode = lioTrack.ivdtmTrack,
                     ivnumtrack = lioTrack.ivnumTrack,
-                    ivstrAuthCode = lioFEXResponseAuthorize.FEXResultAuth.Cae,
-                    ivdtmAuthVenc = lioFEXResponseAuthorize.FEXResultAuth.Fch_venc_Cae,
+                    ivstrAuthCode = lioFEXResponseAuthorize.FEXResultAuth?.Cae ?? string.Empty,
+                    ivdtmAuthVenc = lioFEXResponseAuthorize.FEXResultAuth?.Fch_venc_Cae ?? string.Empty,
                     ivstrAuthType = "CAE",
-                    ivtrStatusDesc = string.IsNullOrEmpty(lioFEXResponseAuthorize.FEXResultAuth.Cae) ? "Rechazado" : "Autorizado",
-                    ivstrErrors = lioFEXResponseAuthorize.FEXErr != null ? $"{lioFEXResponseAuthorize.FEXErr.ErrCode}:{lioFEXResponseAuthorize.FEXErr.ErrMsg}" : string.Empty,
-                    ivstrObs = lioFEXResponseAuthorize.FEXEvents != null ? $"{lioFEXResponseAuthorize.FEXEvents.EventCode}:{lioFEXResponseAuthorize.FEXEvents.EventMsg}" : string.Empty
+                    ivtrStatusDesc = string.IsNullOrEmpty(lioFEXResponseAuthorize?.FEXResultAuth?.Cae) ? "Rechazado" : "Autorizado",
+                    ivstrErrors = lioFEXResponseAuthorize?.FEXErr != null ? $"{lioFEXResponseAuthorize.FEXErr.ErrCode}:{lioFEXResponseAuthorize.FEXErr.ErrMsg}" : string.Empty,
+                    ivstrObs = lioFEXResponseAuthorize?.FEXEvents != null ? $"{lioFEXResponseAuthorize.FEXEvents.EventCode}:{lioFEXResponseAuthorize.FEXEvents.EventMsg}" : string.Empty
                 };
             }
             FEXGetCMPResponse lioFEXGetCMPResponse = JsonConvert.DeserializeObject<FEXGetCMPResponse>(lioTrackData.Response.ToString());
@@ -565,10 +591,10 @@ namespace Applet.Nat.Api.Br.Models
                 throw new Exception(Resources.lioE_HeaderAuth + Environment.NewLine + livstrError);
             return;
         }
-        public bool AuthDataModified(IDocument vioIDocument)
+        public bool AuthDataModified(ITribDocument vioIDocument)
         {
             if (vioIDocument == null) return true;
-            DocumentExp? lioCurrentDocument = vioIDocument as DocumentExp;
+            TribDocumentExp? lioCurrentDocument = vioIDocument as TribDocumentExp;
             if (lioCurrentDocument == null) return true;
             if (lioCurrentDocument.mioDcModel.ivnroStatus < 50) return false;
             if (lioCurrentDocument.mioDcModel.ivlngCuitEmisor != mioDcModel.ivlngCuitEmisor) return true;

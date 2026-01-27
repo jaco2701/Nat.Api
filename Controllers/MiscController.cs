@@ -1,19 +1,13 @@
 ﻿using Applet.Nat.Api.Br;
 using Applet.Nat.Api.Br.Models;
 using Applet.Nat.Api.DC;
+using Applet.Nat.Api.Ifaces;
 using Applet.Nat.Api.Static;
-using Applet.Nat.Api.Models;
-using Applet.Nat.Api.Models.BR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Nat.API.Properties;
 using System.Net.Http.Headers;
-using Applet.Nat.Api.Ifaces;
-using Newtonsoft.Json;
 using System.Text;
-using System.Xml;
-using Applet.Nat.BR;
-using OfficeOpenXml.Table.PivotTable;
 
 namespace Applet.Nat.Api.Controllers
 {
@@ -37,7 +31,6 @@ namespace Applet.Nat.Api.Controllers
             if (lcoTypes.Length == 0)
                 throw new Exception(Resources.lioE_NoStatics);
             lcoLists = mioContext.Lists.Where(x => lcoTypes.Contains(x.ivcodType)).ToList();
-            IDocument lio;
             Double livvalCtz;
             //try
             //{
@@ -51,7 +44,7 @@ namespace Applet.Nat.Api.Controllers
             //}
             try
             {
-                lio = new DocumentV1(new DocumentModel { ivlngCuitEmisor = long.Parse(ListHelper.GetValue("CUIT", "0", mioContext)) }, mioContext);
+                TribDocumentV1 lio = new TribDocumentV1(new DocumentModel { ivlngCuitEmisor = long.Parse(ListHelper.GetValue("CUIT", "0", mioContext)) }, mioContext);
                 livvalCtz = await lio.GetCotizacion("DOL", DateTime.Today.AddDays(-1));
                 lcoLists.Add(new ListModel { ivcodType = "CTZ", ivcodId = "DOLV1", ivstrDesc = livvalCtz.ToString("N2", System.Globalization.CultureInfo.GetCultureInfo("es-AR")) });
             }
@@ -70,6 +63,30 @@ namespace Applet.Nat.Api.Controllers
             //    LogHelper.write(lioE);
             //}
             return ResponseHelper.Get(new { coLists = lcoLists, coIdentityProviders = mioContext.IdentityProviders.Where(x => x.ivblnEnable == true).ToList() });
+        }
+        [HttpGet("Statics/{livnroNivel}")]
+        public async Task<Response> Statics(short livnroNivel)
+        {
+
+            List<ListModel> lcoLists = new List<ListModel>();
+            string[] lcoTypes = ListHelper.GetValue("STATICS", livnroNivel.ToString(), mioContext).Split(',');
+            if (lcoTypes.Length == 0)
+                throw new Exception(Resources.lioE_NoStatics);
+            lcoLists = mioContext.Lists.Where(x => lcoTypes.Contains(x.ivcodType)).ToList();
+            if (livnroNivel == 0)
+                return ResponseHelper.Get(new { coLists = lcoLists, coIdentityProviders = mioContext.IdentityProviders.Where(x => x.ivblnEnable == true).ToList() });
+            Double livvalCtz;
+            try
+            {
+                TribDocumentV1 lio = new TribDocumentV1(new DocumentModel { ivlngCuitEmisor = long.Parse(ListHelper.GetValue("CUIT", "0", mioContext)) }, mioContext);
+                livvalCtz = await lio.GetCotizacion("DOL", DateTime.Today.AddDays(-1));
+                lcoLists.Add(new ListModel { ivcodType = "CTZ", ivcodId = "DOLV1", ivstrDesc = livvalCtz.ToString("N2", System.Globalization.CultureInfo.GetCultureInfo("es-AR")) });
+            }
+            catch (Exception lioE)
+            {
+                LogHelper.write(lioE);
+            }
+            return ResponseHelper.Get(new { coLists = lcoLists });
         }
         [HttpPost("Rs")]
         public Response Rs([FromBody] long vivlngCuit)
@@ -146,19 +163,11 @@ namespace Applet.Nat.Api.Controllers
                 lioUser.ieTask = eTask.Auth;
                 lioUser.Task();
                 //EJECUCION
-                if (ListHelper.GetValue("DOCPROC", "0", mioContext) == "1")
-                {
-                    LogHelper.write(new Exception(Resources.lioE_ProcRun));
-                    return ResponseHelper.Get("OK");
-                }
-                ListHelper.SetQueueRunning(mioContext, "1");
                 await Static.Queue.Run(mioContext, mioConfiguration);
-                ListHelper.SetQueueRunning(mioContext, "0");
                 return ResponseHelper.Get("OK");
             }
             catch (Exception lioE)
             {
-                ListHelper.SetQueueRunning(mioContext, "0");
                 return ResponseHelper.Get(-1, lioE);
             }
         }

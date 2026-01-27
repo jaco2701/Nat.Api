@@ -152,8 +152,10 @@ namespace Applet.Nat.Api.Static
                 lcvstrRet.Add(lcvstr[1]);
                 return lcvstrRet.ToArray();
             }
-            if (vioAuthenticationHeaderValue.Scheme == "NatToken")
+            if (vioAuthenticationHeaderValue.Scheme == "NatToken" )
                 return new string[] { livstrCreds };
+            if (vioAuthenticationHeaderValue.Scheme == "NatOIDC")
+                return livstrCreds.Split(':') ;
             throw new Exception("Cabecera de Autorizacion invalida");
         }
     }

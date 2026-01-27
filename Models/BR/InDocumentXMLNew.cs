@@ -71,6 +71,7 @@ namespace Applet.Nat.Api.Br.Models
                     lioDocumentUser = new DocumentUser();
                     lioDocumentUser.ivstrWs = lioServiceMapper.ivstrWs;
                     lioDocumentUser.ivblnTaxInLines = lioServiceMapper.ivblnTaxInLines ?? false;
+                    lioDocumentUser.ivblnCalcPermisoExistente = lioServiceMapper.ivblnCalcPermisoExistente ?? false;
                     lioDocumentUser.ivstrInputData = Format.Compress(Convert.ToBase64String(Encoding.UTF8.GetBytes(lioXmlDocument.OuterXml)));
                     //Mapeo de valores
                     lioSbErrors.Clear();
@@ -460,14 +461,15 @@ namespace Applet.Nat.Api.Br.Models
                     if (new short[] { 19, 20, 21 }.Contains(lioDocumentUser.ivnroTipoDoc ?? 0))
                         if (!string.IsNullOrEmpty(lioDocumentUser.ivstrPEId) && lioDocumentUser.ivnumPEDestMerc != null)
                         {
-                            lioDocumentUser.coPermisosExp = new List<UxDocumentPermisoExp>
-                            {
+                            if (lioDocumentUser.coPermisosExp == null)
+                                lioDocumentUser.coPermisosExp = new List<UxDocumentPermisoExp>();
+                            lioDocumentUser.coPermisosExp.Add(
                                 new UxDocumentPermisoExp()
                                 {
                                     ivstrId = lioDocumentUser.ivstrPEId,
                                     ivnumDestMerc = lioDocumentUser.ivnumPEDestMerc
                                 }
-                            };
+                            );
                         }
                     #endregion
                     if (lioSbErrors.Length > 0)

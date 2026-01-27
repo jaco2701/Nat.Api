@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 
 namespace Applet.Nat.BR
 {
-    public class DocumentMTXCA : IDocument
+    public class DocumentMTXCA : ITribDocument
     {
         #region CONSTRUCT
         public DocumentMTXCA(DocumentModel vioDocumentModel, NatContext vioContext)
@@ -449,7 +449,7 @@ namespace Applet.Nat.BR
                 ivstrObs =  lioconsultarComprobanteResponse.arrayObservaciones != null ? string.Join(", ", lioconsultarComprobanteResponse.arrayObservaciones.Select(x => $"{x.codigo}:{x.descripcion}")) : string.Empty
             };
         }
-        public bool AuthDataModified(IDocument vioIDocument)
+        public bool AuthDataModified(ITribDocument vioIDocument)
         {
             if (vioIDocument == null) return true;
             DocumentMTXCA? vioCurrentDocument = vioIDocument as DocumentMTXCA;

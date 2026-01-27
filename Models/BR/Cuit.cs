@@ -89,7 +89,7 @@ namespace Applet.Nat.Api.Br.Models
             switch (lioeLoadMethod)
             {
                 case eLoadMethod.File:
-                    lioFileIO = new FileIO(mioConfiguration, mioContext);
+                    lioFileIO = new FileIO(mioConfiguration);
                     lioFileIO.ivlngCuit = ioDcModel.ivlngCuit;
                     lioFileIO.ivstrPathIn = ioCnfg?.coParameters.FirstOrDefault(x => x.ivstrId == "InFolder")?.ivstrValue ?? string.Empty;
                     lioFileIO.ivstrPathOut = ioCnfg?.coParameters.FirstOrDefault(x => x.ivstrId == "OutFolder")?.ivstrValue ?? string.Empty;
@@ -98,7 +98,7 @@ namespace Applet.Nat.Api.Br.Models
                     liIDocsIO = lioFileIO;
                     break;
                 case eLoadMethod.OracleCanonical:
-                    OracleCanonical lioOracleCanonical = new OracleCanonical(mioConfiguration, mioContext);
+                    OracleCanonical lioOracleCanonical = new OracleCanonical(mioConfiguration);
                     lioOracleCanonical.ivlngCuit = ioDcModel.ivlngCuit;
                     lioOracleCanonical.ivstrPathIn = ioCnfg?.coParameters.FirstOrDefault(x => x.ivstrId == "InFolder")?.ivstrValue ?? string.Empty;
                     lioOracleCanonical.ivstrPathOut = ioCnfg?.coParameters.FirstOrDefault(x => x.ivstrId == "OutFolder")?.ivstrValue ?? string.Empty;
@@ -110,6 +110,7 @@ namespace Applet.Nat.Api.Br.Models
                     liIDocsIO = lioOracleCanonical;
                     break;
                 case eLoadMethod.Api:
+                case eLoadMethod.Manual:
                     ApiIO lioApiIO = new ApiIO(mioConfiguration, mioContext);
                     lioApiIO.ivlngCuit = ioDcModel.ivlngCuit;
                     lioApiIO.ioMapper = ioCnfg.coServiceMappers.FirstOrDefault(x => x.ivstrWs == "rta");

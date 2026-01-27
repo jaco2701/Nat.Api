@@ -11,10 +11,10 @@ using System.Net;
 
 namespace Applet.Nat.Api.Br.Models
 {
-    public class DocumentV1 : IDocument
+    public class TribDocumentV1 : ITribDocument
     {
         #region CONSTRUCT
-        public DocumentV1(DocumentModel vioDocumentModel, NatContext vioContext)
+        public TribDocumentV1(DocumentModel vioDocumentModel, NatContext vioContext)
         {
             mioDcModel = vioDocumentModel;
             mioContext = vioContext;
@@ -48,18 +48,18 @@ namespace Applet.Nat.Api.Br.Models
         #region PRIVATE PROPS
         private NatContext mioContext { get; set; }
         private DocumentModel mioDcModel { get; set; }
-
         #endregion
         #region PUBLICS METHODS
         public void SetData(DocumentUser vioDocumentUser)
         {
             string livstrApiDtmFormat = ListHelper.GetValue("Format", "ApiDtm", mioContext);
+            vioDocumentUser.FormatAmounts();
             ivnroConcepto = vioDocumentUser.ivnroConcepto ?? 0;
-            ivdblImporteNoGravado = vioDocumentUser.ivdblImporteNoGravado ?? 0;
-            ivdblImporteGravado = vioDocumentUser.ivdblImporteGravado ?? 0;
-            ivdblImporteExento = vioDocumentUser.ivdblImporteExento ?? 0;
-            ivdblImporteIva = vioDocumentUser.ivdblImporteIva ?? 0;
-            ivdblImporteOtrosTributos = vioDocumentUser.ivdblImporteOtrosTributos ?? 0;
+            ivdblImporteNoGravado = Math.Abs(vioDocumentUser.ivdblImporteNoGravado ?? 0);
+            ivdblImporteGravado = Math.Abs(vioDocumentUser.ivdblImporteGravado ?? 0);
+            ivdblImporteExento = Math.Abs(vioDocumentUser.ivdblImporteExento ?? 0);
+            ivdblImporteIva = Math.Abs(vioDocumentUser.ivdblImporteIva ?? 0);
+            ivdblImporteOtrosTributos = Math.Abs(vioDocumentUser.ivdblImporteOtrosTributos ?? 0);
             ivdblCotizacion = vioDocumentUser.ivdblCotizacion ?? 0;
             ivstrMoneda = vioDocumentUser.ivstrMoneda ?? string.Empty;
             ivnroTipoReceptor = vioDocumentUser.ivnroTipoDocReceptor ?? 0;
@@ -69,110 +69,45 @@ namespace Applet.Nat.Api.Br.Models
             ivdtmServhasta = Format.DateFromUX(vioDocumentUser.ivstrFechaServhasta, livstrApiDtmFormat);
             ivdtmVtopago = Format.DateFromUX(vioDocumentUser.ivstrFechaVtopago, livstrApiDtmFormat);
             ivstrCanMisMonExt = vioDocumentUser.ivstrCanMisMonExt ?? string.Empty;
-            ivblnTaxInLines = vioDocumentUser.ivblnTaxInLines;
             if (vioDocumentUser.coAsociados != null && vioDocumentUser.coAsociados.Count > 0)
             {
                 coAsociados = new List<DocumentAsociado>();
                 foreach (UxDocumentAsociado lioO in vioDocumentUser.coAsociados)
+                {
+                    if (lioO.ivnroCbtetipo == 0) continue;
                     coAsociados.Add(
-                        new DocumentAsociado
-                        {
-                            ivdtmFechaEmision = Format.DateFromUX(lioO.ivstrFechaEmision, livstrApiDtmFormat),
-                            ivlngCbteCUIT = lioO.ivlngCbteCUIT,
-                            ivlngCbteNro = lioO.ivlngCbteNro,
-                            ivnumCbtePuntovta = lioO.ivnumCbtePuntovta,
-                            ivnroCbtetipo = lioO.ivnroCbtetipo
-                        });
+                            new DocumentAsociado
+                            {
+                                ivdtmFechaEmision = Format.DateFromUX(lioO.ivstrFechaEmision, livstrApiDtmFormat),
+                                ivlngCbteCUIT = lioO.ivlngCbteCUIT,
+                                ivlngCbteNro = lioO.ivlngCbteNro,
+                                ivnumCbtePuntovta = lioO.ivnumCbtePuntovta,
+                                ivnroCbtetipo = lioO.ivnroCbtetipo
+                            });
+                }
             }
             short livnro;
-            if (vioDocumentUser.coOtrosTributos != null && vioDocumentUser.coOtrosTributos.Count > 0)
-            {
-                ivdblImporteOtrosTributos = 0;
-                coOtrosTributos = new List<DocumentOtroTributo>();
-                livnro = 0;
-                foreach (UxDocumentOtroTributo lioO in vioDocumentUser.coOtrosTributos.OrderBy(x => x.ivnroId))
-                {
-                    if (livnro != lioO.ivnroId)
-                    {
-                        coOtrosTributos.Add(
-                             new DocumentOtroTributo
-                             {
-                                 ivdblAlicuota = lioO.ivdblAlicuota,
-                                 ivdblBaseImp = 0,
-                                 ivdblImporte = 0,
-                                 ivnroId = lioO.ivnroId,
-                                 ivstrDesc = lioO.ivstrDesc
-                             }
-                        );
-                        livnro = lioO.ivnroId ?? 0;
-                    }
-                    coOtrosTributos.Last().ivdblBaseImp += lioO.ivdblBaseImponible ?? 0;
-                    coOtrosTributos.Last().ivdblImporte += lioO.ivdblImporte ?? 0;
-                    ivdblImporteOtrosTributos += lioO.ivdblImporte ?? 0;
-                }
-
-            }
-            if (vioDocumentUser.coIvas != null && vioDocumentUser.coIvas.Count > 0)
-            {
-                coIvas = new List<DocumentIva>();
-                livnro = 0;
-                foreach (UxDocumentIva lioO in vioDocumentUser.coIvas.OrderBy(x => x.ivnroTipo))
-                {
-                    if (livnro != lioO.ivnroTipo)
-                    {
-                        coIvas.Add(
-                             new DocumentIva
-                             {
-                                 ivdblBaseImponible = 0,
-                                 ivnroTipo = lioO.ivnroTipo,
-                                 ivdblImporte = 0
-                             }
-                        );
-                        livnro = lioO.ivnroTipo ?? 0;
-                    }
-                    coIvas.Last().ivdblImporte += lioO.ivdblImporte ?? 0;
-                    coIvas.Last().ivdblBaseImponible += lioO.ivdblBaseImponible ?? 0;
-                }
-            }
-            // Obtension de montos desde los impuestos
-            if (vioDocumentUser.ivblnTaxInLines ?? false)
-            {
-                ivdblImporteNoGravado = 0;
-                ivdblImporteGravado = 0;
-                ivdblImporteExento = 0;
-                ivdblImporteIva = 0;
-                foreach (UxDocumentIva lioO in vioDocumentUser.coIvas.OrderBy(x => x.ivnroTipo))
-                {
-                    switch (lioO.ivnroTipo)
-                    {
-                        case 1:
-                            ivdblImporteNoGravado += lioO.ivdblBaseImponible ?? 0;
-                            break;
-                        case 2:
-                            ivdblImporteExento += lioO.ivdblBaseImponible ?? 0;
-                            break;
-                        default:
-                            ivdblImporteGravado += lioO.ivdblBaseImponible ?? 0;
-                            ivdblImporteIva += lioO.ivdblImporte ?? 0;
-                            break;
-                    }
-                }
-            }
+       
             if (vioDocumentUser.coOpcionales != null && vioDocumentUser.coOpcionales.Count > 0)
             {
                 coOpcionales = new List<DocumentOpcional>();
                 foreach (UxDocumentOpcional lioO in vioDocumentUser.coOpcionales)
+                {
+                    if (string.IsNullOrEmpty(lioO.ivstrId)) continue;
                     coOpcionales.Add(
                          new DocumentOpcional
                          {
                              ivstrId = lioO.ivstrId,
                              ivstrValor = lioO.ivstrValor
                          });
+                }
             }
             if (vioDocumentUser.coCompradores != null && vioDocumentUser.coCompradores.Count > 0)
             {
                 coCompradores = new List<DocumentComprador>();
                 foreach (UxDocumentComprador lioO in vioDocumentUser.coCompradores)
+                {
+                    if (lioO.ivnroDocTipo == 0) continue;
                     coCompradores.Add(
                          new DocumentComprador
                          {
@@ -180,27 +115,39 @@ namespace Applet.Nat.Api.Br.Models
                              ivnroDocTipo = lioO.ivnroDocTipo,
                              ivlngDocNro = lioO.ivlngDocNro
                          });
+                }
+            }
+            if (vioDocumentUser.coIvas != null && vioDocumentUser.coIvas.Count > 0)
+            {
+                coIvas = new List<DocumentIva>();
+                foreach (UxDocumentIva lioO in vioDocumentUser.coIvas)
+                {
+                    coIvas.Add(
+                         new DocumentIva
+                         {
+                             ivdblBaseImponible = lioO.ivdblBaseImponible ??0,
+                             ivdblImporte = lioO.ivdblImporte ?? 0,
+                             ivnroTipo = lioO.ivnroTipo
+                         });
+                }
             }
             // borrado de iva no gravado y exento
             coIvas.RemoveAll(x => x.ivnroTipo == 1 || x.ivnroTipo == 2);
-            //redondeos
-            ivdblImporteNoGravado = double.Round(ivdblImporteNoGravado, 2);
-            ivdblImporteGravado = double.Round(ivdblImporteGravado, 2);
-            ivdblImporteExento = double.Round(ivdblImporteExento, 2);
-            ivdblImporteIva = double.Round(ivdblImporteIva, 2);
-            ivdblImporteOtrosTributos = double.Round(ivdblImporteOtrosTributos, 2);
-            if (coIvas != null)
-                foreach (DocumentIva lioO in coIvas)
+            if (vioDocumentUser.coOtrosTributos != null && vioDocumentUser.coOtrosTributos.Count > 0)
+            {
+                coOtrosTributos = new List<DocumentOtroTributo>();
+                foreach (UxDocumentOtroTributo lioO in vioDocumentUser.coOtrosTributos)
                 {
-                    lioO.ivdblBaseImponible = double.Round(lioO.ivdblBaseImponible ?? 0, 2);
-                    lioO.ivdblImporte = double.Round(lioO.ivdblImporte ?? 0, 2);
+                    coOtrosTributos.Add(
+                         new DocumentOtroTributo
+                         {
+                             ivdblBaseImp = lioO.ivdblBaseImponible ?? 0,
+                             ivdblImporte = lioO.ivdblImporte ?? 0,
+                             ivnroId = lioO.ivnroId ?? 0,
+                             ivstrDesc = lioO.ivstrDesc
+                         });
                 }
-            if (coOtrosTributos != null)
-                foreach (DocumentOtroTributo lioO in coOtrosTributos)
-                {
-                    lioO.ivdblBaseImp = double.Round(lioO.ivdblBaseImp ?? 0, 2);
-                    lioO.ivdblImporte = double.Round(lioO.ivdblImporte ?? 0, 2);
-                }
+            }
         }
         public async Task<short> Auth()
         {
@@ -370,10 +317,14 @@ namespace Applet.Nat.Api.Br.Models
                 lioCAEDetRequest.FchServDesde = this.ivdtmServdesde?.ToString(lioAfipService.ivstrDateformat);
                 lioCAEDetRequest.FchServHasta = this.ivdtmServhasta?.ToString(lioAfipService.ivstrDateformat);
             }
-            if (this.mioDcModel.ivnroTipo == 203 || this.mioDcModel.ivnroTipo == 202 || (this.mioDcModel.ivnroTipo < 201 && this.ivnroConcepto == 1))
+            // Fecha de pago
+            if (new short[] { 202, 203, 207, 208 }.Contains(this.mioDcModel.ivnroTipo))
+                lioCAEDetRequest.FchVtoPago = null;
+            else if (this.mioDcModel.ivnroTipo < 201 && this.ivnroConcepto == 1)
                 lioCAEDetRequest.FchVtoPago = null;
             else
                 lioCAEDetRequest.FchVtoPago = this.ivdtmVtopago?.ToString(lioAfipService.ivstrDateformat);
+            //
             int lionum = 0;
             if (this.coAsociados != null && this.coAsociados.Count > 0)
             {
@@ -571,10 +522,10 @@ namespace Applet.Nat.Api.Br.Models
                 throw new Exception(Resources.lioE_HeaderAuth + Environment.NewLine + livstrError);
             return;
         }
-        public bool AuthDataModified(IDocument vioIDocument)
+        public bool AuthDataModified(ITribDocument vioIDocument)
         {
             if (vioIDocument == null) return true;
-            DocumentV1? vioCurrentDocument = vioIDocument as DocumentV1;
+            TribDocumentV1? vioCurrentDocument = vioIDocument as TribDocumentV1;
             if (vioCurrentDocument.mioDcModel.ivnroStatus < 50) return false;
             if (vioCurrentDocument.mioDcModel.ivlngCuitEmisor != mioDcModel.ivlngCuitEmisor) return true;
             if (vioCurrentDocument.mioDcModel.ivlngCbte != mioDcModel.ivlngCbte) return true;
@@ -686,7 +637,7 @@ namespace Applet.Nat.Api.Br.Models
             dynamic lioTrackData = JsonConvert.DeserializeObject(lioTrack.ivstrData);
             UxAuth lioUxAuth;
             string livstr;
-            FECAESolicitarResponse lioFECAESolicitarResponse = JsonConvert.DeserializeObject<FECAESolicitarResponse>(lioTrackData.Response.ToString());
+            FECAESolicitarResponse lioFECAESolicitarResponse = JsonConvert.DeserializeObject<FECAESolicitarResponse>(lioTrackData?.Response?.ToString());
             if (lioFECAESolicitarResponse != null && lioFECAESolicitarResponse.Body != null && lioFECAESolicitarResponse.Body.FECAESolicitarResult != null)
             {
                 lioUxAuth = new UxAuth();

@@ -18,6 +18,7 @@ namespace Applet.Nat.Api.Br
         public string? ivstrInputType { get; set; }
         public short[]? cvnroDocTypes { get; set; }
         public bool? ivblnTaxInLines { get; set; }
+        public bool? ivblnCalcPermisoExistente { get; set; }
     }
     public class ServiceMapperItem
     {

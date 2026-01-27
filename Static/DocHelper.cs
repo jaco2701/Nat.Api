@@ -6,6 +6,8 @@ using Applet.Nat.Api.Models.BR;
 using Microsoft.Extensions.Configuration;
 using Nat.API.Properties;
 using Newtonsoft.Json;
+using System.Text;
+using System.Threading.RateLimiting;
 
 namespace Applet.Nat.Api.Static
 {
@@ -115,7 +117,7 @@ namespace Applet.Nat.Api.Static
             {
                 string livstrRta = File.ReadAllText($"{ListHelper.GetValue("PATH", "template", lioContext)}/{vioDocument.ioDcModel.ivlngCuitEmisor}/{vioServiceMapper.ivstrTemplate}"), livstr, livstrPropInFile;
                 DocumentTrackingModel lioDocumentTrackingModel;
-                UxAuth mioAuthNode = vioDocument.ivIDocument.GetAuth();
+                UxAuth mioAuthNode = vioDocument.iTribDocument.GetAuth();
                 foreach (ServiceMapperItem lioServiceMapperItem in vioServiceMapper.coItems)
                 {
                     livstr = string.Empty;
@@ -213,8 +215,22 @@ namespace Applet.Nat.Api.Static
                     }
                     livstrPropInFile = "{" + lioServiceMapperItem.ivstrProperty + "}";
                     livstrRta = livstrRta.Replace(livstrPropInFile, livstr);
+
                 }
-                return livstrRta;
+                switch (vioServiceMapper.ivstrInputType ?? string.Empty)
+                {
+                    case "B64str":
+                        return Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(livstrRta)));
+                    case "B64Bytes":
+                        livstr = $"{vioDocument.ioDcModel.ivnroTipo.ToString().PadLeft(2, '0')}_{vioDocument.ioDcModel.ivnumPvta.ToString().PadLeft(4, '0')}_{vioDocument.ioDcModel.ivlngCbte.ToString().PadLeft(8, '0')}.{vioServiceMapper.ivstrTemplate.Split('.')[1].Trim()}";
+                        livstr = Path.GetTempPath() + livstr;
+                        if (File.Exists(livstr))
+                            File.Delete(livstr);
+                        File.WriteAllBytes(livstr, Encoding.UTF8.GetBytes(livstrRta));
+                        return Convert.ToBase64String(File.ReadAllBytes(livstr));
+                    default:
+                        return Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(livstrRta)));
+                }
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿using Applet.Nat.Api.DC;
+using Nat.API.Properties;
 
 namespace Applet.Nat.Api.Static
 {
@@ -7,15 +8,15 @@ namespace Applet.Nat.Api.Static
         public static ListModel Get(string vivcodType, string vivcodId, NatContext vioContext)
         {
             if (string.IsNullOrEmpty(vivcodType))
-                throw new Exception("Tipo de Lista de Valores Invalido");
+                throw new Exception(Resources.lioE_ListTypeNo);
             if (string.IsNullOrEmpty(vivcodId))
-                throw new Exception("Id. de Lista de Valores Invalido");
+                throw new Exception(Resources.lioE_ListIdNo);
             return vioContext.Lists.Find(vivcodType.ToUpper(), vivcodId);
         }
         public static ListModel[] GetAll(string vivcodLista, NatContext vioContext)
         {
             if (string.IsNullOrEmpty(vivcodLista))
-                throw new Exception("Tipo de Lista de Valores Invalido");
+                throw new Exception(Resources.lioE_ListTypeNo);
             ListModel[] lcoListasModel = vioContext.Lists.Where(x => x.ivcodType == vivcodLista.ToUpper()).ToArray();
             return lcoListasModel;
         }
@@ -23,7 +24,7 @@ namespace Applet.Nat.Api.Static
         {
             ListModel lioListModel = Get(vivcodType.ToUpper(), vivcodId, vioContext);
             if (lioListModel == null)
-                throw new Exception(string.Format("Valor de Lista {0}:{1} no encontrado", vivcodType, vivcodId));
+                throw new Exception(string.Format(Resources.lioE_ListValNo, vivcodType, vivcodId));
             return lioListModel.ivstrDesc;
         }
         public static Boolean ContainKey(string livstrType, string livstrId, NatContext vioContext)
@@ -43,12 +44,12 @@ namespace Applet.Nat.Api.Static
         //    }
         //    return scoStatus.GetValueOrDefault(vistrStatus);
         //}
-        public static void SetQueueRunning(NatContext vioContext, string vivstr )
+        public static void SetProcessRunning(NatContext vioContext, string vivstrProcess)
         {
-            ListModel? lioO = vioContext.Lists.Find("DOCPROC", "0");
+            ListModel? lioO = vioContext.Lists.Find("DOCPROC", vivstrProcess);
             if (lioO == null)
-                throw new Exception("Tipo de Lista de Valores Invalido");
-            lioO.ivstrDesc = vivstr;
+                throw new Exception(Resources.lioE_ListTypeNo);
+            lioO.ivstrDesc = "-1";
             vioContext.Lists.Update(lioO);
             vioContext.SaveChanges();
         }
@@ -56,7 +57,7 @@ namespace Applet.Nat.Api.Static
         {
             ListModel? lioO = vioContext.Lists.Find("DOCPROC", vivstrProcess);
             if (lioO == null)
-                throw new Exception("Tipo de Lista de Valores Invalido");
+                throw new Exception(Resources.lioE_ListTypeNo);
             lioO.ivstrDesc = Format.TimestampFromDate(DateTime.UtcNow).ToString();
             vioContext.Lists.Update(lioO);
             vioContext.SaveChanges();
@@ -71,16 +72,18 @@ namespace Applet.Nat.Api.Static
         public static bool CanRun(NatContext vioContext, string vivstrProcess)
         {
             string livstr="Secs";
-            if (vivstrProcess == "1")
+            if (vivstrProcess == "0")
                 livstr += "Docs";
+            else if (vivstrProcess == "1")
+                livstr += "Ftp";
             else if (vivstrProcess == "2")
-                livstr += "Uploads";
-            else if (vivstrProcess == "2")
+                livstr += "Ocan";
+            else 
                 return false;
             ListModel? lioO = vioContext.Lists.Find("FORMAT", livstr);
             if (lioO == null)
             {
-                LogHelper.write(new Exception($"Tipo de Lista de Valores FORMAT:{livstr} Invalido"));
+                LogHelper.write(new Exception(string.Format(Resources.lioE_ListValNo, "FORMAT", livstr)));
                 return false;
             }
             if (!int.TryParse(lioO.ivstrDesc, out int livnumSecs))
@@ -93,17 +96,17 @@ namespace Applet.Nat.Api.Static
             lioO = vioContext.Lists.Find("DOCPROC", vivstrProcess);
             if (lioO == null)
             {
-                LogHelper.write(new Exception($"Tipo de Lista de Valores DOCPROC:{vivstrProcess} Invalido"));
+                LogHelper.write(new Exception(string.Format(Resources.lioE_ListValNo, "DOCPROC", vivstrProcess)));
                 return false;
             }
             if (string.IsNullOrEmpty(lioO.ivstrDesc.Trim()))
                 return true;
             if (!long.TryParse(lioO.ivstrDesc, out long livlngTnsLastRun))
             {
-                LogHelper.write(new Exception($"Valor de Lista DOCPROC:{vivstrProcess} no es numerico"));
+                LogHelper.write(new Exception(string.Format(Resources.lioE_ListValNo, "DOCPROC", vivstrProcess)));
                 return false;
             }
-            return (livlngTnsLastRun + livnumSecs ) < Format.TimestampFromDate(DateTime.UtcNow);
+            return livlngTnsLastRun>=0 && (livlngTnsLastRun + livnumSecs ) < Format.TimestampFromDate(DateTime.UtcNow);
         }
     }
 
