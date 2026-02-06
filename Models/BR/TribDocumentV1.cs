@@ -55,11 +55,11 @@ namespace Applet.Nat.Api.Br.Models
             string livstrApiDtmFormat = ListHelper.GetValue("Format", "ApiDtm", mioContext);
             vioDocumentUser.FormatAmounts();
             ivnroConcepto = vioDocumentUser.ivnroConcepto ?? 0;
-            ivdblImporteNoGravado = Math.Abs(vioDocumentUser.ivdblImporteNoGravado ?? 0);
-            ivdblImporteGravado = Math.Abs(vioDocumentUser.ivdblImporteGravado ?? 0);
-            ivdblImporteExento = Math.Abs(vioDocumentUser.ivdblImporteExento ?? 0);
-            ivdblImporteIva = Math.Abs(vioDocumentUser.ivdblImporteIva ?? 0);
-            ivdblImporteOtrosTributos = Math.Abs(vioDocumentUser.ivdblImporteOtrosTributos ?? 0);
+            ivdblImporteNoGravado = vioDocumentUser.ivdblImporteNoGravado ??0;
+            ivdblImporteGravado = vioDocumentUser.ivdblImporteGravado ?? 0;
+            ivdblImporteExento = vioDocumentUser.ivdblImporteExento ?? 0;
+            ivdblImporteIva = vioDocumentUser.ivdblImporteIva ?? 0;
+            ivdblImporteOtrosTributos = vioDocumentUser.ivdblImporteOtrosTributos ?? 0;
             ivdblCotizacion = vioDocumentUser.ivdblCotizacion ?? 0;
             ivstrMoneda = vioDocumentUser.ivstrMoneda ?? string.Empty;
             ivnroTipoReceptor = vioDocumentUser.ivnroTipoDocReceptor ?? 0;
@@ -130,9 +130,9 @@ namespace Applet.Nat.Api.Br.Models
                              ivnroTipo = lioO.ivnroTipo
                          });
                 }
+                // borrado de iva no gravado y exento
+                coIvas.RemoveAll(x => x.ivnroTipo == 1 || x.ivnroTipo == 2);
             }
-            // borrado de iva no gravado y exento
-            coIvas.RemoveAll(x => x.ivnroTipo == 1 || x.ivnroTipo == 2);
             if (vioDocumentUser.coOtrosTributos != null && vioDocumentUser.coOtrosTributos.Count > 0)
             {
                 coOtrosTributos = new List<DocumentOtroTributo>();
@@ -631,12 +631,26 @@ namespace Applet.Nat.Api.Br.Models
         }
         public UxAuth GetAuth()
         {
-            DocumentTrackingModel lioTrack = mioContext.DocumentTrackings.OrderByDescending(x => x.ivdtmTrack).FirstOrDefault(x => x.ivlngDoc == mioDcModel.ivlngDoc && (x.ivnroStatus == 50 || x.ivnroStatus == 40));
+            short[] lcvnroStatusRTA = new short[] { 20, 35, 40, 50 };
+            DocumentTrackingModel lioTrack = mioContext.DocumentTrackings.OrderByDescending(x => x.ivdtmTrack).FirstOrDefault(x => x.ivlngDoc == mioDcModel.ivlngDoc && (x.ivnroStatus == 20 || x.ivnroStatus == 35 || x.ivnroStatus == 40 || x.ivnroStatus == 50));
             if (lioTrack == null || string.IsNullOrEmpty(lioTrack.ivstrData))
                 throw new Exception(Resources.lioE_CAEQry_Err);
             dynamic lioTrackData = JsonConvert.DeserializeObject(lioTrack.ivstrData);
             UxAuth lioUxAuth;
             string livstr;
+            FECompUltimoAutorizadoResponse lioFECompUltimoAutorizadoResponse= JsonConvert.DeserializeObject<FECompUltimoAutorizadoResponse>(lioTrackData?.Response?.ToString());
+            if (lioFECompUltimoAutorizadoResponse != null && lioFECompUltimoAutorizadoResponse.Body != null && lioFECompUltimoAutorizadoResponse?.Body?.FECompUltimoAutorizadoResult != null && lioFECompUltimoAutorizadoResponse?.Body?.FECompUltimoAutorizadoResult.CbteNro>0)
+                return new UxAuth
+                {
+                    ivdtmNode = lioTrack.ivdtmTrack,
+                    ivnumtrack = lioTrack.ivnumTrack,
+                    ivstrAuthCode = string.Empty,
+                    ivdtmAuthVenc = string.Empty,
+                    ivstrAuthType = "CAE",
+                    ivtrStatusDesc = "Rechazado",
+                    ivstrErrors = $"No Correlativo, Ultimo Autorizado: {lioFECompUltimoAutorizadoResponse.Body.FECompUltimoAutorizadoResult.CbteNro}",
+                    ivstrObs = string.Empty
+                }; 
             FECAESolicitarResponse lioFECAESolicitarResponse = JsonConvert.DeserializeObject<FECAESolicitarResponse>(lioTrackData?.Response?.ToString());
             if (lioFECAESolicitarResponse != null && lioFECAESolicitarResponse.Body != null && lioFECAESolicitarResponse.Body.FECAESolicitarResult != null)
             {

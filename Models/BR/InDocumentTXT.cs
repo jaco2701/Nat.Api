@@ -135,6 +135,7 @@ namespace Applet.Nat.Api.Br.Models
                             case "ivstrCondPago":
                                 lioDocumentUser.ivstrCondPago = livstrPropertyValue;
                                 break;
+                            case "ivdtmVtopago":
                             case "ivstrFechaVtopago":
                                 if (!GetDateFromProp(lioMapperItem, livstrPropertyValue, out livdtm))
                                 {
@@ -143,6 +144,7 @@ namespace Applet.Nat.Api.Br.Models
                                 }
                                 lioDocumentUser.ivstrFechaVtopago = livdtm.ToString(livstrApiDtmFormat);
                                 break;
+                            case "ivdtmServdesde":
                             case "ivstrFechaServdesde":
                                 if (!string.IsNullOrEmpty(livstrPropertyValue))
                                 {
@@ -154,6 +156,7 @@ namespace Applet.Nat.Api.Br.Models
                                     lioDocumentUser.ivstrFechaServdesde = livdtm.ToString(livstrApiDtmFormat);
                                 }
                                 break;
+                            case "ivdtmServhasta":
                             case "ivstrFechaServhasta":
                                 if (!string.IsNullOrEmpty(livstrPropertyValue))
                                 {
@@ -501,6 +504,7 @@ namespace Applet.Nat.Api.Br.Models
                                             }
                                             lioUxDocumentAsociado.ivlngCbteCUIT = livlng;
                                             break;
+                                        case "coAsociados.ivdtmFechaEmision":
                                         case "coAsociados.ivstrFechaEmision":
                                             livdtm = DateTime.MinValue;
                                             if (!GetDateFromProp(lioMapperItemR, livstrPropertyValue, out livdtm))

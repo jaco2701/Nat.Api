@@ -1,6 +1,8 @@
-﻿using System.Xml.Serialization;
+﻿using Applet.Nat.Api.Br;
+using Applet.Nat.Api.DC;
+using Nat.API.Properties;
 using System.Xml;
-using Applet.Nat.Api.Br;
+using System.Xml.Serialization;
 
 namespace Applet.Nat.Api.Static
 {
@@ -64,5 +66,4 @@ namespace Applet.Nat.Api.Static
 
         }
     }
-
 }

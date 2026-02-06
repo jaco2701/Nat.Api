@@ -38,7 +38,7 @@ namespace Applet.Nat.Api.Br.Models
         public short ivnroRows { get; set; }
         #endregion
         #region PUBLIC METHODS  
-        public async Task DocsGet()
+        public async Task DocsI()
         {
 
             using NatContext lioContext = NatContext.GetContext(mioConfiguration);
@@ -89,7 +89,7 @@ namespace Applet.Nat.Api.Br.Models
                     foreach (DocumentUploadResponse lioDocumentUploadResponse in lcoUDocumentsUploadResponse.Where(x => x.ivnroStatus == 1))
                         lcoDocumentsToUpdate.Add(new Document(lioDocumentUploadResponse.ivlngDoc ?? 0, lioContext, mioConfiguration));
                     if (lcoDocumentsToUpdate.Count > 0)
-                        await DocsUpdate(lcoDocumentsToUpdate.ToArray());
+                        await DocO(lcoDocumentsToUpdate.ToArray());
                     //Documentos con errores de carga
                     UxDocumentIntegracion lioUxDocumentIntegracion;
                     string livsrtDFFAttributes;
@@ -113,7 +113,7 @@ namespace Applet.Nat.Api.Br.Models
                 }
             }
         }
-        public async Task DocsUpdate(Document[] vcoDocuments)
+        public async Task DocO(Document[] vcoDocuments)
         {
             using NatContext lioContext = NatContext.GetContext(mioConfiguration);
             {

@@ -27,7 +27,12 @@ namespace Applet.Nat.Api.Br.Models
         OracleCanonical = 2,
         Api = 3,
     }
-
+    public enum eOidcRequestType : short
+    {
+        GetAuthUrl = 0,
+        ExchangeCode = 1,
+        RefreshToken = 2,
+    }
 }
 
 

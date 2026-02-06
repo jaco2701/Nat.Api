@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Nat.API.Properties;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -55,6 +56,7 @@ namespace Applet.Nat.Api.Static
                 ListHelper.SetProccessEnd(vioContext, "0");
             }
             lcoTasks.Add(BuildTaskUpLoad(vioConfiguration));
+            lcoTasks.Add(NatDaily(vioConfiguration));
             foreach (var lioTasks in lcoTasks)
                 await lioTasks;
         }
@@ -207,27 +209,27 @@ namespace Applet.Nat.Api.Static
             {
                 try
                 {
-                    List<Tuple<short,Cuit>> lcoCuitsByLoadMethod = new List<Tuple<short,Cuit>>();
+                    List<Tuple<short, Cuit>> lcoCuitsByLoadMethod = new List<Tuple<short, Cuit>>();
                     Cuit lioCuit;
                     short livnroLoadMethod = 0;
                     foreach (CuitModel lioCuitModel in lioContext.Cuits)
                     {
                         lioCuit = new Cuit(lioCuitModel, lioContext, vioConfiguration);
                         CuitParameter lioCuitParameter = lioCuit.ioCnfg?.coParameters?.FirstOrDefault(x => x.ivstrId == "LoadMethod");
-                        if (lioCuitParameter == null || string.IsNullOrEmpty(lioCuitParameter.ivstrValue) || !short.TryParse(lioCuitParameter.ivstrValue, out  livnroLoadMethod))
+                        if (lioCuitParameter == null || string.IsNullOrEmpty(lioCuitParameter.ivstrValue) || !short.TryParse(lioCuitParameter.ivstrValue, out livnroLoadMethod))
                             continue;
-                        if (livnroLoadMethod == (short)eLoadMethod.Manual || livnroLoadMethod==(short)eLoadMethod.Api)
+                        if (livnroLoadMethod == (short)eLoadMethod.Manual || livnroLoadMethod == (short)eLoadMethod.Api)
                             continue;
                         lcoCuitsByLoadMethod.Add(new Tuple<short, Cuit>(livnroLoadMethod, lioCuit));
                     }
-                    livnroLoadMethod=0;
-                    foreach (Tuple<short, Cuit> lioO in lcoCuitsByLoadMethod.OrderBy(x=>x.Item1))
+                    livnroLoadMethod = 0;
+                    foreach (Tuple<short, Cuit> lioO in lcoCuitsByLoadMethod.OrderBy(x => x.Item1))
                     {
                         try
                         {
                             if (livnroLoadMethod != lioO.Item1)
                             {
-                                if (livnroLoadMethod!= 0)
+                                if (livnroLoadMethod != 0)
                                 {
                                     ListHelper.SetProccessEnd(lioContext, livnroLoadMethod.ToString());
                                 }
@@ -237,7 +239,7 @@ namespace Applet.Nat.Api.Static
                                 LogHelper.writeinfo($"{DateTime.Now} Cargando Documentos para metodo de ingreso {livnroLoadMethod}", ListHelper.Verbose(lioContext));
                             }
                             IDocsIO liIDocsIO = lioO.Item2.getIDocsIO();
-                            await liIDocsIO.DocsGet();
+                            await liIDocsIO.DocsI();
                         }
                         catch (Exception lioE)
                         {
@@ -256,6 +258,39 @@ namespace Applet.Nat.Api.Static
                 }
 
             }
+        }
+        private static async Task NatDaily(IConfiguration vioConfiguration)
+        {
+            using NatContext lioContext = NatContext.GetContext(vioConfiguration);
+            {
+                try
+                {
+                    if (!ListHelper.CanRun(lioContext, "3")) return;
+                    LogHelper.writeinfo("******NAT Mantenimiento Diario******", true);
+                    LogHelper.writeinfo("Borrado estados Oidc anteriores a 30 minutos", true);
+                    lioContext.OidcOidcStates.RemoveRange(lioContext.OidcOidcStates.Where(s => s.ivdtmState < DateTime.UtcNow.AddMinutes(-30)));
+                    lioContext.SaveChanges();
+                    LogHelper.writeinfo("Borrado de logs anteriores a 3 dias",true);
+                    DateTime livdtm = DateTime.Today.AddDays(-3);
+                    string lioPath;
+                    while (true)
+                    {
+                        lioPath = $"./log/{livdtm.ToString("yyyyMMdd")}.log";
+                        if (File.Exists(lioPath))
+                            File.Delete(lioPath);
+                        else
+                            break;
+                        livdtm = livdtm.AddDays(-1);
+                    }
+                    ListHelper.SetProccessEnd(lioContext, "3");
+                }
+                catch (Exception lioE)
+                {
+                    ListHelper.SetProccessEnd(lioContext, "3");
+                    LogHelper.write(lioE);
+                }
+            }
+
         }
     }
 }

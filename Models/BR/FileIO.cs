@@ -33,7 +33,7 @@ namespace Nat.API.Models.BR
         public ServiceMapper ioMapper { get; set; }
         #endregion
         #region PUBLIC METHODS  
-        public async Task DocsGet()
+        public async Task DocsI()
         {
             using NatContext lioContext = NatContext.GetContext(mioConfiguration);
             {
@@ -71,7 +71,7 @@ namespace Nat.API.Models.BR
                 }
             }
         }
-        public async Task DocsUpdate(Document[] vcoDocuments)
+        public async Task DocO(Document[] vcoDocuments)
         {
             string livstrRta, livstrPathOut, livstr;
             foreach (Document lioDocument in vcoDocuments)

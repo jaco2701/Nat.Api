@@ -7,5 +7,6 @@ namespace Applet.Nat.Api.Models
     {
         public User? ioUser { get; set; }
         public string? ivstrToken { get; set; }
+        public string? ivstrRefreshToken { get; set; }
     }
 }

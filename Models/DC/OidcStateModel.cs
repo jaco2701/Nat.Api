@@ -14,5 +14,7 @@ namespace Applet.Nat.Api.DC
         public string ivstrIdentityProviderId { get; set; }
         [Column("dtmState")]
         public DateTime ivdtmState { get; set; }
+        [Column("strchallenge")]
+        public string ivstrCodeVerifier { get; set; }
     }
 }

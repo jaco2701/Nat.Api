@@ -3,8 +3,6 @@ using Applet.Nat.Api.Ifaces;
 using Applet.Nat.Api.Models;
 using Applet.Nat.Api.Models.BR;
 using Applet.Nat.Api.Static;
-using Microsoft.AspNetCore.Components.Server.Circuits;
-using Microsoft.EntityFrameworkCore.Storage;
 using Nat.Api.Models.BR;
 using Nat.API.Properties;
 using Newtonsoft.Json;
@@ -197,7 +195,7 @@ namespace Applet.Nat.Api.Br.Models
             iTribDocument.Validate();
             Cuit lioCuit = new Cuit(ioDcModel.ivlngCuitEmisor, mioContext, mioConfiguration);
             IDocsIO liIDocsIO = lioCuit.getIDocsIO();
-            await liIDocsIO.DocsUpdate([this]);
+            await liIDocsIO.DocO([this]);
         }
         public async Task Share(IConfiguration vioConfiguration)
         {
@@ -230,11 +228,13 @@ namespace Applet.Nat.Api.Br.Models
                 livstrfilename = $"{Path.GetTempPath()}/{ivstrKey}_{ioDcModel.ivnroTemplateVersion}.pdf";
             livstrSubject = livstrSubject
                 .Replace("#nro", ivstrKey)
-                .Replace("#cuit", ioDcModel.ivlngCuitReceptor.ToString());
+                .Replace("#cuit", ioDcModel.ivlngCuitReceptor.ToString())
+                .Replace("#rs", ioDcModel.ivstrRazonSocial);
             livstrBody = livstrBody
                 .Replace("#nro", ivstrKey)
                 .Replace("#cuit", ioDcModel.ivlngCuitReceptor.ToString())
-                .Replace("#nl", Environment.NewLine);
+                .Replace("#nl", Environment.NewLine)
+                .Replace("#rs", ioDcModel.ivstrRazonSocial); 
             AlternateView lioHtmlView = AlternateView.CreateAlternateViewFromString(livstrBody, Encoding.UTF8, MediaTypeNames.Text.Html);
             string livstrB46pdf = await Print();
             File.WriteAllBytes(livstrfilename, Convert.FromBase64String(livstrB46pdf));
@@ -312,10 +312,9 @@ namespace Applet.Nat.Api.Br.Models
         {
             try
             {
-                UxAuth lioUxAuth;
                 Cuit lioCuit = new Cuit(ioDcModel.ivlngCuitEmisor, mioContext, mioConfiguration);
                 IDocsIO liIDocsIO = lioCuit.getIDocsIO();
-                await liIDocsIO.DocsUpdate([this]);
+                await liIDocsIO.DocO([this]);
                 return liIDocsIO.ivstrB64Rta;
             }
             catch (Exception lioE)

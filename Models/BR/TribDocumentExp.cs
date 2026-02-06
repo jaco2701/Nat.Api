@@ -83,7 +83,7 @@ namespace Applet.Nat.Api.Br.Models
             {
                 coAsociados = new List<DocumentAsociado>();
                 foreach (UxDocumentAsociado lioO in vioDocumentUser.coAsociados)
-                    coAsociados.Add(
+                    coAsociados.Add( 
                         new DocumentAsociado
                         {
                             ivdtmFechaEmision = Format.DateFromUX(lioO.ivstrFechaEmision, livstrApiDtmFormat),
@@ -403,8 +403,8 @@ namespace Applet.Nat.Api.Br.Models
                     lioClsFEXRequest.Items[livnro].Pro_bonificacion = System.Convert.ToDecimal(lioDocumentItem.ivdblBonificaion);
                     lioClsFEXRequest.Items[livnro].Pro_codigo = lioDocumentItem.ivstrCodigo;
                     lioClsFEXRequest.Items[livnro].Pro_ds = lioDocumentItem.ivstrDescripcion;
-                    lioClsFEXRequest.Items[livnro].Pro_precio_uni = System.Convert.ToDecimal(lioDocumentItem.ivdblPrecioUnitario);
-                    lioClsFEXRequest.Items[livnro].Pro_qty = System.Convert.ToDecimal(lioDocumentItem.ivdblCantidad);
+                    lioClsFEXRequest.Items[livnro].Pro_precio_uni = new int[] { 97, 99 }.Contains(lioDocumentItem.ivnroUM ?? 0) ? 0 : System.Convert.ToDecimal(lioDocumentItem.ivdblPrecioUnitario);
+                    lioClsFEXRequest.Items[livnro].Pro_qty = new int[] { 97, 99 }.Contains(lioDocumentItem.ivnroUM ?? 0) ? 0 : System.Convert.ToDecimal(lioDocumentItem.ivdblCantidad);
                     lioClsFEXRequest.Items[livnro].Pro_total_item = System.Convert.ToDecimal(lioDocumentItem.ivdblImporteTotal);
                     lioClsFEXRequest.Items[livnro].Pro_umed = lioDocumentItem.ivnroUM ?? 0;
                     livnro++;
@@ -482,15 +482,27 @@ namespace Applet.Nat.Api.Br.Models
         public UxAuth GetAuth()
         {
             string livstr;
-            DocumentTrackingModel lioTrack = mioContext.DocumentTrackings.OrderByDescending(x => x.ivdtmTrack).FirstOrDefault(x => x.ivlngDoc == mioDcModel.ivlngDoc && (x.ivnroStatus == 50 || x.ivnroStatus == 40));
-            if (lioTrack == null)
-                throw new Exception(Resources.lioE_CAEQry_Err);
+            short[] lcvnroStatusRTA= new short[] { };
+            DocumentTrackingModel lioTrack = mioContext.DocumentTrackings.OrderByDescending(x => x.ivdtmTrack).FirstOrDefault(x => x.ivlngDoc == mioDcModel.ivlngDoc && (x.ivnroStatus== 20 || x.ivnroStatus == 35 || x.ivnroStatus == 40 || x.ivnroStatus == 50));
             if (lioTrack == null || string.IsNullOrEmpty(lioTrack.ivstrData))
                 throw new Exception(Resources.lioE_CAEQry_Err);
             dynamic lioTrackData = JsonConvert.DeserializeObject(lioTrack.ivstrData);
+
+            FEXResponseLast_CMP lioFEXResponseLast_CMP = JsonConvert.DeserializeObject<FEXResponseLast_CMP>(lioTrackData.Response.ToString()); 
+            if (lioFEXResponseLast_CMP.FEXResult_LastCMP != null && lioFEXResponseLast_CMP.FEXResult_LastCMP?.Cbte_nro != null)
+                return new UxAuth
+                {
+                    ivdtmNode = lioTrack.ivdtmTrack,
+                    ivnumtrack = lioTrack.ivnumTrack,
+                    ivstrAuthCode = string.Empty,
+                    ivdtmAuthVenc =  string.Empty,
+                    ivstrAuthType = "CAE",
+                    ivtrStatusDesc = "Rechazado",
+                    ivstrErrors = $"No Correlativo, Ultimo Autorizado: {lioFEXResponseLast_CMP.FEXResult_LastCMP.Cbte_nro}",
+                    ivstrObs = string.Empty
+                };
             FEXResponseAuthorize lioFEXResponseAuthorize = JsonConvert.DeserializeObject<FEXResponseAuthorize>(lioTrackData.Response.ToString());
             if (lioFEXResponseAuthorize != null && (lioFEXResponseAuthorize.FEXResultAuth != null || (lioFEXResponseAuthorize.FEXErr != null && lioFEXResponseAuthorize.FEXErr.ErrCode != 0)))
-            {
                 return new UxAuth
                 {
                     ivdtmNode = lioTrack.ivdtmTrack,
@@ -502,7 +514,6 @@ namespace Applet.Nat.Api.Br.Models
                     ivstrErrors = lioFEXResponseAuthorize?.FEXErr != null ? $"{lioFEXResponseAuthorize.FEXErr.ErrCode}:{lioFEXResponseAuthorize.FEXErr.ErrMsg}" : string.Empty,
                     ivstrObs = lioFEXResponseAuthorize?.FEXEvents != null ? $"{lioFEXResponseAuthorize.FEXEvents.EventCode}:{lioFEXResponseAuthorize.FEXEvents.EventMsg}" : string.Empty
                 };
-            }
             FEXGetCMPResponse lioFEXGetCMPResponse = JsonConvert.DeserializeObject<FEXGetCMPResponse>(lioTrackData.Response.ToString());
             if (lioFEXGetCMPResponse == null || lioFEXGetCMPResponse.FEXResultGet == null)
                 throw new Exception(Resources.lioE_CAEQry_Err);

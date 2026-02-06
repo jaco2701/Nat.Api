@@ -1,5 +1,6 @@
 using Applet.Nat.Api.Br;
 using Applet.Nat.Api.DC;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.IdentityModel.Tokens;
 using Nat.API.Properties;
 using System.IdentityModel.Tokens.Jwt;
@@ -152,13 +153,36 @@ namespace Applet.Nat.Api.Static
                 lcvstrRet.Add(lcvstr[1]);
                 return lcvstrRet.ToArray();
             }
-            if (vioAuthenticationHeaderValue.Scheme == "NatToken" )
+            if (vioAuthenticationHeaderValue.Scheme == "NatToken")
                 return new string[] { livstrCreds };
-            if (vioAuthenticationHeaderValue.Scheme == "NatOIDC")
-                return livstrCreds.Split(':') ;
             throw new Exception("Cabecera de Autorizacion invalida");
         }
     }
+    public static class PkceHelper
+    {
+        public static string GenerateCodeVerifier()
+        {
+            Random lioRandom = new Random(); 
+            byte[] lcoVerifierBytes = new byte[32];
+            lioRandom.NextBytes(lcoVerifierBytes);
+            return Base64UrlEncodeNoPadding(lcoVerifierBytes);
+        }
+
+        public static string GenerateCodeChallenge(string vivstrCodeVerifier)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                byte[] lcoChallengeBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(vivstrCodeVerifier));
+                return Base64UrlEncodeNoPadding(lcoChallengeBytes);
+            }
+        }
+
+        private static string Base64UrlEncodeNoPadding(byte[] buffer)
+        {
+            return WebEncoders.Base64UrlEncode(buffer);
+        }
+    }
+
     //public static byte[] EncryptWith3Des(string DataToEncrypt)
     //{
     //    UTF8Encoding utF8Encoding = new UTF8Encoding();

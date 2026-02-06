@@ -65,9 +65,11 @@ namespace Applet.Nat.Api.Br.Models
         [JsonIgnore] public UxDocumentIntegracion ioIntegracion { get; set; } // Datos de integración del documento
         public void FormatAmounts()
         {
-            short livnro = 0;
+            short livnro;
             if (coIvas != null && coIvas.Count > 0)
             {
+                //agrupacion de codigos de iva
+                livnro = 0;
                 List<UxDocumentIva> lcoUxDocumentIvas = new List<UxDocumentIva>();
                 foreach (UxDocumentIva lioO in coIvas.OrderBy(x => x.ivnroTipo))
                 {
@@ -91,93 +93,154 @@ namespace Applet.Nat.Api.Br.Models
                 }
                 coIvas = lcoUxDocumentIvas;
             }
-            if (coOtrosTributos != null && coOtrosTributos.Count > 0)
-            {
-                livnro = 0;
-                ivdblImporteOtrosTributos = 0;
-                List<UxDocumentOtroTributo> lcoOtrosTributos = new List<UxDocumentOtroTributo>();
-                foreach (UxDocumentOtroTributo lioO in coOtrosTributos.OrderBy(x => x.ivnroId))
-                {
-                    lioO.ivdblBaseImponible = lioO.ivdblBaseImponible ?? 0;
-                    lioO.ivdblAlicuota = lioO.ivdblAlicuota ?? 0;
-                    lioO.ivdblImporte = lioO.ivdblImporte ?? 0;
-                    if (lioO.ivnroId == null || lioO.ivnroId == 0) continue;
-                    if (livnro != lioO.ivnroId)
-                    {
-                        lcoOtrosTributos.Add(
-                             new UxDocumentOtroTributo
-                             {
-                                 ivdblAlicuota = lioO.ivdblAlicuota ?? 0,
-                                 ivdblBaseImponible = 0,
-                                 ivdblImporte = 0,
-                                 ivnroId = lioO.ivnroId,
-                                 ivstrDesc = lioO.ivstrDesc
-                             }
-                        );
-                        livnro = lioO.ivnroId ?? 0;
-                    }
-                    lcoOtrosTributos.Last().ivdblBaseImponible += lioO.ivdblBaseImponible ?? 0;
-                    lcoOtrosTributos.Last().ivdblImporte += lioO.ivdblImporte ?? 0;
-                    ivdblImporteOtrosTributos += lioO.ivdblImporte ?? 0;
-                }
-                coOtrosTributos = lcoOtrosTributos;
-            }
-            // Obtension de montos desde los impuestos
+            //if (coOtrosTributos != null && coOtrosTributos.Count > 0)
+            //{
+            //    //agrupacion de codigos de otros tributos
+            //    livnro = 0;
+            //    ivdblImporteOtrosTributos = 0;
+            //    List<UxDocumentOtroTributo> lcoOtrosTributos = new List<UxDocumentOtroTributo>();
+            //    foreach (UxDocumentOtroTributo lioO in coOtrosTributos.OrderBy(x => x.ivnroId))
+            //    {
+            //        lioO.ivdblBaseImponible = lioO.ivdblBaseImponible ?? 0;
+            //        lioO.ivdblAlicuota = lioO.ivdblAlicuota ?? 0;
+            //        lioO.ivdblImporte = lioO.ivdblImporte ?? 0;
+            //        if (lioO.ivnroId == null || lioO.ivnroId == 0) continue;
+            //        if (livnro != lioO.ivnroId)
+            //        {
+            //            lcoOtrosTributos.Add(
+            //                 new UxDocumentOtroTributo
+            //                 {
+            //                     ivdblAlicuota = lioO.ivdblAlicuota ?? 0,
+            //                     ivdblBaseImponible = 0,
+            //                     ivdblImporte = 0,
+            //                     ivnroId = lioO.ivnroId,
+            //                     ivstrDesc = lioO.ivstrDesc
+            //                 }
+            //            );
+            //            livnro = lioO.ivnroId ?? 0;
+            //        }
+            //        lcoOtrosTributos.Last().ivdblBaseImponible += lioO.ivdblBaseImponible ?? 0;
+            //        lcoOtrosTributos.Last().ivdblImporte += lioO.ivdblImporte ?? 0;
+            //    }
+            //    coOtrosTributos = lcoOtrosTributos;
+            //}
             if (ivblnTaxInLines ?? false)
             {
-                ivdblImporteNoGravado = 0;
-                ivdblImporteGravado = 0;
-                ivdblImporteExento = 0;
-                ivdblImporteIva = 0;
-                foreach (UxDocumentIva lioO in coIvas.OrderBy(x => x.ivnroTipo))
+                // Obtension de montos desde los impuestos
+                if (coIvas != null && coIvas.Count > 0)
                 {
-                    switch (lioO.ivnroTipo)
+                    ivdblImporteNoGravado = 0;
+                    ivdblImporteGravado = 0;
+                    ivdblImporteExento = 0;
+                    ivdblImporteOtrosTributos = 0;
+                    ivdblImporteIva = 0;
+                    foreach (UxDocumentIva lioO in coIvas.OrderBy(x => x.ivnroTipo))
                     {
-                        case 1:
-                            ivdblImporteNoGravado += lioO.ivdblBaseImponible ?? 0;
-                            break;
-                        case 2:
-                            ivdblImporteExento += lioO.ivdblBaseImponible ?? 0;
-                            break;
-                        default:
-                            ivdblImporteGravado += lioO.ivdblBaseImponible ?? 0;
-                            ivdblImporteIva += lioO.ivdblImporte ?? 0;
-                            break;
+                        switch (lioO.ivnroTipo)
+                        {
+                            case 1:
+                                ivdblImporteNoGravado += lioO.ivdblBaseImponible ?? 0;
+                                break;
+                            case 2:
+                                ivdblImporteExento += lioO.ivdblBaseImponible ?? 0;
+                                break;
+                            default:
+                                ivdblImporteGravado += lioO.ivdblBaseImponible ?? 0;
+                                ivdblImporteIva += lioO.ivdblImporte ?? 0;
+                                break;
+                        }
                     }
                 }
+                if (coOtrosTributos != null && coOtrosTributos.Count > 0)
+                    foreach (UxDocumentOtroTributo lioO in coOtrosTributos)
+                        ivdblImporteOtrosTributos += lioO.ivdblImporte ?? 0;
             }
-            //redondeos y valores absolutos
-            ivdblImporteTotal = Math.Round(Math.Abs(ivdblImporteTotal ?? 0), 2);
-            ivdblImporteGravado = Math.Round(Math.Abs(ivdblImporteGravado ?? 0), 2);
-            ivdblImporteNoGravado = Math.Round(Math.Abs(ivdblImporteNoGravado ?? 0), 2);
-            ivdblImporteExento = Math.Round(Math.Abs(ivdblImporteExento ?? 0), 2);
-            ivdblImporteOtrosTributos = Math.Round(Math.Abs(ivdblImporteOtrosTributos ?? 0), 2);
-            ivdblImporteIva = Math.Round(Math.Abs(ivdblImporteIva ?? 0), 2);
+            //redondeos y valor absoluto
+            ivdblImporteTotal = Math.Abs(Math.Round(ivdblImporteTotal ?? 0, 2));
+            ivdblImporteGravado = Math.Abs(Math.Round(ivdblImporteGravado ?? 0, 2));
+            ivdblImporteNoGravado = Math.Abs(Math.Round(ivdblImporteNoGravado ?? 0, 2));
+            ivdblImporteExento = Math.Abs(Math.Round(ivdblImporteExento ?? 0, 2));
+            ivdblImporteOtrosTributos = Math.Abs(Math.Round(ivdblImporteOtrosTributos ?? 0, 2));
+            ivdblImporteIva = Math.Abs(Math.Round(ivdblImporteIva ?? 0, 2));
             //
             if (coIvas != null && coIvas.Count > 0)
                 foreach (UxDocumentIva lioO in coIvas)
                 {
-                    lioO.ivdblBaseImponible = Math.Round(Math.Abs(lioO.ivdblBaseImponible ?? 0), 2);
-                    lioO.ivdblImporte = Math.Round(Math.Abs(lioO.ivdblImporte ?? 0), 2);
+                    lioO.ivdblBaseImponible = Math.Abs(Math.Round(lioO.ivdblBaseImponible ?? 0, 2));
+                    lioO.ivdblImporte = Math.Abs(Math.Round(lioO.ivdblImporte ?? 0, 2));
                 }
             //
             if (coOtrosTributos != null && coOtrosTributos.Count > 0)
                 foreach (UxDocumentOtroTributo lioO in coOtrosTributos)
                 {
-                    lioO.ivdblBaseImponible = Math.Round(Math.Abs(lioO.ivdblBaseImponible ?? 0), 2);
-                    lioO.ivdblAlicuota = Math.Round(Math.Abs(lioO.ivdblAlicuota ?? 0), 2);
-                    lioO.ivdblImporte = Math.Round(Math.Abs(lioO.ivdblImporte ?? 0), 2);
+                    lioO.ivdblBaseImponible = Math.Abs(Math.Round(lioO.ivdblBaseImponible ?? 0, 2));
+                    lioO.ivdblAlicuota = Math.Abs(Math.Round(lioO.ivdblAlicuota ?? 0, 2));
+                    lioO.ivdblImporte = Math.Abs(Math.Round(lioO.ivdblImporte ?? 0, 2));
                 }
             //
             if (coItems != null && coItems.Count > 0)
                 foreach (UxDocumentItem lioO in coItems)
                 {
-                    lioO.ivdblCantidad = Math.Round(Math.Abs(lioO.ivdblCantidad ?? 0), 6);
-                    lioO.ivdblImporteIVA = Math.Round(Math.Abs(lioO.ivdblImporteIVA ?? 0), 2);
-                    lioO.ivdblImporteTotal = Math.Round(Math.Abs(lioO.ivdblImporteTotal ?? 0), 2);
-                    lioO.ivdblPrecioUnitario = Math.Abs(lioO.ivdblPrecioUnitario ?? 0);
+                    lioO.ivdblCantidad = Math.Round(lioO.ivdblCantidad ?? 0, 6);
+                    lioO.ivdblImporteIVA = Math.Round(lioO.ivdblImporteIVA ?? 0, 2);
+                    lioO.ivdblImporteTotal = Math.Round(lioO.ivdblImporteTotal ?? 0, 2);
+                    lioO.ivdblPrecioUnitario = Math.Abs(Math.Round(lioO.ivdblPrecioUnitario ?? 0, 6));
+                    if (new short[] { 97, 99 }.Contains(lioO.ivnroUM ?? 0))
+                    {
+                        if (lioO.ivdblCantidad > 0)
+                            lioO.ivdblCantidad = -lioO.ivdblCantidad;
+                        if (lioO.ivdblImporteIVA > 0)
+                            lioO.ivdblImporteIVA = -lioO.ivdblImporteIVA;
+                        if (lioO.ivdblImporteTotal > 0)
+                            lioO.ivdblImporteTotal = -lioO.ivdblImporteTotal;
+                    }
+                    else
+                    {
+                        lioO.ivdblCantidad = Math.Abs(lioO.ivdblCantidad ?? 0);
+                        lioO.ivdblImporteIVA = Math.Abs(lioO.ivdblImporteIVA ?? 0);
+                        lioO.ivdblImporteTotal = Math.Abs(lioO.ivdblImporteTotal ?? 0);
+                    }
                 }
-
+            // inversion de signo para notas de credito
+            //if (new short[] { 3, 8, 13, 21, 203, 208 }.Contains(ivnroTipoDoc ?? 0))
+            //{
+            //    ivdblImporteTotal = -(ivdblImporteTotal ?? 0);
+            //    ivdblImporteGravado = -(ivdblImporteGravado ?? 0);
+            //    ivdblImporteNoGravado = -(ivdblImporteNoGravado ?? 0);
+            //    ivdblImporteExento = -(ivdblImporteExento ?? 0);
+            //    ivdblImporteOtrosTributos = -(ivdblImporteOtrosTributos ?? 0);
+            //    ivdblImporteIva = -(ivdblImporteIva ?? 0);
+            //    if (coIvas != null && coIvas.Count > 0)
+            //        foreach (UxDocumentIva lioO in coIvas)
+            //        {
+            //            lioO.ivdblBaseImponible = -lioO.ivdblBaseImponible;
+            //            lioO.ivdblImporte = -lioO.ivdblImporte;
+            //        }
+            //    if (coOtrosTributos != null && coOtrosTributos.Count > 0)
+            //        foreach (UxDocumentOtroTributo lioO in coOtrosTributos)
+            //        {
+            //            lioO.ivdblBaseImponible = -lioO.ivdblBaseImponible;
+            //            lioO.ivdblAlicuota = -lioO.ivdblAlicuota;
+            //            lioO.ivdblImporte = -lioO.ivdblImporte;
+            //        }
+            //    if (coItems != null && coItems.Count > 0)
+            //        foreach (UxDocumentItem lioO in coItems)
+            //        {
+            //            if (new short[] { 97, 99 }.Contains(lioO.ivnroUM ?? 0))
+            //            {
+            //                lioO.ivdblCantidad = -lioO.ivdblCantidad;
+            //                lioO.ivdblImporteIVA = -lioO.ivdblImporteIVA;
+            //                lioO.ivdblImporteTotal = -lioO.ivdblImporteTotal;
+            //            }
+            //            else
+            //            {
+            //                lioO.ivdblCantidad = Math.Abs(lioO.ivdblCantidad ?? 0);
+            //                lioO.ivdblImporteIVA = Math.Abs(lioO.ivdblImporteIVA ?? 0);
+            //                lioO.ivdblImporteTotal = Math.Abs(lioO.ivdblImporteTotal ?? 0);
+            //            }
+            //            lioO.ivdblPrecioUnitario = Math.Abs(lioO.ivdblPrecioUnitario ?? 0);
+            //        }
+            //}
         }
     }
     public class UxDomicilio
@@ -304,7 +367,7 @@ namespace Applet.Nat.Api.Br.Models
         public long? ivlngDoc { get; set; }
         [JsonProperty("CuitEmisor")]
         public long? ivlngCuitEmisor { get; set; }
-        [JsonProperty("PuntoVenta")]
+        [JsonProperty("PuntoDeVenta")]
         public int? ivnumPvta { get; set; }
         [JsonProperty("Tipo")]
         public short? ivnroTipoDoc { get; set; }

@@ -3,10 +3,10 @@ using Applet.Nat.Api.DC;
 
 namespace Applet.Nat.Api.Ifaces
 {
-    public interface IDocsIO
+    public interface IDocsIO  //entrada y salida de documentos  
     {
-        Task DocsGet();
-        Task DocsUpdate(Document[] vcoDocuments);
+        Task DocsI();
+        Task DocO(Document[] vcoDocuments);
         string ivstrB64Rta { get; set; }
     }
 }

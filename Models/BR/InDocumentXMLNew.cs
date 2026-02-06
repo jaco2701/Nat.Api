@@ -1,6 +1,7 @@
 ﻿using Applet.Nat.Api.DC;
 using Applet.Nat.Api.Ifaces;
 using Applet.Nat.Api.Static;
+using Microsoft.IdentityModel.Tokens;
 using Nat.API.Properties;
 using System.Linq;
 using System.Text;
@@ -37,7 +38,7 @@ namespace Applet.Nat.Api.Br.Models
             ServiceMapper lioServiceMapper;
             List<DocumentUser> lcoDocumentsUser = new List<DocumentUser>();
             try
-            {                
+            {
                 lioServiceMapper = GetMapper();
             }
             catch (Exception lioE)
@@ -86,7 +87,7 @@ namespace Applet.Nat.Api.Br.Models
                         }
                         catch (Exception lioE)
                         {
-                            LogHelper.writeinfo($"Prop: {lioServiceMapperItem.ivstrProperty}",true);
+                            LogHelper.writeinfo($"Prop: {lioServiceMapperItem.ivstrProperty}", true);
                             LogHelper.write(lioE);
                             lioSbErrors.AppendLine(lioE.Message);
                         }
@@ -437,7 +438,7 @@ namespace Applet.Nat.Api.Br.Models
                                 lioUxDocumentOpcional.ivstrValor = lioDocumentUser.ivstrTransferencia;
                         }
                     }
-                    if (new short[] { 201, 202, 203 }.Contains(lioDocumentUser.ivnroTipoDoc ?? 0)) 
+                    if (new short[] { 201, 202, 203 }.Contains(lioDocumentUser.ivnroTipoDoc ?? 0))
                     {
                         if (!string.IsNullOrEmpty(lioDocumentUser.ivstrAnulacion))
                         {
@@ -459,28 +460,34 @@ namespace Applet.Nat.Api.Br.Models
                     #endregion
                     #region Permisos no iterativos
                     if (new short[] { 19, 20, 21 }.Contains(lioDocumentUser.ivnroTipoDoc ?? 0))
-                        if (!string.IsNullOrEmpty(lioDocumentUser.ivstrPEId) && lioDocumentUser.ivnumPEDestMerc != null)
+                        if (!string.IsNullOrEmpty(lioDocumentUser.ivstrPEId)) // hay Permiso en campo no repetitivo
                         {
-                            if (lioDocumentUser.coPermisosExp == null)
-                                lioDocumentUser.coPermisosExp = new List<UxDocumentPermisoExp>();
-                            lioDocumentUser.coPermisosExp.Add(
-                                new UxDocumentPermisoExp()
+                            if (lioDocumentUser.coPermisosExp == null || lioDocumentUser.coPermisosExp.Count() == 0) // si no hay estructura iterativa de permisos, la crea con los valores de campos no repetitivos 
+                            {
+                                lioDocumentUser.coPermisosExp = new List<UxDocumentPermisoExp>()
                                 {
-                                    ivstrId = lioDocumentUser.ivstrPEId,
-                                    ivnumDestMerc = lioDocumentUser.ivnumPEDestMerc
+                                    new UxDocumentPermisoExp()
+                                    {
+                                        ivstrId = lioDocumentUser.ivstrPEId ?? string.Empty,
+                                        ivnumDestMerc = lioDocumentUser.ivnumPEDestMerc ?? 0,
+                                    }
+                                };
+                            }
+                            else  // si hay estructura iterativa de permisos, le asigna los valores de campos no repetitivos a cada uno de los permisos iterativos sino estan cargados 
+                            {
+                                foreach (UxDocumentPermisoExp lioO in lioDocumentUser.coPermisosExp)
+                                {
+                                    if (!string.IsNullOrEmpty(lioO.ivstrId?.Trim())) continue;
+                                    if (lioO.ivnumDestMerc == null || lioO.ivnumDestMerc == 0) continue;
+                                    lioO.ivstrId = lioDocumentUser.ivstrPEId;
                                 }
-                            );
+
+                            }
                         }
                     #endregion
-                    if (lioSbErrors.Length > 0)
-                    {
-                        lioDocumentUser.ivstrLoadErrors = lioSbErrors.ToString();
-                        lioDocumentUser.ioIntegracion.ivstrEfdMessage = lioSbErrors.ToString();
-                        LogHelper.writeinfo($"Errores de carga en el documento [{lioDocumentUser.ivnroTipoDoc}-{lioDocumentUser.ivnumPvta}-{lioDocumentUser.ivlngCbte}]: {lioSbErrors.ToString()}", true);
-                        //LogHelper.writeinfo(mioXmlDocument.OuterXml, true);
-                    }
                     lcoDocumentsUser.Add(lioDocumentUser);
                 }
+
                 catch (Exception lioE)
                 {
                     LogHelper.write(lioE);

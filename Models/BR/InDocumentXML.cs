@@ -531,7 +531,6 @@ namespace Applet.Nat.Api.Br.Models
                 #endregion
                 #region Tributos
                 livnroI = 1;
-                lioDocumentUser.ivdblImporteOtrosTributos = 0;
                 livstrPath = lioMapper.coItems.FirstOrDefault(x => x.ivstrProperty == "coOtrosTributos")?.coXPaths[0].ivstrData;
                 lioXmlNodeList = xmlDocumentNode.SelectNodes(livstrPath, lioNsMngr);
                 if (!string.IsNullOrEmpty(livstrPath))
@@ -594,18 +593,15 @@ namespace Applet.Nat.Api.Br.Models
                                         lioUxDocumentOtroTributo.ivdblImporte = livval;
                                 }
                                 //
-                                lioDocumentUser.ivdblImporteOtrosTributos += lioUxDocumentOtroTributo.ivdblImporte;
                                 lioDocumentUser.coOtrosTributos.Add(lioUxDocumentOtroTributo);
                                 livnroI++;
                             }
                         }
                     }
                 }
-                lioDocumentUser.ivdblImporteOtrosTributos = double.Round(lioDocumentUser.ivdblImporteOtrosTributos??0, 2);
                 #endregion
                 #region Alicuota
                 livnroI = 1;
-                lioDocumentUser.ivdblImporteIva = 0;
                 if (!string.IsNullOrEmpty(livstrPath))
                 {
                     livstrPath = lioMapper.coItems.FirstOrDefault(x => x.ivstrProperty == "coIvas")?.coXPaths[0].ivstrData;
@@ -649,7 +645,6 @@ namespace Applet.Nat.Api.Br.Models
                                     else
                                     {
                                         lioUxDocumentIva.ivdblImporte = livval;
-                                        lioDocumentUser.ivdblImporteIva += lioUxDocumentIva.ivdblImporte;
                                     }
                                 }
                                 //

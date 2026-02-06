@@ -78,7 +78,9 @@ namespace Applet.Nat.Api.Static
                 livstr += "Ftp";
             else if (vivstrProcess == "2")
                 livstr += "Ocan";
-            else 
+            else if (vivstrProcess == "3")
+                livstr += "Daily";
+            else
                 return false;
             ListModel? lioO = vioContext.Lists.Find("FORMAT", livstr);
             if (lioO == null)

@@ -12,10 +12,10 @@ using Newtonsoft.Json;
 
 namespace Applet.Nat.BR
 {
-    public class DocumentMTXCA : ITribDocument
+    public class TribDocumentMTXCA : ITribDocument
     {
         #region CONSTRUCT
-        public DocumentMTXCA(DocumentModel vioDocumentModel, NatContext vioContext)
+        public TribDocumentMTXCA(DocumentModel vioDocumentModel, NatContext vioContext)
         {
             mioDcModel = vioDocumentModel;
             mioContext = vioContext;
@@ -452,7 +452,7 @@ namespace Applet.Nat.BR
         public bool AuthDataModified(ITribDocument vioIDocument)
         {
             if (vioIDocument == null) return true;
-            DocumentMTXCA? vioCurrentDocument = vioIDocument as DocumentMTXCA;
+            TribDocumentMTXCA? vioCurrentDocument = vioIDocument as TribDocumentMTXCA;
             if (vioCurrentDocument.mioDcModel.ivnroStatus <50) return false;
             if (vioCurrentDocument.mioDcModel.ivlngCuitEmisor != mioDcModel.ivlngCuitEmisor) return true;
             if (vioCurrentDocument.mioDcModel.ivlngCbte != mioDcModel.ivlngCbte) return true;

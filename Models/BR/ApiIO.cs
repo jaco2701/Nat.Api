@@ -35,10 +35,10 @@ namespace Nat.API.Models.BR
         public ServiceMapper ioMapper { get; set; }
         #endregion
         #region PUBLIC METHODS  
-        public async Task DocsGet()
+        public async Task DocsI()
         {
         }
-        public async Task DocsUpdate(Document[] vcoDocuments)
+        public async Task DocO(Document[] vcoDocuments)
         {
             foreach (Document lioDocument in vcoDocuments)
             {

@@ -8,4 +8,5 @@ namespace Applet.Nat.Api.Br
         public int ivnumUser { get; set; }
         public string? ivstrAuthType { get; set; }
     }
+
 }

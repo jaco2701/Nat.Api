@@ -15,21 +15,7 @@ namespace Applet.Nat.Api.Static
             mioPath += livdtm.ToString("yyyyMMdd");
             mioPath += ".log";
             if (!File.Exists(mioPath))
-            {
                 mioStreamWriter = File.CreateText(mioPath);
-                //borrado de logs anteriores a 3 dias
-                livdtm = DateTime.Today.AddDays(-3);
-                string lioPath;
-                while (true)
-                {
-                    lioPath = $"./log/{livdtm.ToString("yyyyMMdd")}.log";
-                    if (File.Exists(lioPath))
-                        File.Delete(lioPath);
-                    else
-                        break;
-                    livdtm = livdtm.AddDays(-1);
-                }
-            }
             else
                 mioStreamWriter = File.AppendText(mioPath);
             
