@@ -1,5 +1,4 @@
 ﻿using Applet.Nat.Afip.ServicesFEX;
-using Applet.Nat.Afip.ServicesV1;
 using Applet.Nat.Api.AFIP.Model;
 using Applet.Nat.Api.DC;
 using Applet.Nat.Api.Ifaces;
@@ -8,11 +7,7 @@ using Applet.Nat.Api.Models.BR;
 using Applet.Nat.Api.Static;
 using Nat.API.Properties;
 using Newtonsoft.Json;
-using OfficeOpenXml.FormulaParsing.Excel.Functions.Information;
-using System.Collections.Generic;
-using System.Linq.Expressions;
 using System.Net;
-using System.Text;
 using Opcional = Applet.Nat.Afip.ServicesFEX.Opcional;
 using ServiceSoapClient = Applet.Nat.Afip.ServicesFEX.ServiceSoapClient;
 
@@ -83,7 +78,7 @@ namespace Applet.Nat.Api.Br.Models
             {
                 coAsociados = new List<DocumentAsociado>();
                 foreach (UxDocumentAsociado lioO in vioDocumentUser.coAsociados)
-                    coAsociados.Add( 
+                    coAsociados.Add(
                         new DocumentAsociado
                         {
                             ivdtmFechaEmision = Format.DateFromUX(lioO.ivstrFechaEmision, livstrApiDtmFormat),
@@ -241,7 +236,7 @@ namespace Applet.Nat.Api.Br.Models
                                    lioAutRequest,
                                    lioClsFEX_LastCMP
                                },
-                               Response = lioE.Message
+                               Response = ExceptionToResponse(lioE)
                            }
                        )
                     );
@@ -306,7 +301,7 @@ namespace Applet.Nat.Api.Br.Models
                                        lioAutRequest,
                                        lioClsFEXGetCMP
                                    },
-                                   Response = lioE.Message
+                                   Response = ExceptionToResponse(lioE)
                                }
                            )
                         );
@@ -449,7 +444,7 @@ namespace Applet.Nat.Api.Br.Models
                                    lioAutRequest,
                                    lioClsFEXRequest
                                },
-                               Response = lioE.Message
+                               Response = ExceptionToResponse(lioE)
                            }
                        )
                    );
@@ -482,20 +477,20 @@ namespace Applet.Nat.Api.Br.Models
         public UxAuth GetAuth()
         {
             string livstr;
-            short[] lcvnroStatusRTA= new short[] { };
-            DocumentTrackingModel lioTrack = mioContext.DocumentTrackings.OrderByDescending(x => x.ivdtmTrack).FirstOrDefault(x => x.ivlngDoc == mioDcModel.ivlngDoc && (x.ivnroStatus== 20 || x.ivnroStatus == 35 || x.ivnroStatus == 40 || x.ivnroStatus == 50));
+            short[] lcvnroStatusRTA = new short[] { };
+            DocumentTrackingModel lioTrack = mioContext.DocumentTrackings.OrderByDescending(x => x.ivdtmTrack).FirstOrDefault(x => x.ivlngDoc == mioDcModel.ivlngDoc && (x.ivnroStatus == 20 || x.ivnroStatus == 35 || x.ivnroStatus == 40 || x.ivnroStatus == 50));
             if (lioTrack == null || string.IsNullOrEmpty(lioTrack.ivstrData))
                 throw new Exception(Resources.lioE_CAEQry_Err);
             dynamic lioTrackData = JsonConvert.DeserializeObject(lioTrack.ivstrData);
 
-            FEXResponseLast_CMP lioFEXResponseLast_CMP = JsonConvert.DeserializeObject<FEXResponseLast_CMP>(lioTrackData.Response.ToString()); 
+            FEXResponseLast_CMP lioFEXResponseLast_CMP = JsonConvert.DeserializeObject<FEXResponseLast_CMP>(lioTrackData.Response.ToString());
             if (lioFEXResponseLast_CMP.FEXResult_LastCMP != null && lioFEXResponseLast_CMP.FEXResult_LastCMP?.Cbte_nro != null)
                 return new UxAuth
                 {
                     ivdtmNode = lioTrack.ivdtmTrack,
                     ivnumtrack = lioTrack.ivnumTrack,
                     ivstrAuthCode = string.Empty,
-                    ivdtmAuthVenc =  string.Empty,
+                    ivdtmAuthVenc = string.Empty,
                     ivstrAuthType = "CAE",
                     ivtrStatusDesc = "Rechazado",
                     ivstrErrors = $"No Correlativo, Ultimo Autorizado: {lioFEXResponseLast_CMP.FEXResult_LastCMP.Cbte_nro}",
@@ -648,7 +643,27 @@ namespace Applet.Nat.Api.Br.Models
         }
         #endregion
         #region PRIVATE METHODS
-
+        private FEXGetCMPResponse ExceptionToResponse(Exception lioE)
+        {
+            FEXGetCMPResponse lioO = new FEXGetCMPResponse
+            {
+                FEXResultGet = new ClsFEXGetCMPR
+                {
+                    Cae = string.Empty,
+                    Cbte_nro = 0,
+                    Cbte_tipo = 0,
+                    Fch_venc_Cae = string.Empty,
+                    Punto_vta = 0
+                },
+                FEXErr = new ClsFEXErr
+                {
+                    ErrCode = 999,
+                    ErrMsg = lioE.Message
+                },
+                FEXEvents = null
+            };
+            return lioO;
+        }
         #endregion
     }
 

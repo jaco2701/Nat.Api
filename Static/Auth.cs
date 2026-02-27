@@ -23,7 +23,7 @@ namespace Applet.Nat.Api.Static
                 ValidateIssuer = false,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = GetKey()
+                IssuerSigningKey = GetKey(),
             };
             new JwtSecurityTokenHandler().ValidateToken(vivstrToken, lioValidationParameters, out SecurityToken rioSecurityToken);
             if (rioSecurityToken == null)

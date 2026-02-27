@@ -38,6 +38,7 @@ namespace Applet.Nat.Api.Br.Models
         public DateTime? ivdtmServhasta { get; set; }
         public DateTime? ivdtmVtopago { get; set; }
         public string? ivstrCanMisMonExt { get; set; }
+        public DocumentoPeriodoAsociado ioPeriodoAsociado { get; set; }
         public List<DocumentAsociado> coAsociados { get; set; }
         public List<DocumentOtroTributo> coOtrosTributos { get; set; }
         public List<DocumentIva> coIvas { get; set; }
@@ -69,6 +70,14 @@ namespace Applet.Nat.Api.Br.Models
             ivdtmServhasta = Format.DateFromUX(vioDocumentUser.ivstrFechaServhasta, livstrApiDtmFormat);
             ivdtmVtopago = Format.DateFromUX(vioDocumentUser.ivstrFechaVtopago, livstrApiDtmFormat);
             ivstrCanMisMonExt = vioDocumentUser.ivstrCanMisMonExt ?? string.Empty;
+            if (vioDocumentUser.ioPeriodoAsociado != null)
+            {
+                ioPeriodoAsociado = new DocumentoPeriodoAsociado
+                {
+                    ivdtmDesde = Format.DateFromUX(vioDocumentUser.ioPeriodoAsociado.ivstrFechaDesde, livstrApiDtmFormat),
+                    ivdtmHasta = Format.DateFromUX(vioDocumentUser.ioPeriodoAsociado.ivstrFechaHasta, livstrApiDtmFormat)
+                };
+            }
             if (vioDocumentUser.coAsociados != null && vioDocumentUser.coAsociados.Count > 0)
             {
                 coAsociados = new List<DocumentAsociado>();
@@ -144,6 +153,7 @@ namespace Applet.Nat.Api.Br.Models
                              ivdblBaseImp = lioO.ivdblBaseImponible ?? 0,
                              ivdblImporte = lioO.ivdblImporte ?? 0,
                              ivnroId = lioO.ivnroId ?? 0,
+                             ivdblAlicuota = lioO.ivdblAlicuota,
                              ivstrDesc = lioO.ivstrDesc
                          });
                 }
@@ -191,7 +201,7 @@ namespace Applet.Nat.Api.Br.Models
                                {
                                    lioAutRequest
                                },
-                               Response = lioE.Message
+                               Response = ExceptionToResponse(lioE)
                            }
                        )
                    );
@@ -260,7 +270,7 @@ namespace Applet.Nat.Api.Br.Models
                                        lioAutRequest,
                                        lioFECompConsultaReq
                                    },
-                                   Response = lioE.Message
+                                   Response = ExceptionToResponse(lioE)
                                }
                            )
                        );
@@ -325,74 +335,80 @@ namespace Applet.Nat.Api.Br.Models
             else
                 lioCAEDetRequest.FchVtoPago = this.ivdtmVtopago?.ToString(lioAfipService.ivstrDateformat);
             //
-            int lionum = 0;
-            if (this.coAsociados != null && this.coAsociados.Count > 0)
+            int livnum = 0;
+            if (ioPeriodoAsociado != null && ioPeriodoAsociado?.ivdtmDesde!= null && ioPeriodoAsociado?.ivdtmHasta != null)
+            {
+                lioCAEDetRequest.PeriodoAsoc = new Periodo();
+                lioCAEDetRequest.PeriodoAsoc.FchDesde = ioPeriodoAsociado?.ivdtmDesde?.ToString(lioAfipService.ivstrDateformat);
+                lioCAEDetRequest.PeriodoAsoc.FchHasta = ioPeriodoAsociado?.ivdtmHasta?.ToString(lioAfipService.ivstrDateformat);
+            }
+            else if (this.coAsociados != null && this.coAsociados.Count > 0)
             {
                 lioCAEDetRequest.CbtesAsoc = new CbteAsoc[this.coAsociados.Count];
                 foreach (DocumentAsociado lioDocumentAsociado in this.coAsociados)
                 {
-                    lioCAEDetRequest.CbtesAsoc[lionum] = new CbteAsoc();
-                    lioCAEDetRequest.CbtesAsoc[lionum].Tipo = (int)lioDocumentAsociado.ivnroCbtetipo;
-                    lioCAEDetRequest.CbtesAsoc[lionum].PtoVta = lioDocumentAsociado.ivnumCbtePuntovta ?? 0;
-                    lioCAEDetRequest.CbtesAsoc[lionum].Nro = lioDocumentAsociado.ivlngCbteNro ?? 0;
-                    lioCAEDetRequest.CbtesAsoc[lionum].Cuit = lioDocumentAsociado.ivlngCbteCUIT.ToString();
-                    lioCAEDetRequest.CbtesAsoc[lionum].CbteFch = lioDocumentAsociado.ivdtmFechaEmision?.ToString(lioAfipService.ivstrDateformat);
-                    lionum++;
+                    lioCAEDetRequest.CbtesAsoc[livnum] = new CbteAsoc();
+                    lioCAEDetRequest.CbtesAsoc[livnum].Tipo = (int)lioDocumentAsociado.ivnroCbtetipo;
+                    lioCAEDetRequest.CbtesAsoc[livnum].PtoVta = lioDocumentAsociado.ivnumCbtePuntovta ?? 0;
+                    lioCAEDetRequest.CbtesAsoc[livnum].Nro = lioDocumentAsociado.ivlngCbteNro ?? 0;
+                    lioCAEDetRequest.CbtesAsoc[livnum].Cuit = lioDocumentAsociado.ivlngCbteCUIT.ToString();
+                    lioCAEDetRequest.CbtesAsoc[livnum].CbteFch = lioDocumentAsociado.ivdtmFechaEmision?.ToString(lioAfipService.ivstrDateformat);
+                    livnum++;
                 }
             }
             if (this.coOtrosTributos != null && this.coOtrosTributos.Count > 0)
             {
-                lionum = 0;
+                livnum = 0;
                 lioCAEDetRequest.Tributos = new Tributo[this.coOtrosTributos.Count];
                 foreach (DocumentOtroTributo lioDocumentOtroTributo in this.coOtrosTributos)
                 {
-                    lioCAEDetRequest.Tributos[lionum] = new Tributo();
-                    lioCAEDetRequest.Tributos[lionum].Id = lioDocumentOtroTributo.ivnroId ?? 0;
-                    lioCAEDetRequest.Tributos[lionum].Desc = lioDocumentOtroTributo.ivstrDesc;
-                    lioCAEDetRequest.Tributos[lionum].BaseImp = lioDocumentOtroTributo.ivdblBaseImp ?? 0;
-                    lioCAEDetRequest.Tributos[lionum].Alic = lioDocumentOtroTributo.ivdblAlicuota ?? 0;
-                    lioCAEDetRequest.Tributos[lionum].Importe = lioDocumentOtroTributo.ivdblImporte ?? 0;
-                    lionum++;
+                    lioCAEDetRequest.Tributos[livnum] = new Tributo();
+                    lioCAEDetRequest.Tributos[livnum].Id = lioDocumentOtroTributo.ivnroId ?? 0;
+                    lioCAEDetRequest.Tributos[livnum].Desc = lioDocumentOtroTributo.ivstrDesc;
+                    lioCAEDetRequest.Tributos[livnum].BaseImp = lioDocumentOtroTributo.ivdblBaseImp ?? 0;
+                    lioCAEDetRequest.Tributos[livnum].Alic = lioDocumentOtroTributo.ivdblAlicuota ?? 0;
+                    lioCAEDetRequest.Tributos[livnum].Importe = lioDocumentOtroTributo.ivdblImporte ?? 0;
+                    livnum++;
                 }
             }
             if (this.coIvas != null && this.coIvas.Count > 0)
             {
-                lionum = 0;
+                livnum = 0;
                 lioCAEDetRequest.Iva = new AlicIva[this.coIvas.Count];
                 foreach (DocumentIva lioDocumentIva in this.coIvas)
                 {
-                    lioCAEDetRequest.Iva[lionum] = new AlicIva();
-                    lioCAEDetRequest.Iva[lionum].Id = lioDocumentIva.ivnroTipo ?? 0;
-                    lioCAEDetRequest.Iva[lionum].BaseImp = lioDocumentIva.ivdblBaseImponible ?? 0;
-                    lioCAEDetRequest.Iva[lionum].Importe = lioDocumentIva.ivdblImporte ?? 0;
-                    lionum++;
+                    lioCAEDetRequest.Iva[livnum] = new AlicIva();
+                    lioCAEDetRequest.Iva[livnum].Id = lioDocumentIva.ivnroTipo ?? 0;
+                    lioCAEDetRequest.Iva[livnum].BaseImp = lioDocumentIva.ivdblBaseImponible ?? 0;
+                    lioCAEDetRequest.Iva[livnum].Importe = lioDocumentIva.ivdblImporte ?? 0;
+                    livnum++;
                 }
             }
             //
             if (this.coOpcionales != null && this.coOpcionales.Count > 0)
             {
-                lionum = 0;
+                livnum = 0;
                 lioCAEDetRequest.Opcionales = new Opcional[this.coOpcionales.Count];
                 foreach (DocumentOpcional lioDocumentOpcional in this.coOpcionales)
                 {
-                    lioCAEDetRequest.Opcionales[lionum] = new Opcional();
-                    lioCAEDetRequest.Opcionales[lionum].Id = lioDocumentOpcional.ivstrId;
-                    lioCAEDetRequest.Opcionales[lionum].Valor = lioDocumentOpcional.ivstrValor;
-                    lionum++;
+                    lioCAEDetRequest.Opcionales[livnum] = new Opcional();
+                    lioCAEDetRequest.Opcionales[livnum].Id = lioDocumentOpcional.ivstrId;
+                    lioCAEDetRequest.Opcionales[livnum].Valor = lioDocumentOpcional.ivstrValor;
+                    livnum++;
                 }
             }
             //
             if (this.coCompradores != null && this.coCompradores.Count > 0)
             {
-                lionum = 0;
+                livnum = 0;
                 lioCAEDetRequest.Compradores = new Comprador[this.coCompradores.Count];
                 foreach (DocumentComprador lioDocumentComprador in this.coCompradores)
                 {
-                    lioCAEDetRequest.Compradores[lionum] = new Comprador();
-                    lioCAEDetRequest.Compradores[lionum].DocTipo = lioDocumentComprador.ivnroDocTipo ?? 0;
-                    lioCAEDetRequest.Compradores[lionum].DocNro = lioDocumentComprador.ivlngDocNro ?? 0;
-                    lioCAEDetRequest.Compradores[lionum].Porcentaje = lioDocumentComprador.ivdblPorcentaje ?? 0;
-                    lionum++;
+                    lioCAEDetRequest.Compradores[livnum] = new Comprador();
+                    lioCAEDetRequest.Compradores[livnum].DocTipo = lioDocumentComprador.ivnroDocTipo ?? 0;
+                    lioCAEDetRequest.Compradores[livnum].DocNro = lioDocumentComprador.ivlngDocNro ?? 0;
+                    lioCAEDetRequest.Compradores[livnum].Porcentaje = lioDocumentComprador.ivdblPorcentaje ?? 0;
+                    livnum++;
                 }
             }
             FECAERequest lioFECAERequest = new FECAERequest
@@ -426,7 +442,7 @@ namespace Applet.Nat.Api.Br.Models
                                    lioAutRequest,
                                    lioFECAERequest
                                },
-                               Response = lioE.Message
+                               Response = ExceptionToResponse(lioE) 
                            }
                        )
                     );
@@ -701,7 +717,22 @@ namespace Applet.Nat.Api.Br.Models
         }
         #endregion
         #region PRIVATE METHODS
-
+        private FECompConsultarResponse ExceptionToResponse(Exception lioE)
+        {
+            FECompConsultarResponse lioO = new FECompConsultarResponse
+            {
+                Body = new FECompConsultarResponseBody
+                {
+                    FECompConsultarResult = new FECompConsultaResponse
+                    {
+                        ResultGet = new FECompConsResponse { CodAutorizacion = string.Empty, FchVto = string.Empty },
+                        Errors = [new Err { Code = 999, Msg = lioE.Message }],
+                        Events = []
+                    }
+                }
+            };
+            return lioO;
+        }
         #endregion
     }
 

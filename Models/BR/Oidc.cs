@@ -7,7 +7,7 @@ namespace Applet.Nat.Api.Br
         public int ivnumIdentityProvider { get; set; } = 0;
         public string? ivstrState { get; set; }
         public string? ivstrCode { get; set; }
-        public string? ivstrRefreshToken { get; set; }
+        public string? ivstrToken { get; set; }
     }
     public class OidcResponse
     {

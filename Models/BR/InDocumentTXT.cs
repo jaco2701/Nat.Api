@@ -539,7 +539,7 @@ namespace Applet.Nat.Api.Br.Models
                                     continue;
                                 if (livstrLine.Trim().StartsWith("*") || livstrLine.Trim().StartsWith("XXXFINDOC"))
                                     break;
-                                lioUxDocumentOtroTributo = new UxDocumentOtroTributo();
+                                lioUxDocumentOtroTributo = new UxDocumentOtroTributo { ivstrJurisdiccion=string.Empty};
                                 livblnOK = true;
                                 foreach (ServiceMapperItem lioMapperItemR in lioServiceMapper.coItems.Where(x => x.ivstrProperty.StartsWith("coOtrosTributos.")))
                                 {
@@ -599,6 +599,11 @@ namespace Applet.Nat.Api.Br.Models
                                             }
                                             lioUxDocumentOtroTributo.ivdblImporte = livval;
                                             break;
+                                        case "coOtrosTributos.ivstrJurisdiccion":
+                                            if (!string.IsNullOrEmpty(livstrPropertyValue))
+                                                lioUxDocumentOtroTributo.ivstrJurisdiccion = livstrPropertyValue;
+                                            break;
+
                                     }
                                 }
                                 if (livblnOK)

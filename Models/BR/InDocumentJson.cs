@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Reflection;
 using System.Text;
 using System.Xml;
 namespace Applet.Nat.Api.Br.Models
@@ -25,43 +26,43 @@ namespace Applet.Nat.Api.Br.Models
         #region PUBLIC METHODS
         public DocumentUser[] GetDocuments()
         {
-                Cuit lioCuit = new Cuit(mivlngCuit, mioContext, null);
-                ServiceMapper lioServiceMapper = GetMapper();
-                string livstr = lioCuit.GetEncoding().GetString(Convert.FromBase64String(Format.UnCompress(ivstrRaw ?? string.Empty, lioCuit.GetEncoding()))),
-                        livstrApiDtmFormat = ListHelper.GetValue("Format", "ApiDtm", mioContext);
-                DateTime livdtm;
-                StringBuilder lioSbErrors = new StringBuilder();
-                List<DocumentUser> lcoDocumentUser = JsonConvert.DeserializeObject<List<DocumentUser>>(livstr);
-                short livnroI = 0;
-                foreach (DocumentUser lioDocumentUser in lcoDocumentUser)
-                {
-                    lioDocumentUser.ivstrInputData = Format.Compress(Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new List<DocumentUser> { lioDocumentUser }))));
-                    lioDocumentUser.ivblnTaxInLines = lioServiceMapper.ivblnTaxInLines ?? false;
-                    lioDocumentUser.ivblnCalcPermisoExistente = lioServiceMapper.ivblnCalcPermisoExistente ?? false;
-                    lioDocumentUser.ivstrLoadErrors = string.Empty;
-                    if (lioDocumentUser.ivnroTipoDoc == null)
-                        lioSbErrors.AppendLine($"[{livnroI}] Tipo de Documento {Resources.lioE_ObjectNoM}");
-                    if (lioDocumentUser.ivnumPvta == null)
-                        lioSbErrors.AppendLine($"[{livnroI}] Punto de Venta {Resources.lioE_ObjectNoM}");
-                    if (lioDocumentUser.ivlngCbte == null)
-                        lioSbErrors.AppendLine($"[{livnroI}] Numero de Comprobante {Resources.lioE_ObjectNoM}");
-                    if (lioDocumentUser.ivstrFechaEmision == null || !DateTime.TryParseExact(lioDocumentUser.ivstrFechaEmision, livstrApiDtmFormat, null, DateTimeStyles.None, out livdtm))
-                        lioSbErrors.AppendLine($"[{livnroI}] Fecha de Comprobante {Resources.lioE_ObjectNoF}");
-                    if (lioDocumentUser.ivstrMoneda == null)
-                        lioSbErrors.AppendLine($"[{livnroI}] Moneda {Resources.lioE_ObjectNoF}");
-                    if (lioDocumentUser.ivlngCuitEmisor == null)
-                        lioSbErrors.AppendLine($"[{livnroI}] CUIT Emisor {Resources.lioE_ObjectNoF}");
-                    if (lioDocumentUser.ivlngDocReceptor == null)
-                        lioSbErrors.AppendLine($"[{livnroI}] Numero de documento receptor {Resources.lioE_ObjectNoM}");
-                    if (lioDocumentUser.ivnroTipoDocReceptor == null)
-                        lioSbErrors.AppendLine($"[{livnroI}] Tipo de documento receptor {Resources.lioE_ObjectNoM}");
-                    if (lioDocumentUser.ivstrRazonSocial == null)
-                        lioSbErrors.AppendLine($"[{livnroI}] Razon Social Receptor {Resources.lioE_ObjectNoF}");
-                    if (lioSbErrors.Length > 0)
-                        lioDocumentUser.ivstrLoadErrors = lioSbErrors.ToString();
-                    livnroI++;
-                }
-                return lcoDocumentUser.ToArray();
+            Cuit lioCuit = new Cuit(mivlngCuit, mioContext, null);
+            ServiceMapper lioServiceMapper = GetMapper();
+            string livstr = lioCuit.GetEncoding().GetString(Convert.FromBase64String(Format.UnCompress(ivstrRaw ?? string.Empty, lioCuit.GetEncoding()))),
+                    livstrApiDtmFormat = ListHelper.GetValue("Format", "ApiDtm", mioContext);
+            DateTime livdtm;
+            StringBuilder lioSbErrors = new StringBuilder();
+            List<DocumentUser> lcoDocumentUser = JsonConvert.DeserializeObject<List<DocumentUser>>(livstr);
+            short livnroI = 0;
+            foreach (DocumentUser lioDocumentUser in lcoDocumentUser)
+            {
+                lioDocumentUser.ivstrInputData = Format.Compress(Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new List<DocumentUser> { lioDocumentUser }))));
+                lioDocumentUser.ivblnTaxInLines = lioServiceMapper.ivblnTaxInLines ?? false;
+                lioDocumentUser.ivblnCalcPermisoExistente = lioServiceMapper.ivblnCalcPermisoExistente ?? false;
+                lioDocumentUser.ivstrLoadErrors = string.Empty;
+                if (lioDocumentUser.ivnroTipoDoc == null)
+                    lioSbErrors.AppendLine($"[{livnroI}] Tipo de Documento {Resources.lioE_ObjectNoM}");
+                if (lioDocumentUser.ivnumPvta == null)
+                    lioSbErrors.AppendLine($"[{livnroI}] Punto de Venta {Resources.lioE_ObjectNoM}");
+                if (lioDocumentUser.ivlngCbte == null)
+                    lioSbErrors.AppendLine($"[{livnroI}] Numero de Comprobante {Resources.lioE_ObjectNoM}");
+                if (lioDocumentUser.ivstrFechaEmision == null || !DateTime.TryParseExact(lioDocumentUser.ivstrFechaEmision, livstrApiDtmFormat, null, DateTimeStyles.None, out livdtm))
+                    lioSbErrors.AppendLine($"[{livnroI}] Fecha de Comprobante {Resources.lioE_ObjectNoF}");
+                if (lioDocumentUser.ivstrMoneda == null)
+                    lioSbErrors.AppendLine($"[{livnroI}] Moneda {Resources.lioE_ObjectNoF}");
+                if (lioDocumentUser.ivlngCuitEmisor == null)
+                    lioSbErrors.AppendLine($"[{livnroI}] CUIT Emisor {Resources.lioE_ObjectNoF}");
+                if (lioDocumentUser.ivlngDocReceptor == null)
+                    lioSbErrors.AppendLine($"[{livnroI}] Numero de documento receptor {Resources.lioE_ObjectNoM}");
+                if (lioDocumentUser.ivnroTipoDocReceptor == null)
+                    lioSbErrors.AppendLine($"[{livnroI}] Tipo de documento receptor {Resources.lioE_ObjectNoM}");
+                if (lioDocumentUser.ivstrRazonSocial == null)
+                    lioSbErrors.AppendLine($"[{livnroI}] Razon Social Receptor {Resources.lioE_ObjectNoF}");
+                if (lioSbErrors.Length > 0)
+                    lioDocumentUser.ivstrLoadErrors = lioSbErrors.ToString();
+                livnroI++;
+            }
+            return lcoDocumentUser.ToArray();
         }
         public string ToPrint()
         {
@@ -85,57 +86,73 @@ namespace Applet.Nat.Api.Br.Models
             XmlNamespaceManager lioNsMngr = new XmlNamespaceManager(lioXmlToPrinter.NameTable);
             lioNsMngr.AddNamespace("ns", "http://www.afip.com.ar/fe");
             StringBuilder lioSbErrors = new StringBuilder();
-            //CAMPOS
+            // Convert the document to JObject for JSON path queries
+            JObject lioDocumentJson = JObject.FromObject(lcoDocuments[0]);
+            string[] lcvstrPropertyValues;
+            PropertyInfo lioPropertyInfo, lioParentPropertyInfo;
+            string livstrValue;
+            object lioTargetObject = lcoDocuments[0];
+            // CAMPOS
             foreach (ServiceMapperItem lioMapperItem in lioServiceMapper.coItems)
             {
                 if (string.IsNullOrEmpty(lioMapperItem.ivstrProperty)) continue;
-                if (lioMapperItem.coXPaths==null) continue;
-                //CAMPOS UNICOS
-                switch (lioMapperItem.ivstrProperty.Substring(0, 2))
+                if (lioMapperItem.coXPaths == null) continue;
+                try
                 {
-                    case "iv":
-                        livstrPropertyValue = lcoDocuments[0].GetType().GetProperty(lioMapperItem.ivstrProperty)?.GetValue(lcoDocuments[0], null)?.ToString() ?? string.Empty;
-                        foreach (ServiceMapperItemXPath lioServiceMapperItemXPath in lioMapperItem.coXPaths)
+                    lcvstrPropertyValues= lioMapperItem.ivstrProperty.Split('.'); 
+                    if (lcvstrPropertyValues.Length==0) continue;
+                    if (lcvstrPropertyValues.Length == 1 && lcvstrPropertyValues[0].StartsWith("iv"))
+                        lioPropertyInfo = typeof(DocumentUser).GetProperty(lioMapperItem.ivstrProperty);
+                    else if (lcvstrPropertyValues.Length == 2)
+                    {
+                        lioParentPropertyInfo = typeof(DocumentUser).GetProperty(lcvstrPropertyValues[0]);
+                        if (lioParentPropertyInfo == null)
                         {
-                            try
-                            {
-                                lioXmlNodeToPrinter = lioXmlToPrinter.SelectSingleNode(lioServiceMapperItemXPath.ivstrData, lioNsMngr);
-                            }
-                            catch (Exception lioE)
-                            {
-                                lioSbErrors.AppendLine($"Propiedad {lioMapperItem.ivstrProperty} xpath {lioServiceMapperItemXPath.ivstrData} {Resources.lioE_ObjectNoM} Error: {lioE.Message}");
-                                continue;
-                            }
+                            lioSbErrors.AppendLine($"Propiedad {lcvstrPropertyValues[0]} {Resources.lioE_ObjectNoF}");
+                            continue;
+                        }
+                        lioTargetObject = lioParentPropertyInfo.GetValue(lcoDocuments[0]);
+                        if (lioTargetObject == null)
+                        {
+                            lioSbErrors.AppendLine($"Valor de Propiedad {lcvstrPropertyValues[0]} es null");
+                            continue;
+                        }
+                        lioPropertyInfo = lioParentPropertyInfo.PropertyType.GetProperty(lcvstrPropertyValues[1]);
+                    }
+                    else continue;
+                    if (lioPropertyInfo == null)
+                    {
+                        lioSbErrors.AppendLine($"Propiedad {lioMapperItem.ivstrProperty} {Resources.lioE_ObjectNoF}");
+                        continue;
+                    }
+                    livstrValue = lioPropertyInfo.GetValue(lioTargetObject)?.ToString() ?? string.Empty;
+                    if (string.IsNullOrEmpty(livstrValue))
+                    {
+                        lioSbErrors.AppendLine($"Valor de propiedad {lioMapperItem.ivstrProperty} {Resources.lioE_ObjectNoM}");
+                        continue;
+                    }
+                    foreach (ServiceMapperItemXPath lioServiceMapperItemXPath in lioMapperItem.coXPaths)
+                    {
+                        try
+                        {
+                            lioXmlNodeToPrinter = lioXmlToPrinter.SelectSingleNode(lioServiceMapperItemXPath.ivstrData, lioNsMngr);
                             if (lioXmlNodeToPrinter == null)
                             {
-                                lioSbErrors.AppendLine($"Propiedad {lioMapperItem.ivstrProperty} xpath {lioServiceMapperItemXPath.ivstrData} {Resources.lioE_ObjectNoM}");
+                                lioSbErrors.AppendLine($"XPath {lioMapperItem.ivstrProperty} {Resources.lioE_ObjectNoM}");
                                 continue;
                             }
-                            lioXmlNodeToPrinter.InnerText = livstrPropertyValue;
+                            lioXmlNodeToPrinter.InnerText = livstrValue;
                         }
-                        break;
-                    case "io":
-                    case "co":
-                        JArray lcoJArray = (JArray)JToken.FromObject(lcoDocuments[0].GetType().GetProperty(lioMapperItem.ivstrProperty)?.GetValue(lcoDocuments[0], null) ?? new JArray());
-                        int livnumIndex = 1;
-                        foreach (JObject lioJObject in lcoJArray)
+                        catch (Exception lioE)
                         {
-                            foreach (ServiceMapperItemXPath lioServiceMapperItemXPath in lioMapperItem.coXPaths)
-                            {
-                                lioXmlNodeToPrinter = lioXmlToPrinter.SelectSingleNode(lioServiceMapperItemXPath.ivstrData.Replace("{N}", livnumIndex.ToString()), lioNsMngr);
-                                if (lioXmlNodeToPrinter == null)
-                                {
-                                    lioSbErrors.AppendLine($"Propiedad {lioMapperItem.ivstrProperty} xpath {lioServiceMapperItemXPath.ivstrData} {Resources.lioE_ObjectNoM}");
-                                    continue;
-                                }
-                                livstrPropertyValue = lioJObject.GetType().GetProperty(lioMapperItem.ivstrProperty.Substring(3))?.GetValue(lioJObject, null)?.ToString() ?? string.Empty;
-                                lioXmlNodeToPrinter.InnerText = livstrPropertyValue;
-                            }
-                            livnumIndex++;
+                            lioSbErrors.AppendLine($"Property {lioMapperItem.ivstrProperty} XPath {lioServiceMapperItemXPath.ivstrData} Error: {lioE.Message}");
+                            continue;
                         }
-                        break;
-                    default:
-                        break;
+                    }
+                }
+                catch (Exception lioE)
+                {
+                    lioSbErrors.AppendLine($"Propiedad {lioMapperItem.ivstrProperty} Error: {lioE.Message}");
                 }
             }
             if (lioSbErrors.Length > 0)

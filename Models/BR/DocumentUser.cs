@@ -33,6 +33,7 @@ namespace Applet.Nat.Api.Br.Models
         [JsonProperty("IdCliente")] public string? ivstrIdCliente { get; set; } // Identificador interno del cliente asociado al documento
         [JsonProperty("IdSucursal")] public string? ivstrIdSucursal { get; set; } // Identificador interno de la sucursal
         [JsonProperty("DocumentosAsociados")] public List<UxDocumentAsociado>? coAsociados { get; set; } // Lista de documentos asociados (ej. notas de crédito, débito, etc.)
+        [JsonProperty("PeriodoAsociado")] public UxPeriodoAsociado ioPeriodoAsociado { get; set; } // Periodo Asociado al documento
         [JsonProperty("OtrosTributos")] public List<UxDocumentOtroTributo>? coOtrosTributos { get; set; } // Lista de otros tributos aplicables al documento
         [JsonProperty("Ivas")] public List<UxDocumentIva>? coIvas { get; set; } // Lista de alícuotas de IVA aplicables al documento
         [JsonProperty("Opcionales")] public List<UxDocumentOpcional>? coOpcionales { get; set; } // Lista de campos opcionales del documento
@@ -93,37 +94,37 @@ namespace Applet.Nat.Api.Br.Models
                 }
                 coIvas = lcoUxDocumentIvas;
             }
-            //if (coOtrosTributos != null && coOtrosTributos.Count > 0)
-            //{
-            //    //agrupacion de codigos de otros tributos
-            //    livnro = 0;
-            //    ivdblImporteOtrosTributos = 0;
-            //    List<UxDocumentOtroTributo> lcoOtrosTributos = new List<UxDocumentOtroTributo>();
-            //    foreach (UxDocumentOtroTributo lioO in coOtrosTributos.OrderBy(x => x.ivnroId))
-            //    {
-            //        lioO.ivdblBaseImponible = lioO.ivdblBaseImponible ?? 0;
-            //        lioO.ivdblAlicuota = lioO.ivdblAlicuota ?? 0;
-            //        lioO.ivdblImporte = lioO.ivdblImporte ?? 0;
-            //        if (lioO.ivnroId == null || lioO.ivnroId == 0) continue;
-            //        if (livnro != lioO.ivnroId)
-            //        {
-            //            lcoOtrosTributos.Add(
-            //                 new UxDocumentOtroTributo
-            //                 {
-            //                     ivdblAlicuota = lioO.ivdblAlicuota ?? 0,
-            //                     ivdblBaseImponible = 0,
-            //                     ivdblImporte = 0,
-            //                     ivnroId = lioO.ivnroId,
-            //                     ivstrDesc = lioO.ivstrDesc
-            //                 }
-            //            );
-            //            livnro = lioO.ivnroId ?? 0;
-            //        }
-            //        lcoOtrosTributos.Last().ivdblBaseImponible += lioO.ivdblBaseImponible ?? 0;
-            //        lcoOtrosTributos.Last().ivdblImporte += lioO.ivdblImporte ?? 0;
-            //    }
-            //    coOtrosTributos = lcoOtrosTributos;
-            //}
+            if (coOtrosTributos != null && coOtrosTributos.Count > 0)
+            {
+                //agrupacion de codigos de otros tributos
+                string livstrJurisdiccion = "999999999";
+                List<UxDocumentOtroTributo> lcoOtrosTributos = new List<UxDocumentOtroTributo>();
+                foreach (UxDocumentOtroTributo lioO in coOtrosTributos.OrderBy(x => x.ivstrJurisdiccion))
+                {
+                    lioO.ivdblBaseImponible = lioO.ivdblBaseImponible ?? 0;
+                    lioO.ivdblAlicuota = lioO.ivdblAlicuota ?? 0;
+                    lioO.ivdblImporte = lioO.ivdblImporte ?? 0;
+                    if (lioO.ivnroId == null || lioO.ivnroId == 0) continue;
+                    if (livstrJurisdiccion != lioO.ivstrJurisdiccion)
+                    {
+                        lcoOtrosTributos.Add(
+                             new UxDocumentOtroTributo
+                             {
+                                 ivdblAlicuota = lioO.ivdblAlicuota ?? 0,
+                                 ivdblBaseImponible = 0,
+                                 ivdblImporte = 0,
+                                 ivnroId = lioO.ivnroId,
+                                 ivstrDesc = lioO.ivstrDesc,
+                                 ivstrJurisdiccion = lioO.ivstrJurisdiccion
+                             }
+                        );
+                        livstrJurisdiccion = lioO.ivstrJurisdiccion ?? string.Empty;
+                    }
+                    lcoOtrosTributos.Last().ivdblBaseImponible += lioO.ivdblBaseImponible ?? 0;
+                    lcoOtrosTributos.Last().ivdblImporte += lioO.ivdblImporte ?? 0;
+                }
+                coOtrosTributos = lcoOtrosTributos;
+            }
             if (ivblnTaxInLines ?? false)
             {
                 // Obtension de montos desde los impuestos
@@ -281,6 +282,8 @@ namespace Applet.Nat.Api.Br.Models
         [JsonProperty("BaseImponible")] public Double? ivdblBaseImponible { get; set; }  // Base imponible del otro tributo
         [JsonProperty("Alicuota")] public Double? ivdblAlicuota { get; set; } // Alícuota del otro tributo
         [JsonProperty("Importe")] public Double? ivdblImporte { get; set; } // Importe total del otro tributo
+        [JsonProperty("Jurisdiccion")] public string? ivstrJurisdiccion { get; set; } // Id del otro tributo
+
     }
     public class UxDocumentIva
     {
@@ -328,6 +331,11 @@ namespace Applet.Nat.Api.Br.Models
         [JsonProperty("Desc")] public string? ivstrDesc { get; set; } // Descripción del ítem
         [JsonProperty("TipoIVA")] public short? ivnroTipoIVA { get; set; } // Tipo de IVA aplicable al ítem (ej. IVA General, IVA Reducido, etc.)
         [JsonProperty("ImporteItem")] public double? ivdblImporteItem { get; set; } // Importe total del ítem (Cantidad * Precio Unitario - Bonificación)
+    }
+    public class UxPeriodoAsociado
+    {
+        [JsonProperty("FechaDesde")] public string? ivstrFechaDesde { get; set; } // Fecha de inicio del período asociado
+        [JsonProperty("FechaHasta")] public string ivstrFechaHasta { get; set; } // Fecha de fin del período asociado
     }
     public class UxDocumentPermisoExp
     {

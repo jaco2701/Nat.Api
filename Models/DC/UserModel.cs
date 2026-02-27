@@ -20,5 +20,6 @@ namespace Applet.Nat.Api.DC
         public bool? ivblnEnable { get; set; }
         [Column("nrologonFails")]
         public short? ivnrologonFails { get; set; }
+
     }
 }

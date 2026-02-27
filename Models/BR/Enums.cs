@@ -30,8 +30,8 @@ namespace Applet.Nat.Api.Br.Models
     public enum eOidcRequestType : short
     {
         GetAuthUrl = 0,
-        ExchangeCode = 1,
-        RefreshToken = 2,
+        GetExchangeParams = 1,
+        GetUser = 2,
     }
 }
 

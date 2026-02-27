@@ -150,6 +150,26 @@ namespace Applet.Nat.Api.Br.Models
                             livnumIdx++;
                         }
                     }
+                    lioDocumentUser.ioPeriodoAsociado = null;
+                    foreach (ServiceMapperItem lioServiceMapperItem in lioServiceMapper.coItems.Where(x => x.ivstrProperty.StartsWith("ioPeriodoAsociado.")))
+                    {
+                        try
+                        {
+                            if (lioDocumentUser.ioPeriodoAsociado == null)
+                                lioDocumentUser.ioPeriodoAsociado = new UxPeriodoAsociado();
+                            lioObj = GetItemValue(lioServiceMapperItem, lioXmlDocument, string.Empty);
+                            if (lioObj != null)
+                            {
+                                typeof(UxPeriodoAsociado).GetProperty(lioServiceMapperItem.ivstrProperty.Split(".").Last())?.SetValue(lioDocumentUser.ioPeriodoAsociado, lioObj);
+                            }
+                        }
+                        catch (Exception lioE)
+                        {
+                            LogHelper.writeinfo($"Prop: {lioServiceMapperItem.ivstrProperty}", true);
+                            LogHelper.write(lioE);
+                            lioSbErrors.AppendLine(lioE.Message);
+                        }
+                    }
                     #endregion
                     #region Otros Tributos
                     livstr = lioServiceMapper.coItems.FirstOrDefault(x => x.ivstrProperty == "coOtrosTributos")?.coXPaths[0].ivstrData;
@@ -163,7 +183,7 @@ namespace Applet.Nat.Api.Br.Models
                         {
                             lioXmlNodeDocument = new XmlDocument();
                             lioXmlNodeDocument.LoadXml(lioXmlNode.OuterXml);
-                            lioUxDocumentOtroTributo = new UxDocumentOtroTributo();
+                            lioUxDocumentOtroTributo = new UxDocumentOtroTributo { ivstrJurisdiccion = string.Empty };
                             livblnLoadChild = false;
                             foreach (ServiceMapperItem lioServiceMapperItem in lioServiceMapper.coItems.Where(x => x.ivstrProperty.StartsWith("coOtrosTributos.")))
                             {
@@ -360,7 +380,7 @@ namespace Applet.Nat.Api.Br.Models
                             lioXmlNodeDocument.LoadXml(lioXmlNode.OuterXml);
                             lioUxDocumentPermisoExp = new UxDocumentPermisoExp();
                             livblnLoadChild = false;
-                            foreach (ServiceMapperItem lioServiceMapperItem in lioServiceMapper.coItems.Where(x => x.ivstrProperty.StartsWith("coPermisoExpes.")))
+                            foreach (ServiceMapperItem lioServiceMapperItem in lioServiceMapper.coItems.Where(x => x.ivstrProperty.StartsWith("coPermisosExp.")))
                             {
                                 try
                                 {
@@ -460,30 +480,39 @@ namespace Applet.Nat.Api.Br.Models
                     #endregion
                     #region Permisos no iterativos
                     if (new short[] { 19, 20, 21 }.Contains(lioDocumentUser.ivnroTipoDoc ?? 0))
-                        if (!string.IsNullOrEmpty(lioDocumentUser.ivstrPEId)) // hay Permiso en campo no repetitivo
-                        {
-                            if (lioDocumentUser.coPermisosExp == null || lioDocumentUser.coPermisosExp.Count() == 0) // si no hay estructura iterativa de permisos, la crea con los valores de campos no repetitivos 
+                    {
+                        if (lioDocumentUser.coPermisosExp == null || lioDocumentUser.coPermisosExp.Count() == 0)
+                            // no hay estructura iterativa de permisos, la crea con los valores de campos no repetitivos si los hubiera
+                            lioDocumentUser.coPermisosExp = new List<UxDocumentPermisoExp>
                             {
-                                lioDocumentUser.coPermisosExp = new List<UxDocumentPermisoExp>()
-                                {
-                                    new UxDocumentPermisoExp()
+                                new UxDocumentPermisoExp
                                     {
                                         ivstrId = lioDocumentUser.ivstrPEId ?? string.Empty,
                                         ivnumDestMerc = lioDocumentUser.ivnumPEDestMerc ?? 0,
                                     }
-                                };
-                            }
-                            else  // si hay estructura iterativa de permisos, le asigna los valores de campos no repetitivos a cada uno de los permisos iterativos sino estan cargados 
-                            {
-                                foreach (UxDocumentPermisoExp lioO in lioDocumentUser.coPermisosExp)
-                                {
-                                    if (!string.IsNullOrEmpty(lioO.ivstrId?.Trim())) continue;
-                                    if (lioO.ivnumDestMerc == null || lioO.ivnumDestMerc == 0) continue;
-                                    lioO.ivstrId = lioDocumentUser.ivstrPEId;
-                                }
-
-                            }
+                            };
+                        foreach (UxDocumentPermisoExp lioO in lioDocumentUser.coPermisosExp)
+                        {
+                            // para cada permiso completa campos con los datos no repetitivos si los hubiera
+                            if (string.IsNullOrEmpty(lioO.ivstrId?.Trim()))
+                                lioO.ivstrId = lioDocumentUser.ivstrPEId ?? string.Empty;
+                            if (lioO.ivnumDestMerc == null || lioO.ivnumDestMerc == 0)
+                                lioO.ivnumDestMerc = lioDocumentUser.ivnumPEDestMerc ?? 0;
                         }
+                        //borra permisos duplicados y en blanco
+                        List<UxDocumentPermisoExp> lcoPermisosExp = new List<UxDocumentPermisoExp>();
+                        string livstrCurrPEId = string.Empty;
+                        foreach (UxDocumentPermisoExp lioO in lioDocumentUser.coPermisosExp.OrderBy(x => x.ivstrId))
+                        {
+                            if (string.IsNullOrEmpty(lioO.ivstrId?.Trim())) continue;
+                            if (lioO.ivnumDestMerc == null || lioO.ivnumDestMerc == 0) continue;
+                            if (lioO.ivstrId == livstrCurrPEId) continue;
+                            livstrCurrPEId= lioO.ivstrId;
+                            lcoPermisosExp.Add(lioO);
+                        }
+                        lioDocumentUser.coPermisosExp = lcoPermisosExp;
+                    }
+
                     #endregion
                     lcoDocumentsUser.Add(lioDocumentUser);
                 }

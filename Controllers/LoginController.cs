@@ -109,97 +109,51 @@ namespace Applet.Nat.Api.Controllers
                             .Replace("{ST}", livstrState)
                             .Replace("{CH}", PkceHelper.GenerateCodeChallenge(livstrCodeVerifier));
                         LogHelper.writeinfo($"RedirectUrl: {livstrRedirectUrl}", ListHelper.Verbose(mioContext));
-
                         return ResponseHelper.Get(livstrRedirectUrl);
-
-                    case eOidcRequestType.ExchangeCode:
+                    case eOidcRequestType.GetExchangeParams:
                         {
                             if (string.IsNullOrEmpty(vioOidcRequest.ivstrState))
                                 throw new Exception($"{Resources.lioE_NoCreds} STATE");
-                            if (string.IsNullOrEmpty(vioOidcRequest.ivstrCode))
-                                throw new Exception($"{Resources.lioE_NoCreds} CODE");
                             OidcStateModel lioO = mioContext.OidcOidcStates.FirstOrDefault(x => x.ivstrState == vioOidcRequest.ivstrState);
                             if (lioO == null)
-                                throw new Exception($"{Resources.lioE_NoCreds} STATE");
+                                throw new Exception($"{Resources.lioE_NoCreds} IdentityProvider");
                             if (lioO?.ivnumIdentityProvider == null || lioO.ivnumIdentityProvider == 0)
                                 throw new Exception($"{Resources.lioE_NoCreds} IdentityProvider");
                             lioIdentityProviderModel = mioContext.IdentityProviders.Find(lioO.ivnumIdentityProvider);
                             if (lioIdentityProviderModel == null)
                                 throw new Exception($"{Resources.lioE_NoCreds} IdentityProviderModel");
-                            Dictionary<string, string> lcoParams = new Dictionary<string, string>
+                            return ResponseHelper.Get(new Dictionary<string, string>
                             {
+                                { "IdentityProviders",lioIdentityProviderModel.ivnumIdentityProvider.ToString() },
+                                { "UrlToken",lioIdentityProviderModel.ivstrIdentityProviderUrlToken },
                                 { "client_id", lioIdentityProviderModel.ivstrIdentityProviderId },
                                 { "grant_type", "authorization_code" },
-                                { "code", vioOidcRequest.ivstrCode },
+                                { "code", string.Empty },
                                 { "redirect_uri",  ListHelper.GetValue("FORMAT", "OidcUrl", mioContext) },
                                 { "code_verifier",  lioO.ivstrCodeVerifier }
-                            };
-                            using HttpClient lioHttpClient = new HttpClient();
-                            {
-                                using HttpResponseMessage lioResponse = await lioHttpClient.PostAsync(lioIdentityProviderModel.ivstrIdentityProviderUrlToken, new FormUrlEncodedContent(lcoParams));
-                                {
-                                    if (!lioResponse.IsSuccessStatusCode)
-                                    {
-                                        string lioError = await lioResponse.Content.ReadAsStringAsync();
-                                        LogHelper.writeinfo("TOKEN EXCHANGE ERROR**************", ListHelper.Verbose(mioContext));
-                                        LogHelper.writeinfo(JsonConvert.SerializeObject(lcoParams), ListHelper.Verbose(mioContext));
-                                        LogHelper.writeinfo(lioError, ListHelper.Verbose(mioContext));
-                                        throw new Exception($"{Resources.lioE_NoCreds} Token Exchange");
-                                    }
-                                    lioOauth2Response = JsonConvert.DeserializeObject<Oauth2Response>(await lioResponse.Content.ReadAsStringAsync());
-                                }
-                            }
+                            });
                         }
-                        break;
-                    case eOidcRequestType.RefreshToken:
+                    case eOidcRequestType.GetUser:
                         {
-                            if (vioOidcRequest.ivnumIdentityProvider == 0)
-                                throw new Exception($"{Resources.lioE_NoCreds} IdentityProvider");
-                            if (string.IsNullOrEmpty(vioOidcRequest.ivstrRefreshToken))
-                                throw new Exception($"{Resources.lioE_NoCreds} RefreshToken");
-                            lioIdentityProviderModel = mioContext.IdentityProviders.Find(vioOidcRequest.ivnumIdentityProvider);
-                            if (lioIdentityProviderModel == null)
-                                throw new Exception($"{Resources.lioE_NoCreds} IdentityProviderModel");
-                            Dictionary<string, string> lcoParams = new Dictionary<string, string>
-                            {
-                                { "client_id", lioIdentityProviderModel.ivstrIdentityProviderId },
-                                { "grant_type", "refresh_token" },
-                                { "refresh_token", vioOidcRequest.ivstrRefreshToken },
-                            };
-                            using HttpClient lioHttpClient = new HttpClient();
-                            {
-                                using HttpResponseMessage lioResponse = await lioHttpClient.PostAsync(lioIdentityProviderModel.ivstrIdentityProviderUrlToken, new FormUrlEncodedContent(lcoParams));
+                            JwtSecurityTokenHandler lioJwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+                            JwtSecurityToken jsonToken = lioJwtSecurityTokenHandler.ReadToken(vioOidcRequest.ivstrToken) as JwtSecurityToken;
+                            string livstrUserEmail = jsonToken?.Claims.FirstOrDefault(c => c.Type == "upn")?.Value;
+                            UserModel lioUserModel = mioContext.Users.FirstOrDefault(u => u.ivstrUserEmail == livstrUserEmail);
+                            if (lioUserModel == null)
+                                throw new Exception($"{Resources.lioE_NoCreds} User {livstrUserEmail}");
+                            User lioUser = new User(lioUserModel,mioContext);
+                            LogHelper.writeinfo($"User {lioUserModel.ivstrUserName} authenticated successfully.", ListHelper.Verbose(mioContext));
+                            return ResponseHelper.Get(
+                                new Login
                                 {
-                                    if (!lioResponse.IsSuccessStatusCode)
-                                    {
-                                        string lioError = await lioResponse.Content.ReadAsStringAsync();
-                                        LogHelper.writeinfo(lioError, true);
-                                        throw new Exception($"{Resources.lioE_NoCreds} Token Exchange");
-                                    }
-                                    lioOauth2Response = JsonConvert.DeserializeObject<Oauth2Response>(await lioResponse.Content.ReadAsStringAsync());
-                                }
-                            }
-                            break;
+                                    ioUser = new User(lioUserModel, mioContext),
+                                    ivstrToken = Auth.Get(lioUser.ioDcModel.ivnumUser, mioContext, "NatAuth"),
+                                });
                         }
                     default:
                         throw new Exception(Resources.lioE_NoCreds);
                 }
-                if (lioOauth2Response == null || string.IsNullOrEmpty(lioOauth2Response.IdToken))
-                    throw new Exception($"{Resources.lioE_NoCreds} Token Response");
-                JwtSecurityTokenHandler lioJwtSecurityTokenHandler = new JwtSecurityTokenHandler();
-                JwtSecurityToken jsonToken = lioJwtSecurityTokenHandler.ReadToken(lioOauth2Response.AccessToken) as JwtSecurityToken;
-                string livstrUserEmail = jsonToken?.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
-                UserModel lioUserModel = mioContext.Users.FirstOrDefault(u => u.ivstrUserEmail == livstrUserEmail);
-                if (lioUserModel == null)
-                    throw new Exception($"{Resources.lioE_NoCreds} User {livstrUserEmail}");
-                LogHelper.writeinfo($"User {lioUserModel.ivstrUserName} authenticated successfully.", ListHelper.Verbose(mioContext));
-                return ResponseHelper.Get(
-                    new Login
-                    {
-                        ioUser = new User(lioUserModel, mioContext),
-                        ivstrToken = lioOauth2Response.AccessToken,
-                        ivstrRefreshToken = lioOauth2Response.RefreshToken,
-                    });
+
             }
             catch (Exception lioE)
             {

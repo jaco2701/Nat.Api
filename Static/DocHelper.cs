@@ -138,6 +138,7 @@ namespace Applet.Nat.Api.Static
                         case "ivlngCbte":
                             livstr = vioDocument.ioDcModel.ivlngCbte.ToString();
                             break;
+                        case "ivdtmEmision":
                         case "ivstrFechaEmision":
                             if (vioDocument.ioDcModel.ivdtmEmision == null)
                                 throw new Exception(string.Format(Resources.lioE_ObjectNoM, "DtmEmision", "a"));
