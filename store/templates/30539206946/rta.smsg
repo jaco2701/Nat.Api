@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<SignatureMessage type="MSGSAS" tstamp="{ivdtmGen}">
+  <Document Id="-8538818082156999198">
+    <Sender>{ivlngCuitEmisor}</Sender>
+    <Receiver>{ivlngDocReceptor}</Receiver>
+    <Group>1</Group>
+    <Type>{ivnroTipo}</Type>
+    <Serie>{ivnumPvta}</Serie>
+    <Number>{ivlngCbte}</Number>
+    <Date>{ivdtmEmision}</Date>
+    <LocalNumber>{ivstrIdCliente}</LocalNumber>
+  </Document>
+  <StoreInfo>
+    <TimeStamp>{ivdtmRec}</TimeStamp>
+    <UpdateTStamp>{ivdtmAct}</UpdateTStamp>
+    <XmlFile></XmlFile>
+    <PdfFile>{ivstrFileName}</PdfFile>
+    <Url></Url>
+  </StoreInfo>
+  <Authorization>
+    <Code>{ivstrAuthCode}</Code>
+    <Date>{ivdtmNode}</Date>
+    <Expiration>{ivdtmAuthVenc}</Expiration>
+    <TrackId>{ivstrTrackId}</TrackId>
+    <Status>
+      <Code>{ivstr3o4}</Code>
+      <Description>{ivstrAuthDsc}</Description>
+      <TimeStamp>{ivdtmNode}</TimeStamp>
+      <Comments>{ivstrAuthObs}</Comments>
+      <Autorizacion xmlns="http://www.afip.com.ar/fe">
+        <CodAut xmlns="http://www.afip.com.ar/fe">{ivstrAuthCode}</CodAut>
+        <FechaVtoAut xmlns="http://www.afip.com.ar/fe">>{ivdtmAuthVenc}</</FechaVtoAut>
+        <TimeStampAut xmlns="http://www.afip.com.ar/fe">{ivdtmNode}</TimeStampAut>
+        <BarCode xmlns="http://www.afip.com.ar/fe"></BarCode>
+        <BarCodeFont xmlns="http://www.afip.com.ar/fe"></BarCodeFont>
+      </Autorizacion>
+      <CAE>{ivstrAuthCode}</CAE>
+    </Status>
+  </Authorization>
+  <Status>
+    <Code>{ivstr3o4}</Code>
+    <Description>{ivstrAuthDsc}</Description>
+    <TimeStamp>{ivdtmNode}</TimeStamp>
+    <TrackId>{ivstrTrackId}</TrackId>
+    <Comments>{ivstrAuthObs}</Comments>
+  </Status>
+  <Extensions>
+    <StringField name="SIGEXT_MOTIVO">
+    </StringField>
+  </Extensions>
+</SignatureMessage>
