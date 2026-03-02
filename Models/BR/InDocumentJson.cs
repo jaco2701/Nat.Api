@@ -90,19 +90,47 @@ namespace Applet.Nat.Api.Br.Models
             JObject lioDocumentJson = JObject.FromObject(lcoDocuments[0]);
             string[] lcvstrPropertyValues;
             PropertyInfo lioPropertyInfo, lioParentPropertyInfo;
+            Type lioPropertyType;
             string livstrValue;
-            object lioTargetObject = lcoDocuments[0];
+            object lioTargetObject;
+            bool livblnIsCollection;
+            XmlNodeList lioXmlNodeList;
+            int livnumNodesToClone = 0;
             // CAMPOS
             foreach (ServiceMapperItem lioMapperItem in lioServiceMapper.coItems)
             {
                 if (string.IsNullOrEmpty(lioMapperItem.ivstrProperty)) continue;
-                if (lioMapperItem.coXPaths == null) continue;
+                if (lioMapperItem.coXPaths == null || lioMapperItem.coXPaths.Length == 0) continue;
                 try
                 {
-                    lcvstrPropertyValues= lioMapperItem.ivstrProperty.Split('.'); 
-                    if (lcvstrPropertyValues.Length==0) continue;
-                    if (lcvstrPropertyValues.Length == 1 && lcvstrPropertyValues[0].StartsWith("iv"))
-                        lioPropertyInfo = typeof(DocumentUser).GetProperty(lioMapperItem.ivstrProperty);
+                    lcvstrPropertyValues = lioMapperItem.ivstrProperty.Split('.');
+                    if (lcvstrPropertyValues.Length == 0) continue;
+                    if (lcvstrPropertyValues.Length == 1)
+                    {
+                        if (lcvstrPropertyValues[0].StartsWith("iv")) //propiedad directa de DocumentUser
+                        {
+                            lioPropertyInfo = typeof(DocumentUser).GetProperty(lioMapperItem.ivstrProperty);
+                            lioTargetObject = lcoDocuments[0];
+                        }
+                        else
+                        {
+                            if (!lcvstrPropertyValues[0].StartsWith("co")) continue;
+                            //padres de coleccion solo se setea el nodo padre del xml
+                            lioXmlNodeList = lioXmlToPrinter.SelectNodes(lioMapperItem.coXPaths[0].ivstrData, lioNsMngr);
+                            if (lioXmlNodeList == null || lioXmlNodeList.Count == 0)
+                                lioSbErrors.AppendLine($"XPath {lioMapperItem.ivstrProperty} {Resources.lioE_ObjectNoM}");
+                            // se deben crear tantos nodos como elementos tenga la coleccion, pero como no se especifica la propiedad de la coleccion no se puede acceder a ella, por lo que se clona el nodo por cada elemento de la coleccion sin setearle valor alguno
+                            lioPropertyInfo = typeof(DocumentUser).GetProperty(lcvstrPropertyValues[0]);
+                            lioPropertyType = lioPropertyInfo.PropertyType;
+                            livnumNodesToClone = (int)lioPropertyInfo.GetValue(lcoDocuments[0])?.GetType().GetProperty("Count")?.GetValue(lioPropertyInfo.GetValue(lcoDocuments[0]));
+                            //for( int livnum lioNode in lioXmlNodeList)
+                            //{
+                            //    lioXmlNodeToClone = lioNode.Clone();
+                            //    lioNode.ParentNode.InsertBefore(lioXmlNodeToClone, lioNode);
+                            //}
+                            continue;
+                        }
+                    }
                     else if (lcvstrPropertyValues.Length == 2)
                     {
                         lioParentPropertyInfo = typeof(DocumentUser).GetProperty(lcvstrPropertyValues[0]);
@@ -111,13 +139,38 @@ namespace Applet.Nat.Api.Br.Models
                             lioSbErrors.AppendLine($"Propiedad {lcvstrPropertyValues[0]} {Resources.lioE_ObjectNoF}");
                             continue;
                         }
+
+
+
                         lioTargetObject = lioParentPropertyInfo.GetValue(lcoDocuments[0]);
                         if (lioTargetObject == null)
-                        {
-                            lioSbErrors.AppendLine($"Valor de Propiedad {lcvstrPropertyValues[0]} es null");
                             continue;
+                        lioPropertyType = lioParentPropertyInfo.PropertyType;
+                        livblnIsCollection = false;
+                        if (lioPropertyType.IsGenericType && lioPropertyType.GetGenericTypeDefinition() == typeof(List<>))
+                        {
+                            lioPropertyType = lioPropertyType.GetGenericArguments()[0];
+                            livblnIsCollection = true;
                         }
-                        lioPropertyInfo = lioParentPropertyInfo.PropertyType.GetProperty(lcvstrPropertyValues[1]);
+                        else if (lioPropertyType.IsArray)
+                        {
+                            lioPropertyType = lioPropertyType.GetElementType();
+                            livblnIsCollection = true;
+                        }
+                        if (livblnIsCollection)
+                        {
+                            var lioEnumerable = lioTargetObject as System.Collections.IEnumerable;
+                            if (lioEnumerable != null)
+                            {
+                                var lioEnumerator = lioEnumerable.GetEnumerator();
+                                if (lioEnumerator.MoveNext())
+                                    lioTargetObject = lioEnumerator.Current;
+                                else
+                                    continue;
+                            }
+                        }
+
+                        lioPropertyInfo = lioPropertyType.GetProperty(lcvstrPropertyValues[1]);
                     }
                     else continue;
                     if (lioPropertyInfo == null)
@@ -126,7 +179,7 @@ namespace Applet.Nat.Api.Br.Models
                         continue;
                     }
                     livstrValue = lioPropertyInfo.GetValue(lioTargetObject)?.ToString() ?? string.Empty;
-                    if (string.IsNullOrEmpty(livstrValue))
+                    if (lioMapperItem.ivblnRequired ?? false && string.IsNullOrEmpty(livstrValue))
                     {
                         lioSbErrors.AppendLine($"Valor de propiedad {lioMapperItem.ivstrProperty} {Resources.lioE_ObjectNoM}");
                         continue;

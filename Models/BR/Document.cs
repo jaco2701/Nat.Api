@@ -379,7 +379,7 @@ namespace Applet.Nat.Api.Br.Models
                 LogHelper.write(lioE);
                 if (!string.IsNullOrEmpty(lioXmlDocument.OuterXml))
                     LogHelper.writeinfo(lioXmlDocument.OuterXml, ListHelper.GetValue("FORMAT", "VERBOSE", mioContext) == "1");
-                throw new Exception(Resources.lioE_PrintNo);
+                throw new Exception($"{Resources.lioE_PrintNo}: {lioE.Message}");
             }
         }
         public UxAuth GetAuth()

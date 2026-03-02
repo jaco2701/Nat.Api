@@ -230,7 +230,7 @@ namespace Applet.Nat.Api.Static
                         File.WriteAllBytes(livstr, Encoding.UTF8.GetBytes(livstrRta));
                         return Convert.ToBase64String(File.ReadAllBytes(livstr));
                     default:
-                        return Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(livstrRta)));
+                        return livstrRta;
                 }
             }
         }
