@@ -93,7 +93,7 @@ namespace Applet.Nat.Api.Controllers
                             lioSB.Append(livstrChars[lioByte % livstrChars.Length]);
                         }
                         string livstrCodeVerifier = PkceHelper.GenerateCodeVerifier();
-                        mioContext.OidcOidcStates.Add(
+                        mioContext.OidcStates.Add(
                             new OidcStateModel
                             {
                                 ivstrState = livstrState,
@@ -114,7 +114,7 @@ namespace Applet.Nat.Api.Controllers
                         {
                             if (string.IsNullOrEmpty(vioOidcRequest.ivstrState))
                                 throw new Exception($"{Resources.lioE_NoCreds} STATE");
-                            OidcStateModel lioO = mioContext.OidcOidcStates.FirstOrDefault(x => x.ivstrState == vioOidcRequest.ivstrState);
+                            OidcStateModel lioO = mioContext.OidcStates.FirstOrDefault(x => x.ivstrState == vioOidcRequest.ivstrState);
                             if (lioO == null)
                                 throw new Exception($"{Resources.lioE_NoCreds} IdentityProvider");
                             if (lioO?.ivnumIdentityProvider == null || lioO.ivnumIdentityProvider == 0)
