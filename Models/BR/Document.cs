@@ -160,7 +160,7 @@ namespace Applet.Nat.Api.Br.Models
                         mioContext.SaveChanges();
                         livblnSaved = true;
                     }
-                    catch (Microsoft.EntityFrameworkCore.DbUpdateException lioE)
+                    catch (Exception lioE)
                     {
                         if (lioE.InnerException != null && 
                             (lioE.InnerException.Message.Contains("duplicate key") || 
@@ -169,7 +169,7 @@ namespace Applet.Nat.Api.Br.Models
                         {
                             livnroRetries++;
                             mioContext.Entry(ioDcModel).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
-
+                            LogHelper.writeinfo($"Reintento: {livnroRetries} ",true);
                             if (livnroRetries >= livnroMaxRetries)
                             {
                                 LogHelper.write(new Exception($"Error: No se pudo generar un ID único después de {livnroMaxRetries} intentos", lioE));
