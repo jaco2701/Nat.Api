@@ -35,17 +35,17 @@ namespace Applet.Nat.Api.Controllers
                 lcoLists.Add(new ListModel { ivcodType = "IDPROV", ivcodId = liO.ivnumIdentityProvider.ToString(), ivstrDesc = liO.ivstrIdentityProvider });
             if (livnroNivel == 0)
                 return ResponseHelper.Get(lcoLists);
-            Double livvalCtz;
-            try
-            {
-                TribDocumentV1 lio = new TribDocumentV1(new DocumentModel { ivlngCuitEmisor = long.Parse(ListHelper.GetValue("CUIT", "0", mioContext)) }, mioContext);
-                livvalCtz = await lio.GetCotizacion("DOL", DateTime.Today.AddDays(-1));
-                lcoLists.Add(new ListModel { ivcodType = "CTZ", ivcodId = "DOLV1", ivstrDesc = livvalCtz.ToString("N2", System.Globalization.CultureInfo.GetCultureInfo("es-AR")) });
-            }
-            catch (Exception lioE)
-            {
-                LogHelper.write(lioE);
-            }
+            //Double livvalCtz;
+            //try
+            //{
+            //    TribDocumentV1 lio = new TribDocumentV1(new DocumentModel { ivlngCuitEmisor = long.Parse(ListHelper.GetValue("CUIT", "0", mioContext)) }, mioContext);
+            //    livvalCtz = await lio.GetCotizacion("DOL", DateTime.Today.AddDays(-1));
+            //    lcoLists.Add(new ListModel { ivcodType = "CTZ", ivcodId = "DOLV1", ivstrDesc = livvalCtz.ToString("N2", System.Globalization.CultureInfo.GetCultureInfo("es-AR")) });
+            //}
+            //catch (Exception lioE)
+            //{
+            //    LogHelper.write(lioE);
+            //}
             return ResponseHelper.Get(lcoLists);
         }
         [HttpPost("Rs")]

@@ -243,6 +243,7 @@ namespace Applet.Nat.Api.Br.Models
             //        }
             //}
         }
+        [JsonIgnore] public string ivstrKey { get { return $"Doc:[{ivlngCuitEmisor.ToString() ?? string.Empty}-{ivnumPvta.ToString() ?? string.Empty}-{ivnroTipoDoc.ToString() ?? string.Empty}-{ivlngCbte.ToString() ?? string.Empty}]"; } }
     }
     public class UxDomicilio
     {

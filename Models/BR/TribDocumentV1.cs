@@ -610,6 +610,7 @@ namespace Applet.Nat.Api.Br.Models
                 Token = lioAfipLoginResponse.ivstrToken
             };
             ServiceSoapClient lioService = new ServiceSoapClient(ServiceSoapClient.EndpointConfiguration.ServiceSoap);
+            lioService.Endpoint.Address = new System.ServiceModel.EndpointAddress(lioAfipService.ivstrUrl);
             short livnroIntento = 0;
             FEParamGetCotizacionResponse lioFEParamGetCotizacionResponse = null;
             while (true)

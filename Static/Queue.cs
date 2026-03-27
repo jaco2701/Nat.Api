@@ -268,9 +268,9 @@ namespace Applet.Nat.Api.Static
                     if (!ListHelper.CanRun(lioContext, "3")) return;
                     LogHelper.writeinfo("******NAT Mantenimiento Diario******", true);
                     LogHelper.writeinfo("Borrado estados Oidc anteriores a 30 minutos", true);
-                    lioContext.OidcOidcStates.RemoveRange(lioContext.OidcOidcStates.Where(s => s.ivdtmState < DateTime.UtcNow.AddMinutes(-30)));
+                    lioContext.OidcStates.RemoveRange(lioContext.OidcStates.Where(s => s.ivdtmState < DateTime.UtcNow.AddMinutes(-30)));
                     lioContext.SaveChanges();
-                    LogHelper.writeinfo("Borrado de logs anteriores a 3 dias",true);
+                    LogHelper.writeinfo("Borrado de logs anteriores a 3 dias", true);
                     DateTime livdtm = DateTime.Today.AddDays(-3);
                     string lioPath;
                     while (true)
@@ -281,6 +281,17 @@ namespace Applet.Nat.Api.Static
                         else
                             break;
                         livdtm = livdtm.AddDays(-1);
+                    }
+                    LogHelper.writeinfo("Cotizacion", true);
+                    Double livvalCtz;
+                    TribDocumentV1 lio = new TribDocumentV1(new DocumentModel { ivlngCuitEmisor = long.Parse(ListHelper.GetValue("CUIT", "0", lioContext)) }, lioContext);
+                    livvalCtz = await lio.GetCotizacion("DOL", DateTime.Today.AddDays(-1));
+                    ListModel? lioListModel = lioContext.Lists.Find("FORMAT", "Cotizacion");
+                    if (lioListModel != null)
+                    {
+                        lioListModel.ivstrDesc = livvalCtz.ToString("N2", System.Globalization.CultureInfo.GetCultureInfo("es-AR"));
+                        lioContext.Lists.Update(lioListModel);
+                        lioContext.SaveChanges();
                     }
                     ListHelper.SetProccessEnd(lioContext, "3");
                 }

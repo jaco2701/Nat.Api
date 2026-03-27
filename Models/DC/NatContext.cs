@@ -30,7 +30,7 @@ namespace Applet.Nat.Api.DC
         public DbSet<DocumentModel> Documents { get; set; }
         public DbSet<DocumentTrackingModel> DocumentTrackings { get; set; }
         public DbSet<ListModel> Lists { get; set; }
-        public DbSet<OidcStateModel> OidcOidcStates { get; set; }
+        public DbSet<OidcStateModel> OidcStates { get; set; }
         public DbSet<UserCuitModel> UserCuits { get; set; }
         public DbSet<UserModel> Users { get; set; }
     }

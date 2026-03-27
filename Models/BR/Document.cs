@@ -139,7 +139,6 @@ namespace Applet.Nat.Api.Br.Models
             if (lioDBDocumentModel == null)
             {
                 ioDcModel.ivnroStatus = 10;
-                ioDcModel.ivlngDoc = NN();
                 Cuit lioCuit = new Cuit(ioDcModel.ivlngCuitEmisor, mioContext, mioConfiguration);
                 if (lioCuit.ioCnfg == null || lioCuit.ioCnfg.coTemplateVersions == null)
                     throw new Exception($"Version de Plantillas {Resources.lioE_ObjectNoM}");
@@ -147,7 +146,43 @@ namespace Applet.Nat.Api.Br.Models
                 if (lioO == null)
                     throw new Exception($"Version de Plantillas {Resources.lioE_ObjectNoM}");
                 ioDcModel.ivnroTemplateVersion = lioO.ivnroTemplateVersion;
-                mioContext.Documents.Add(ioDcModel);
+
+                short livnroRetries = 0;
+                const short livnroMaxRetries = 5;
+                bool livblnSaved = false;
+
+                while (!livblnSaved && livnroRetries < livnroMaxRetries)
+                {
+                    try
+                    {
+                        ioDcModel.ivlngDoc = NN();
+                        mioContext.Documents.Add(ioDcModel);
+                        mioContext.SaveChanges();
+                        livblnSaved = true;
+                    }
+                    catch (Exception lioE)
+                    {
+                        if (lioE.InnerException != null && 
+                            (lioE.InnerException.Message.Contains("duplicate key") || 
+                             lioE.InnerException.Message.Contains("UNIQUE KEY") ||
+                             lioE.InnerException.Message.Contains("PRIMARY KEY")))
+                        {
+                            livnroRetries++;
+                            mioContext.Entry(ioDcModel).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+                            LogHelper.writeinfo($"Reintento: {livnroRetries} ",true);
+                            if (livnroRetries >= livnroMaxRetries)
+                            {
+                                LogHelper.write(new Exception($"Error: No se pudo generar un ID único después de {livnroMaxRetries} intentos", lioE));
+                                throw new Exception($"No se pudo guardar el documento después de {livnroMaxRetries} intentos. Por favor, intente nuevamente.");
+                            }
+                            System.Threading.Thread.Sleep(100 * livnroRetries);
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                }
             }
             else
             {
@@ -174,8 +209,8 @@ namespace Applet.Nat.Api.Br.Models
                     lioDBDocumentModel.ivnroTemplateVersion = ioDcModel.ivnroTemplateVersion;
                 mioContext.Documents.Update(lioDBDocumentModel);
                 ioDcModel.ivlngDoc = lioDBDocumentModel.ivlngDoc;
+                mioContext.SaveChanges();
             }
-            mioContext.SaveChanges();
         }
         public string Delete()
         {
@@ -379,7 +414,7 @@ namespace Applet.Nat.Api.Br.Models
                 LogHelper.write(lioE);
                 if (!string.IsNullOrEmpty(lioXmlDocument.OuterXml))
                     LogHelper.writeinfo(lioXmlDocument.OuterXml, ListHelper.GetValue("FORMAT", "VERBOSE", mioContext) == "1");
-                throw new Exception(Resources.lioE_PrintNo);
+                throw new Exception($"{Resources.lioE_PrintNo}: {lioE.Message}");
             }
         }
         public UxAuth GetAuth()

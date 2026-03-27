@@ -87,9 +87,7 @@ namespace Applet.Nat.Api.Br.Models
                         }
                         catch (Exception lioE)
                         {
-                            LogHelper.writeinfo($"Prop: {lioServiceMapperItem.ivstrProperty}", true);
-                            LogHelper.write(lioE);
-                            lioSbErrors.AppendLine(lioE.Message);
+                            lioSbErrors.AppendLine($"Prop: {lioServiceMapperItem.ivstrProperty}: {lioE.Message}");
                         }
                     }
                     #endregion
@@ -105,9 +103,7 @@ namespace Applet.Nat.Api.Br.Models
                         }
                         catch (Exception lioE)
                         {
-                            LogHelper.writeinfo($"Prop: {lioServiceMapperItem.ivstrProperty}", true);
-                            LogHelper.write(lioE);
-                            lioSbErrors.AppendLine(lioE.Message);
+                            lioSbErrors.AppendLine($"Prop: {lioServiceMapperItem.ivstrProperty}: {lioE.Message}");
                         }
                     }
                     #endregion
@@ -140,9 +136,7 @@ namespace Applet.Nat.Api.Br.Models
                                 }
                                 catch (Exception lioE)
                                 {
-                                    LogHelper.writeinfo($"Prop: {lioServiceMapperItem.ivstrProperty}", true);
-                                    LogHelper.write(lioE);
-                                    lioSbErrors.AppendLine(lioE.Message);
+                                    lioSbErrors.AppendLine($"Prop: {lioServiceMapperItem.ivstrProperty}: {lioE.Message}");
                                 }
                             }
                             if (livblnLoadChild)
@@ -165,9 +159,7 @@ namespace Applet.Nat.Api.Br.Models
                         }
                         catch (Exception lioE)
                         {
-                            LogHelper.writeinfo($"Prop: {lioServiceMapperItem.ivstrProperty}", true);
-                            LogHelper.write(lioE);
-                            lioSbErrors.AppendLine(lioE.Message);
+                            lioSbErrors.AppendLine($"Prop: {lioServiceMapperItem.ivstrProperty}: {lioE.Message}");
                         }
                     }
                     #endregion
@@ -198,9 +190,7 @@ namespace Applet.Nat.Api.Br.Models
                                 }
                                 catch (Exception lioE)
                                 {
-                                    LogHelper.writeinfo($"Prop: {lioServiceMapperItem.ivstrProperty}", true);
-                                    LogHelper.write(lioE);
-                                    lioSbErrors.AppendLine(lioE.Message);
+                                    lioSbErrors.AppendLine($"Prop: {lioServiceMapperItem.ivstrProperty}: {lioE.Message}");
                                 }
                             }
                             if (livblnLoadChild)
@@ -237,9 +227,7 @@ namespace Applet.Nat.Api.Br.Models
                                 }
                                 catch (Exception lioE)
                                 {
-                                    LogHelper.writeinfo($"Prop: {lioServiceMapperItem.ivstrProperty}", true);
-                                    LogHelper.write(lioE);
-                                    lioSbErrors.AppendLine(lioE.Message);
+                                    lioSbErrors.AppendLine($"Prop: {lioServiceMapperItem.ivstrProperty}: {lioE.Message}");
                                 }
                             }
                             if (livblnLoadChild)
@@ -277,9 +265,7 @@ namespace Applet.Nat.Api.Br.Models
                                 }
                                 catch (Exception lioE)
                                 {
-                                    LogHelper.writeinfo($"Prop: {lioServiceMapperItem.ivstrProperty}", true);
-                                    LogHelper.write(lioE);
-                                    lioSbErrors.AppendLine(lioE.Message);
+                                    lioSbErrors.AppendLine($"Prop: {lioServiceMapperItem.ivstrProperty}: {lioE.Message}");
                                 }
                             }
                             if (livblnLoadChild)
@@ -315,9 +301,7 @@ namespace Applet.Nat.Api.Br.Models
                                 }
                                 catch (Exception lioE)
                                 {
-                                    LogHelper.writeinfo($"Prop: {lioServiceMapperItem.ivstrProperty}", true);
-                                    LogHelper.write(lioE);
-                                    lioSbErrors.AppendLine(lioE.Message);
+                                    lioSbErrors.AppendLine($"Prop: {lioServiceMapperItem.ivstrProperty}: {lioE.Message}");
                                 }
                             }
                             if (livblnLoadChild)
@@ -353,9 +337,7 @@ namespace Applet.Nat.Api.Br.Models
                                 }
                                 catch (Exception lioE)
                                 {
-                                    LogHelper.writeinfo($"Prop: {lioServiceMapperItem.ivstrProperty}", true);
-                                    LogHelper.write(lioE);
-                                    lioSbErrors.AppendLine(lioE.Message);
+                                    lioSbErrors.AppendLine($"Prop: {lioServiceMapperItem.ivstrProperty}: {lioE.Message}");
                                 }
                             }
                             if (livblnLoadChild)
@@ -393,9 +375,7 @@ namespace Applet.Nat.Api.Br.Models
                                 }
                                 catch (Exception lioE)
                                 {
-                                    LogHelper.writeinfo($"Prop: {lioServiceMapperItem.ivstrProperty}", true);
-                                    LogHelper.write(lioE);
-                                    lioSbErrors.AppendLine(lioE.Message);
+                                    lioSbErrors.AppendLine($"Prop: {lioServiceMapperItem.ivstrProperty}: {lioE.Message}");
                                 }
                             }
                             if (livblnLoadChild)
@@ -416,9 +396,7 @@ namespace Applet.Nat.Api.Br.Models
                         }
                         catch (Exception lioE)
                         {
-                            LogHelper.writeinfo($"Prop: {lioServiceMapperItem.ivstrProperty}", true);
-                            LogHelper.write(lioE);
-                            lioSbErrors.AppendLine(lioE.Message);
+                            lioSbErrors.AppendLine($"Prop: {lioServiceMapperItem.ivstrProperty}: {lioE.Message}");
                         }
                     }
                     #endregion
@@ -507,16 +485,19 @@ namespace Applet.Nat.Api.Br.Models
                             if (string.IsNullOrEmpty(lioO.ivstrId?.Trim())) continue;
                             if (lioO.ivnumDestMerc == null || lioO.ivnumDestMerc == 0) continue;
                             if (lioO.ivstrId == livstrCurrPEId) continue;
-                            livstrCurrPEId= lioO.ivstrId;
+                            livstrCurrPEId = lioO.ivstrId;
                             lcoPermisosExp.Add(lioO);
                         }
                         lioDocumentUser.coPermisosExp = lcoPermisosExp;
                     }
-
+                    if (lioSbErrors.Length > 0)
+                    {
+                        LogHelper.writeinfo(lioDocumentUser.ivstrKey,true);
+                        LogHelper.writeinfo(lioSbErrors.ToString(), true);
+                    }
                     #endregion
                     lcoDocumentsUser.Add(lioDocumentUser);
                 }
-
                 catch (Exception lioE)
                 {
                     LogHelper.write(lioE);

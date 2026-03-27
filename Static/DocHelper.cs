@@ -65,7 +65,7 @@ namespace Applet.Nat.Api.Static
                     else
                     {
                         if (lioDocumentUser.ivlngCuitEmisor != vioDocumentsUpload.ivlngCuit)
-                            throw new Exception($"Cuit Emisor {Resources.lioE_ObjectNoM}");
+                            throw new Exception($"Doc:{lioDocumentUser.ivstrKey} Cuit Emisor {Resources.lioE_ObjectNoM}");
                         lioDocument = new Document(lioDocumentUser, lioContext, vioConfiguration);
                         lioDocument.ioDcModel.ivstrInData = lioDocumentUser.ivstrInputData;
                         lioDocument.ioDcModel.ivstrInType = lioFileInfo.Extension.ToLower();
@@ -230,7 +230,7 @@ namespace Applet.Nat.Api.Static
                         File.WriteAllBytes(livstr, Encoding.UTF8.GetBytes(livstrRta));
                         return Convert.ToBase64String(File.ReadAllBytes(livstr));
                     default:
-                        return Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(livstrRta)));
+                        return livstrRta;
                 }
             }
         }
