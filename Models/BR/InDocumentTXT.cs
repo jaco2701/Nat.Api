@@ -1525,6 +1525,7 @@ namespace Applet.Nat.Api.Br.Models
             }
             catch (Exception lioE)
             {
+                LogHelper.writeinfo(lioDocumentUser.ivstrKey, true);
                 LogHelper.write(lioE);
                 lioDocumentUser.ivstrLoadErrors = lioE.Message;
                 return [lioDocumentUser];
