@@ -168,7 +168,7 @@ namespace Applet.Nat.Api.Br.Models
                             case 35:
                             case 40:
                                 lioUxAuth = lioDocument.iTribDocument.GetAuth();
-                                if (!string.IsNullOrEmpty(lioUxAuth.ivstrErrors))
+                                if (!string.IsNullOrEmpty(lioUxAuth?.ivstrErrors))
                                 {
                                     livstr = Format.RemoveOracleAttrInvalidChars(lioUxAuth.ivstrErrors);
                                     livnumIndex = 0;
@@ -190,10 +190,10 @@ namespace Applet.Nat.Api.Br.Models
                                 await Task.Delay(5000); // se hace esta espera para asegurar que vaya despues de la carga 
                                 lioUxAuth = lioDocument.iTribDocument.GetAuth();
                                 livsrtDFFAttributes = livsrtDFFAttributes
-                                    .Replace("{ivdtmNode}", (lioUxAuth.ivdtmNode ?? DateTime.Now).ToString(ListHelper.GetValue("FORMAT", "dtmwsfe", lioContext)))
-                                    .Replace("{ivstrAuthCode}", lioUxAuth.ivstrAuthCode)
-                                    .Replace("{ivdtmAuthVenc}", lioUxAuth.ivdtmAuthVenc);
-                                if (!string.IsNullOrEmpty(lioUxAuth.ivstrObs))
+                                    .Replace("{ivdtmNode}", (lioUxAuth?.ivdtmNode ?? DateTime.Now).ToString(ListHelper.GetValue("FORMAT", "dtmwsfe", lioContext)))
+                                    .Replace("{ivstrAuthCode}", lioUxAuth?.ivstrAuthCode)
+                                    .Replace("{ivdtmAuthVenc}", lioUxAuth?.ivdtmAuthVenc);
+                                if (!string.IsNullOrEmpty(lioUxAuth?.ivstrObs))
                                 {
                                     livstr = Format.RemoveOracleAttrInvalidChars(lioUxAuth.ivstrObs);
                                     livnumIndex = 0;

@@ -477,12 +477,14 @@ namespace Applet.Nat.Api.Br.Models
         public UxAuth GetAuth()
         {
             string livstr;
-            short[] lcvnroStatusRTA = new short[] { };
-            DocumentTrackingModel lioTrack = mioContext.DocumentTrackings.OrderByDescending(x => x.ivdtmTrack).FirstOrDefault(x => x.ivlngDoc == mioDcModel.ivlngDoc && (x.ivnroStatus == 20 || x.ivnroStatus == 35 || x.ivnroStatus == 40 || x.ivnroStatus == 50));
+            short[] lcvnroStatusRTA = new short[] { 20, 35, 40, 50 };
+            DocumentTrackingModel[] lcoTracks = mioContext.DocumentTrackings.OrderByDescending(x => x.ivdtmTrack).Where(x => x.ivlngDoc == mioDcModel.ivlngDoc).ToArray();
+            if (lcoTracks == null || lcoTracks.Length == 0 || !lcoTracks.Any(x => lcvnroStatusRTA.Contains(x.ivnroStatus)))
+                throw new Exception($"{Resources.lioE_CAENoSts}: ivlngDoc {mioDcModel.ivlngDoc}");
+            DocumentTrackingModel lioTrack = lcoTracks.FirstOrDefault(x => lcvnroStatusRTA.Contains(x.ivnroStatus));
             if (lioTrack == null || string.IsNullOrEmpty(lioTrack.ivstrData))
-                throw new Exception(Resources.lioE_CAEQry_Err);
+                throw new Exception($"{Resources.lioE_CAERespErr}: ivlngDoc {mioDcModel.ivlngDoc}");
             dynamic lioTrackData = JsonConvert.DeserializeObject(lioTrack.ivstrData);
-
             FEXResponseLast_CMP lioFEXResponseLast_CMP = JsonConvert.DeserializeObject<FEXResponseLast_CMP>(lioTrackData.Response.ToString());
             if (lioFEXResponseLast_CMP.FEXResult_LastCMP != null && lioFEXResponseLast_CMP.FEXResult_LastCMP?.Cbte_nro != null)
                 return new UxAuth
@@ -511,7 +513,7 @@ namespace Applet.Nat.Api.Br.Models
                 };
             FEXGetCMPResponse lioFEXGetCMPResponse = JsonConvert.DeserializeObject<FEXGetCMPResponse>(lioTrackData.Response.ToString());
             if (lioFEXGetCMPResponse == null || lioFEXGetCMPResponse.FEXResultGet == null)
-                throw new Exception(Resources.lioE_CAEQry_Err);
+                throw new Exception($"{Resources.lioE_TrackErr}: ivlngDoc {mioDcModel.ivlngDoc}");
             return new UxAuth
             {
                 ivdtmNode = lioTrack.ivdtmTrack,

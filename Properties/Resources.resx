@@ -519,4 +519,13 @@
   <data name="lioE_ListValNo" xml:space="preserve">
     <value>Valor de Lista {0}:{1} no encontrado</value>
   </data>
+  <data name="lioE_TrackErr" xml:space="preserve">
+    <value>Error en consulta de trazabilidad</value>
+  </data>
+  <data name="lioE_CAERespErr" xml:space="preserve">
+    <value>Error en Recuperacion de Response ARCA</value>
+  </data>
+  <data name="lioE_CAENoSts" xml:space="preserve">
+    <value>Documento no posee datos de Autorizacion</value>
+  </data>
 </root>

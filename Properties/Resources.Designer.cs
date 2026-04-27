@@ -19,7 +19,7 @@ namespace Nat.API.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -106,6 +106,15 @@ namespace Nat.API.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Documento no posee datos de Autorizacion.
+        /// </summary>
+        internal static string lioE_CAENoSts {
+            get {
+                return ResourceManager.GetString("lioE_CAENoSts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error en Consulta de CAE: {0}-{1}.
         /// </summary>
         internal static string lioE_CAEQry_Err {
@@ -129,6 +138,15 @@ namespace Nat.API.Properties {
         internal static string lioE_CAEQry_Obs {
             get {
                 return ResourceManager.GetString("lioE_CAEQry_Obs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error en Recuperacion de Response ARCA.
+        /// </summary>
+        internal static string lioE_CAERespErr {
+            get {
+                return ResourceManager.GetString("lioE_CAERespErr", resourceCulture);
             }
         }
         
@@ -570,6 +588,15 @@ namespace Nat.API.Properties {
         internal static string lioE_TokenNo {
             get {
                 return ResourceManager.GetString("lioE_TokenNo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error en consulta de trazabilidad.
+        /// </summary>
+        internal static string lioE_TrackErr {
+            get {
+                return ResourceManager.GetString("lioE_TrackErr", resourceCulture);
             }
         }
         

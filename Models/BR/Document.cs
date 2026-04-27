@@ -169,13 +169,12 @@ namespace Applet.Nat.Api.Br.Models
                         {
                             livnroRetries++;
                             mioContext.Entry(ioDcModel).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
-                            LogHelper.writeinfo($"Reintento: {livnroRetries} ",true);
                             if (livnroRetries >= livnroMaxRetries)
                             {
                                 LogHelper.write(new Exception($"Error: No se pudo generar un ID único después de {livnroMaxRetries} intentos", lioE));
                                 throw new Exception($"No se pudo guardar el documento después de {livnroMaxRetries} intentos. Por favor, intente nuevamente.");
                             }
-                            System.Threading.Thread.Sleep(100 * livnroRetries);
+                            System.Threading.Thread.Sleep(Random.Shared.Next(1, 5) * 50 * livnroRetries);
                         }
                         else
                         {
@@ -254,6 +253,8 @@ namespace Applet.Nat.Api.Br.Models
                 foreach (string livstrAddress in lioCuitCuitModel.ivstrEmail.Split(";", StringSplitOptions.TrimEntries))
                     if (MailHelper.IsValidEmail(livstrAddress) && !lcvstrAddresses.Contains(livstrAddress))
                         lcvstrAddresses.Add(livstrAddress);
+            if (lcvstrAddresses.Count == 0)
+                return;
             //mapeador
             ServiceMapper lioServiceMapper = lioCuit.ioCnfg.coServiceMappers.FirstOrDefault(x => x.ivstrWs == "mail" && (x.cvnroDocTypes[0] == 0 || x.cvnroDocTypes.Contains(ioDcModel.ivnroTipo)));
             if (lioServiceMapper == null || string.IsNullOrEmpty(lioServiceMapper.ivstrTemplate) || string.IsNullOrEmpty(lioServiceMapper.ivstrInputType))
@@ -345,18 +346,18 @@ namespace Applet.Nat.Api.Br.Models
         }
         public async Task<string> SendResponse()
         {
-            try
-            {
+            //try
+            //{
                 Cuit lioCuit = new Cuit(ioDcModel.ivlngCuitEmisor, mioContext, mioConfiguration);
                 IDocsIO liIDocsIO = lioCuit.getIDocsIO();
                 await liIDocsIO.DocO([this]);
                 return liIDocsIO.ivstrB64Rta;
-            }
-            catch (Exception lioE)
-            {
-                LogHelper.write(lioE);
-                return null;
-            }
+            //}
+            //catch (Exception lioE)
+            //{
+            //    LogHelper.write(lioE);
+            //    return null;
+            //}
         }
         public async Task<string> Print()
         {
@@ -388,7 +389,7 @@ namespace Applet.Nat.Api.Br.Models
                 livstrQR += Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(lioQRData)));
                 //Nodo Auth
 
-                livstr = DateTime.ParseExact(lioUxAuth?.ivdtmAuthVenc, ListHelper.GetValue("FORMAT", "ApiDtm", mioContext), null).ToString(ListHelper.GetValue("FORMAT", "XmlDtm", mioContext), null);
+                livstr = lioUxAuth?.ivdtmAuthVenc==null? string.Empty: DateTime.ParseExact(lioUxAuth?.ivdtmAuthVenc??DateTime.MinValue.ToString(ListHelper.GetValue("FORMAT", "ApiDtm", mioContext)), ListHelper.GetValue("FORMAT", "ApiDtm", mioContext), null).ToString(ListHelper.GetValue("FORMAT", "XmlDtm", mioContext), null);
                 livstrXml = livstrXml.Replace("</DTE>", $"<Autorizacion><CodAut xmlns=\"http://www.afip.com.ar/fe\">{lioUxAuth?.ivstrAuthCode}</CodAut><FechaVtoAut xmlns=\"http://www.afip.com.ar/fe\">{livstr}</FechaVtoAut><TimeStampAut xmlns=\"http://www.afip.com.ar/fe\">{livstr}T00:00:00</TimeStampAut><BarCodeFont xmlns=\"http://www.afip.com.ar/fe\">{livstrQR}</BarCodeFont><BarCode xmlns=\"http://www.afip.com.ar/fe\">{ListHelper.GetValue("PATH", "qr", mioContext)}</BarCode></Autorizacion></DTE>");
                 lioXmlDocument.LoadXml(livstrXml);    //Crystal
                 HttpClient lioHttpClient = new HttpClient();
