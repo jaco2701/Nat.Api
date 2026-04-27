@@ -64,6 +64,7 @@ namespace Applet.Nat.Api.Static
                     }
                     else
                     {
+                        if (lioDocumentUser.ivlngCuitEmisor == null || lioDocumentUser.ivlngCuitEmisor == 0) continue;
                         if (lioDocumentUser.ivlngCuitEmisor != vioDocumentsUpload.ivlngCuit)
                             throw new Exception($"Doc:{lioDocumentUser.ivstrKey} Cuit Emisor {Resources.lioE_ObjectNoM}");
                         lioDocument = new Document(lioDocumentUser, lioContext, vioConfiguration);
@@ -141,7 +142,7 @@ namespace Applet.Nat.Api.Static
                         case "ivdtmEmision":
                         case "ivstrFechaEmision":
                             if (vioDocument.ioDcModel.ivdtmEmision == null)
-                                throw new Exception(string.Format(Resources.lioE_ObjectNoM, "DtmEmision", "a"));
+                                throw new Exception($"Fecha Emision {Resources.lioE_ObjectNoM}");
                             livstr = (vioDocument.ioDcModel.ivdtmEmision ?? DateTime.MinValue).ToString(lioServiceMapperItem.ivstrformat);
                             break;
                         case "ivdblImporte":
@@ -159,13 +160,13 @@ namespace Applet.Nat.Api.Static
                         case "ivdtmRec":
                             lioDocumentTrackingModel = lioContext.DocumentTrackings.OrderByDescending(x => x.ivnumTrack).FirstOrDefault(x => x.ivlngDoc == vioDocument.ioDcModel.ivlngDoc && x.ivnroStatus == 10);
                             if (lioDocumentTrackingModel == null)
-                                throw new Exception(string.Format(Resources.lioE_ObjectNoM, "DtmRec", "a"));
+                                throw new Exception($"Fecha Recepcion {Resources.lioE_ObjectNoM}");
                             livstr = lioDocumentTrackingModel.ivdtmTrack.ToString(lioServiceMapperItem.ivstrformat);
                             break;
                         case "ivdtmAct":
                             lioDocumentTrackingModel = lioContext.DocumentTrackings.OrderByDescending(x => x.ivnumTrack).FirstOrDefault(x => x.ivlngDoc == vioDocument.ioDcModel.ivlngDoc);
                             if (lioDocumentTrackingModel == null)
-                                throw new Exception(string.Format(Resources.lioE_ObjectNoM, "dtmAct", "a"));
+                                throw new Exception($"Fecha Actualizacion {Resources.lioE_ObjectNoM}");
                             livstr = lioDocumentTrackingModel.ivdtmTrack.ToString(lioServiceMapperItem.ivstrformat);
                             break;
                         case "ivstrFileName":
@@ -176,12 +177,12 @@ namespace Applet.Nat.Api.Static
                             break;
                         case "ivdtmNode":
                             if (mioAuthNode?.ivdtmNode == null)
-                                throw new Exception(string.Format(Resources.lioE_ObjectNoM, "DtmEmision", "a"));
+                                throw new Exception($"Fecha Emision {Resources.lioE_ObjectNoM}");
                             livstr = (mioAuthNode?.ivdtmNode ?? DateTime.MinValue).ToString(lioServiceMapperItem.ivstrformat);
                             break;
                         case "ivdtmAuthVenc":
                             if (mioAuthNode?.ivdtmAuthVenc == null)
-                                throw new Exception(string.Format(Resources.lioE_ObjectNoM, "DtmAuthVenc", "a"));
+                                throw new Exception($"Fecha Vencimiento CAE {Resources.lioE_ObjectNoM}");
                             livstr = string.Empty;
                             if (DateTime.TryParseExact(mioAuthNode?.ivdtmAuthVenc, "yyyyMMdd", null, System.Globalization.DateTimeStyles.None, out DateTime livdtm))
                                 livstr = livdtm.ToString(lioServiceMapperItem.ivstrformat);

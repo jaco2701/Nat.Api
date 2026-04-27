@@ -18,7 +18,7 @@ namespace Applet.Nat.Api.Static
                 mioStreamWriter = File.CreateText(mioPath);
             else
                 mioStreamWriter = File.AppendText(mioPath);
-            
+
         }
         #region 'Propiedades'
         private System.IO.StreamWriter mioStreamWriter;
@@ -28,7 +28,21 @@ namespace Applet.Nat.Api.Static
         #region 'Metodos'
         public void escribir(string _linea)
         {
-            mioStreamWriter.WriteLine(_linea);
+            short livnroTry = 0;
+            while (true)
+            {
+                try
+                {
+                    mioStreamWriter.WriteLine(_linea);
+                    break;
+                }
+                catch  
+                {
+                    if (livnroTry > 3) throw;
+                    livnroTry++;
+                    System.Threading.Thread.Sleep(Random.Shared.Next(1, 5) * 50 * livnroTry);
+                }
+            }
         }
         public void cerrar()
         {
@@ -41,35 +55,35 @@ namespace Applet.Nat.Api.Static
     }
 
     public static class LogHelper
+{
+    public static void write(Exception e)
     {
-        public static void write(Exception e)
-        {
 
-            if (e != null)
-            {
-                loginternal liologinternal = new loginternal();
-                liologinternal.escribir($"{DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss")}==>{e.Message}");
-                liologinternal.escribir(e.StackTrace);
-                if (e.InnerException != null)
-                {
-                    liologinternal.escribir(e.InnerException.Message);
-                    liologinternal.escribir(e.InnerException.StackTrace);
-                    if (e.InnerException.InnerException != null)
-                    {
-                        liologinternal.escribir(e.InnerException.InnerException.Message);
-                        liologinternal.escribir(e.InnerException.InnerException.StackTrace);
-                    }
-                }
-                liologinternal.cerrar();
-            }
-        }
-        public static void writeinfo(string _message, bool livblnVerbose)
+        if (e != null)
         {
-            if (!livblnVerbose) return;
             loginternal liologinternal = new loginternal();
-            liologinternal.escribir($"{DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss")}==>{_message}");
+            liologinternal.escribir($"{DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss")}==>{e.Message}");
+            liologinternal.escribir(e.StackTrace);
+            if (e.InnerException != null)
+            {
+                liologinternal.escribir(e.InnerException.Message);
+                liologinternal.escribir(e.InnerException.StackTrace);
+                if (e.InnerException.InnerException != null)
+                {
+                    liologinternal.escribir(e.InnerException.InnerException.Message);
+                    liologinternal.escribir(e.InnerException.InnerException.StackTrace);
+                }
+            }
             liologinternal.cerrar();
         }
-
     }
+    public static void writeinfo(string _message, bool livblnVerbose)
+    {
+        if (!livblnVerbose) return;
+        loginternal liologinternal = new loginternal();
+        liologinternal.escribir($"{DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss")}==>{_message}");
+        liologinternal.cerrar();
+    }
+
+}
 }
