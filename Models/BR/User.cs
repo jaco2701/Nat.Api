@@ -44,6 +44,7 @@ namespace Applet.Nat.Api.Br.Models
         #region PUBLIC PROPS
         public UserModel ioDcModel { get; set; }
         public string? ivstrPass { get; set; }
+        public eRol ieRol { get { return (eRol)(ioDcModel?.ivnroRol??0); } }
         public eTask ieTask { get; set; }
         #endregion
         #region PRIVATE PROPS
@@ -74,6 +75,7 @@ namespace Applet.Nat.Api.Br.Models
                             lioDbUserModel.ivstrUserEmail = ioDcModel.ivstrUserEmail;
                             lioDbUserModel.ivblnEnable = ioDcModel.ivblnEnable;
                             lioDbUserModel.ivnrologonFails = ioDcModel.ivnrologonFails;
+                            lioDbUserModel.ivnroRol = ioDcModel.ivnroRol;
                             mioContext.Users.Update(lioDbUserModel);
                         }
                         else

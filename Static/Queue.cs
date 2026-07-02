@@ -209,9 +209,11 @@ namespace Applet.Nat.Api.Static
             {
                 try
                 {
-                    List<Tuple<short, Cuit>> lcoCuitsByLoadMethod = new List<Tuple<short, Cuit>>();
+                    List<CuitToLoadInfo> lcoCuitsByLoadMethod = new List<CuitToLoadInfo>();
                     Cuit lioCuit;
                     short livnroLoadMethod = 0;
+                    int livnumOriginator = 0;
+                    int[] lcvnumCuitUsers;
                     foreach (CuitModel lioCuitModel in lioContext.Cuits)
                     {
                         lioCuit = new Cuit(lioCuitModel, lioContext, vioConfiguration);
@@ -220,26 +222,43 @@ namespace Applet.Nat.Api.Static
                             continue;
                         if (livnroLoadMethod == (short)eLoadMethod.Manual || livnroLoadMethod == (short)eLoadMethod.Api)
                             continue;
-                        lcoCuitsByLoadMethod.Add(new Tuple<short, Cuit>(livnroLoadMethod, lioCuit));
+                        lcoCuitsByLoadMethod.Add(
+                            new CuitToLoadInfo
+                            {
+                                ioCuit = lioCuit,
+                                ivnroLoadMethod = livnroLoadMethod,
+                            }
+                        );
                     }
                     livnroLoadMethod = 0;
-                    foreach (Tuple<short, Cuit> lioO in lcoCuitsByLoadMethod.OrderBy(x => x.Item1))
+                    foreach (CuitToLoadInfo lioO in lcoCuitsByLoadMethod.OrderBy(x => x.ivnroLoadMethod))
                     {
                         try
                         {
-                            if (livnroLoadMethod != lioO.Item1)
+                            if (livnroLoadMethod != lioO.ivnroLoadMethod)
                             {
                                 if (livnroLoadMethod != 0)
                                 {
                                     ListHelper.SetProccessEnd(lioContext, livnroLoadMethod.ToString());
                                 }
-                                if (!ListHelper.CanRun(lioContext, lioO.Item1.ToString())) continue;
-                                livnroLoadMethod = lioO.Item1;
+                                if (!ListHelper.CanRun(lioContext, lioO.ivnroLoadMethod.ToString())) continue;
+                                livnroLoadMethod = lioO.ivnroLoadMethod;
                                 ListHelper.SetProcessRunning(lioContext, livnroLoadMethod.ToString());
                                 LogHelper.writeinfo($"{DateTime.Now} Cargando Documentos para metodo de ingreso {livnroLoadMethod}", ListHelper.Verbose(lioContext));
                             }
-                            IDocsIO liIDocsIO = lioO.Item2.getIDocsIO();
-                            await liIDocsIO.DocsI();
+                            IDocsIO liIDocsIO = lioO.ioCuit.getIDocsIO();
+                            // originador por defecto del cuit, para usar en cargas via servicio o ftp es el primer usuario administrador del CUIT que encuentra
+                            livnumOriginator = 0;
+                            lcvnumCuitUsers= lioContext.UserCuits.Where(x => x.ivlngCuit == lioO.ioCuit.ioDcModel.ivlngCuit).Select(x=>x.ivnumUser).ToArray();
+                            foreach (int livnumCuitUser in lcvnumCuitUsers)
+                                if (lioContext.Users.Find(livnumCuitUser)?.ivnroRol == (short)eRol.CuitAdmin)
+                                {
+                                    livnumOriginator = livnumCuitUser;
+                                    break;
+                                }
+                            if (livnumOriginator == 0)
+                                throw new Exception($"Usuario Originador {Resources.lioE_ObjectNoM}");
+                            await liIDocsIO.DocsI(livnumOriginator);
                         }
                         catch (Exception lioE)
                         {

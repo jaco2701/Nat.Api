@@ -33,7 +33,7 @@ namespace Nat.API.Models.BR
         public ServiceMapper ioMapper { get; set; }
         #endregion
         #region PUBLIC METHODS  
-        public async Task DocsI()
+        public async Task DocsI(int vivnumUserOriginator)
         {
             using NatContext lioContext = NatContext.GetContext(mioConfiguration);
             {
@@ -57,7 +57,7 @@ namespace Nat.API.Models.BR
                             ivblnComp = false,
                             ivlngCuit = lioO.Item1
                         };
-                        lcoUDocumentsUploadResponse = DocHelper.UploadDocument(lioDocumentsUploadRequest, mioConfiguration);
+                        lcoUDocumentsUploadResponse = DocHelper.UploadDocument(lioDocumentsUploadRequest, mioConfiguration,vivnumUserOriginator);
                         if (lcoUDocumentsUploadResponse.Count == 0)
                             continue;
                         if (lcoUDocumentsUploadResponse[0].ivstrDescStatus != "OK")

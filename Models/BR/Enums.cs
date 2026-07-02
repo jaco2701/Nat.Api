@@ -27,6 +27,12 @@ namespace Applet.Nat.Api.Br.Models
         OracleCanonical = 2,
         Api = 3,
     }
+    public enum eRol : short
+    {
+        SysAdmin = 20,
+        CuitAdmin = 10,
+        User = 0,
+    }
     public enum eOidcRequestType : short
     {
         GetAuthUrl = 0,

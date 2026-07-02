@@ -3,7 +3,9 @@ using Applet.Nat.Api.Br.Models;
 using Applet.Nat.Api.DC;
 using Applet.Nat.Api.Ifaces;
 using Applet.Nat.Api.Models.BR;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.FileProviders;
 using Nat.API.Properties;
 using Newtonsoft.Json;
 using System.Text;
@@ -13,12 +15,12 @@ namespace Applet.Nat.Api.Static
 {
     public static class DocHelper
     {
-        public static List<DocumentUploadResponse> UploadDocument(DocumentUploadRequest vioDocumentsUpload, IConfiguration vioConfiguration)
+        public static List<DocumentUploadResponse> UploadDocument(DocumentUploadRequest vioDocumentsUpload, IConfiguration vioConfiguration,int vivnumUserOriginator)
         {
             using NatContext lioContext = NatContext.GetContext(vioConfiguration);
             {
                 List<DocumentUploadResponse> lcoDocumentUserResponse = new List<DocumentUploadResponse>();
-
+                User lioOriginator = new User(vivnumUserOriginator, lioContext);
                 Document lioDocument;
                 if (string.IsNullOrEmpty(vioDocumentsUpload.ivstrName))
                     throw new Exception($"Nombre de Documento {Resources.lioE_ObjectNoM}");
@@ -26,27 +28,16 @@ namespace Applet.Nat.Api.Static
                     throw new Exception($"Datos de Documento {Resources.lioE_ObjectNoM}");
                 IRawDocument lioRawDocument;
                 FileInfo lioFileInfo = new FileInfo(vioDocumentsUpload.ivstrName);
-                switch (lioFileInfo.Extension.ToLower())
-                {
-                    case ".json":
-                        lioRawDocument = new InDocumentJSON(vioDocumentsUpload.ivlngCuit, lioContext);
-                        break;
-                    case ".xml":
-                        lioRawDocument = new InDocumentXMLNew(vioDocumentsUpload.ivlngCuit, lioContext);
-                        break;
-                    case ".txt":
-                        lioRawDocument = new InDocumentTXT(vioDocumentsUpload.ivlngCuit, lioContext);
-                        break;
-                    default:
-                        throw new Exception($"Extension de Documento {Resources.lioE_ObjectNoM}");
-                }
+                lioRawDocument = getRawDocument(lioFileInfo.Extension.ToLower(), vioDocumentsUpload.ivlngCuit, lioContext);
                 if (!vioDocumentsUpload.ivblnComp ?? false) //sino viene comprimido lo comprimo
                     vioDocumentsUpload.ivstrData = Format.Compress(vioDocumentsUpload.ivstrData);
                 lioRawDocument.ivstrRaw = vioDocumentsUpload.ivstrData;
                 lioRawDocument.ivstrName = vioDocumentsUpload.ivstrName;
                 DocumentUser[] lcoDocumentUsers = lioRawDocument.GetDocuments();
+                string livstr;
                 foreach (DocumentUser lioDocumentUser in lcoDocumentUsers)
-                {
+                { 
+                    lioDocumentUser.ivnumUserOriginator = lioOriginator.ioDcModel.ivnumUser;
                     if (!string.IsNullOrEmpty(lioDocumentUser.ivstrLoadErrors))
                     {
                         lcoDocumentUserResponse.Add(
@@ -65,8 +56,11 @@ namespace Applet.Nat.Api.Static
                     else
                     {
                         if (lioDocumentUser.ivlngCuitEmisor == null || lioDocumentUser.ivlngCuitEmisor == 0) continue;
-                        if (lioDocumentUser.ivlngCuitEmisor != vioDocumentsUpload.ivlngCuit)
-                            throw new Exception($"Doc:{lioDocumentUser.ivstrKey} Cuit Emisor {Resources.lioE_ObjectNoM}");
+                        if (string.IsNullOrEmpty(lioDocumentUser.ivstrInputData))
+                        {
+                            livstr = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(lioDocumentUser)));
+                            lioDocumentUser.ivstrInputData = livstr;
+                        }
                         lioDocument = new Document(lioDocumentUser, lioContext, vioConfiguration);
                         lioDocument.ioDcModel.ivstrInData = lioDocumentUser.ivstrInputData;
                         lioDocument.ioDcModel.ivstrInType = lioFileInfo.Extension.ToLower();
@@ -74,6 +68,8 @@ namespace Applet.Nat.Api.Static
                         lioDocument.ioDcModel.ivnroStatus = 10;
                         try
                         {
+                            if (!lioOriginator.coCuitsModels.Any(x => x.ivlngCuit == lioDocument.iTribDocument.ivCuitAutorizante))
+                                throw new Exception($"Usuario Originador {Resources.lioE_ObjectNoM}");
                             lioDocument.Save();
                             lcoDocumentUserResponse.Add(
                                 new DocumentUploadResponse
@@ -85,7 +81,7 @@ namespace Applet.Nat.Api.Static
                                     ivnroTipoDoc = lioDocumentUser.ivnroTipoDoc,
                                     ivnroStatus = 1,
                                     ivstrDescStatus = "OK",
-                                    ivstrIntegracion = JsonConvert.SerializeObject(lioDocumentUser.ioIntegracion)
+                                    ivstrIntegracion = lioDocumentUser.ioIntegracion != null ? JsonConvert.SerializeObject(lioDocumentUser.ioIntegracion) : null
                                 });
                             new DocumentTracking(lioContext, lioDocument.ioDcModel.ivlngDoc).addTrack(
                                 10,
@@ -109,6 +105,7 @@ namespace Applet.Nat.Api.Static
                         }
                     }
                 }
+
                 return lcoDocumentUserResponse;
             }
         }
@@ -233,6 +230,16 @@ namespace Applet.Nat.Api.Static
                     default:
                         return livstrRta;
                 }
+            }
+        }
+        public static IRawDocument getRawDocument(string vivstrInType, long vivlngCuit, NatContext vioContext)
+        {
+            switch (vivstrInType)
+            {
+                case ".xml": return new InDocumentXMLNew(vivlngCuit, vioContext); 
+                case ".json": return new InDocumentJSON(vivlngCuit, vioContext); 
+                case ".txt": return new InDocumentTXT(vivlngCuit, vioContext);
+                default: throw new Exception($"Extension de Documento {Resources.lioE_ObjectNoM}");
             }
         }
     }

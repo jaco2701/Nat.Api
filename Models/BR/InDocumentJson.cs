@@ -36,7 +36,7 @@ namespace Applet.Nat.Api.Br.Models
             short livnroI = 0;
             foreach (DocumentUser lioDocumentUser in lcoDocumentUser)
             {
-                lioDocumentUser.ivstrInputData = Format.Compress(Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new List<DocumentUser> { lioDocumentUser }))));
+                lioDocumentUser.ivstrInputData = Format.Compress(Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new List<DocumentUser> { lioDocumentUser }, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }))));
                 lioDocumentUser.ivblnTaxInLines = lioServiceMapper.ivblnTaxInLines ?? false;
                 lioDocumentUser.ivblnCalcPermisoExistente = lioServiceMapper.ivblnCalcPermisoExistente ?? false;
                 lioDocumentUser.ivstrLoadErrors = string.Empty;
@@ -48,16 +48,12 @@ namespace Applet.Nat.Api.Br.Models
                     lioSbErrors.AppendLine($"[{livnroI}] Numero de Comprobante {Resources.lioE_ObjectNoM}");
                 if (lioDocumentUser.ivstrFechaEmision == null || !DateTime.TryParseExact(lioDocumentUser.ivstrFechaEmision, livstrApiDtmFormat, null, DateTimeStyles.None, out livdtm))
                     lioSbErrors.AppendLine($"[{livnroI}] Fecha de Comprobante {Resources.lioE_ObjectNoF}");
-                if (lioDocumentUser.ivstrMoneda == null)
-                    lioSbErrors.AppendLine($"[{livnroI}] Moneda {Resources.lioE_ObjectNoF}");
                 if (lioDocumentUser.ivlngCuitEmisor == null)
                     lioSbErrors.AppendLine($"[{livnroI}] CUIT Emisor {Resources.lioE_ObjectNoF}");
                 if (lioDocumentUser.ivlngDocReceptor == null)
                     lioSbErrors.AppendLine($"[{livnroI}] Numero de documento receptor {Resources.lioE_ObjectNoM}");
                 if (lioDocumentUser.ivnroTipoDocReceptor == null)
                     lioSbErrors.AppendLine($"[{livnroI}] Tipo de documento receptor {Resources.lioE_ObjectNoM}");
-                if (lioDocumentUser.ivstrRazonSocial == null)
-                    lioSbErrors.AppendLine($"[{livnroI}] Razon Social Receptor {Resources.lioE_ObjectNoF}");
                 if (lioSbErrors.Length > 0)
                     lioDocumentUser.ivstrLoadErrors = lioSbErrors.ToString();
                 livnroI++;
@@ -230,10 +226,10 @@ namespace Applet.Nat.Api.Br.Models
             if (string.IsNullOrEmpty(ivstrName))
                 throw new Exception($"Nombre de Archivo de Ingreso {Resources.lioE_ObjectNoM}");
             if (lioCuit.ioCnfg?.coServiceMappers?.Count() == 0)
-                throw new Exception($"Mapeadores {Resources.lioE_ObjectNoM}s");
+                throw new Exception($"Mapeadores {Resources.lioE_ObjectNoM}");
             ServiceMapper lioServiceMapper = lioCuit?.ioCnfg?.coServiceMappers?.FirstOrDefault(x => x.ivstrInputType == "json");
             if (lioServiceMapper == null)
-                throw new Exception($"Mapeador JSON {Resources.lioE_ObjectNoM}s");
+                throw new Exception($"Mapeador JSON {Resources.lioE_ObjectNoM}");
             return lioServiceMapper;
         }
         #endregion

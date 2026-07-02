@@ -3,6 +3,7 @@ using Applet.Nat.Api.Ifaces;
 using Applet.Nat.Api.Models;
 using Applet.Nat.Api.Models.BR;
 using Applet.Nat.Api.Static;
+using Applet.Nat.BR;
 using Nat.Api.Models.BR;
 using Nat.API.Properties;
 using Newtonsoft.Json;
@@ -38,13 +39,7 @@ namespace Applet.Nat.Api.Br.Models
             {
                 if (miIRawDocument == null)
                 {
-                    switch (ioDcModel.ivstrInType)
-                    {
-                        case ".xml": miIRawDocument = new InDocumentXMLNew(ioDcModel.ivlngCuitEmisor, mioContext); break;
-                        case ".json": miIRawDocument = new InDocumentJSON(ioDcModel.ivlngCuitEmisor, mioContext); break;
-                        case ".txt": miIRawDocument = new InDocumentTXT(ioDcModel.ivlngCuitEmisor, mioContext); break;
-                        default: miIRawDocument = new InDocumentXML(ioDcModel.ivlngCuitEmisor, mioContext); break;
-                    }
+                    miIRawDocument= DocHelper.getRawDocument(ioDcModel.ivstrInType??string.Empty, iTribDocument.ivCuitAutorizante, mioContext);
                     miIRawDocument.ivstrRaw = ioDcModel.ivstrInData;
                     miIRawDocument.ivstrKey = ivstrKey;
                 }
@@ -61,6 +56,7 @@ namespace Applet.Nat.Api.Br.Models
                 return Directory.Exists(livstrTemplatePath);
             }
         }
+        public bool ivblnIsitMine { get { return ioDcModel.ivstrSR == "S"; } }
         public string ivstrKey
         {
             get
@@ -138,8 +134,9 @@ namespace Applet.Nat.Api.Br.Models
             );
             if (lioDBDocumentModel == null)
             {
+
                 ioDcModel.ivnroStatus = 10;
-                Cuit lioCuit = new Cuit(ioDcModel.ivlngCuitEmisor, mioContext, mioConfiguration);
+                Cuit lioCuit = new Cuit(iTribDocument.ivCuitAutorizante, mioContext, mioConfiguration);
                 if (lioCuit.ioCnfg == null || lioCuit.ioCnfg.coTemplateVersions == null)
                     throw new Exception($"Version de Plantillas {Resources.lioE_ObjectNoM}");
                 TemplateVersion lioO = lioCuit.ioCnfg.coTemplateVersions.FirstOrDefault(x => x.ivnroTipo == ioDcModel.ivnroTipo);
@@ -150,7 +147,7 @@ namespace Applet.Nat.Api.Br.Models
                 short livnroRetries = 0;
                 const short livnroMaxRetries = 5;
                 bool livblnSaved = false;
-
+                ioDcModel.ivstrSR = iTribDocument.ivstrSR;
                 while (!livblnSaved && livnroRetries < livnroMaxRetries)
                 {
                     try
@@ -162,8 +159,8 @@ namespace Applet.Nat.Api.Br.Models
                     }
                     catch (Exception lioE)
                     {
-                        if (lioE.InnerException != null && 
-                            (lioE.InnerException.Message.Contains("duplicate key") || 
+                        if (lioE.InnerException != null &&
+                            (lioE.InnerException.Message.Contains("duplicate key") ||
                              lioE.InnerException.Message.Contains("UNIQUE KEY") ||
                              lioE.InnerException.Message.Contains("PRIMARY KEY")))
                         {
@@ -227,9 +224,6 @@ namespace Applet.Nat.Api.Br.Models
         public async Task Validate()
         {
             iTribDocument.Validate();
-            Cuit lioCuit = new Cuit(ioDcModel.ivlngCuitEmisor, mioContext, mioConfiguration);
-            IDocsIO liIDocsIO = lioCuit.getIDocsIO();
-            await liIDocsIO.DocO([this]);
         }
         public async Task Share(IConfiguration vioConfiguration)
         {
@@ -270,7 +264,7 @@ namespace Applet.Nat.Api.Br.Models
                 .Replace("#nro", ivstrKey)
                 .Replace("#cuit", ioDcModel.ivlngCuitReceptor.ToString())
                 .Replace("#nl", Environment.NewLine)
-                .Replace("#rs", ioDcModel.ivstrRazonSocial); 
+                .Replace("#rs", ioDcModel.ivstrRazonSocial);
             AlternateView lioHtmlView = AlternateView.CreateAlternateViewFromString(livstrBody, Encoding.UTF8, MediaTypeNames.Text.Html);
             string livstrB46pdf = await Print();
             File.WriteAllBytes(livstrfilename, Convert.FromBase64String(livstrB46pdf));
@@ -337,7 +331,8 @@ namespace Applet.Nat.Api.Br.Models
             {
                 ioDcModel.ivnroStatus = await iTribDocument.Auth();
                 Save();
-                await SendResponse();
+                if (ivblnIsitMine)
+                    await SendResponse();
             }
             catch (Exception lioE)
             {
@@ -346,18 +341,10 @@ namespace Applet.Nat.Api.Br.Models
         }
         public async Task<string> SendResponse()
         {
-            //try
-            //{
-                Cuit lioCuit = new Cuit(ioDcModel.ivlngCuitEmisor, mioContext, mioConfiguration);
-                IDocsIO liIDocsIO = lioCuit.getIDocsIO();
-                await liIDocsIO.DocO([this]);
-                return liIDocsIO.ivstrB64Rta;
-            //}
-            //catch (Exception lioE)
-            //{
-            //    LogHelper.write(lioE);
-            //    return null;
-            //}
+            Cuit lioCuit = new Cuit(ioDcModel.ivlngCuitEmisor, mioContext, mioConfiguration);
+            IDocsIO liIDocsIO = lioCuit.getIDocsIO();
+            await liIDocsIO.DocO([this]);
+            return liIDocsIO.ivstrB64Rta;
         }
         public async Task<string> Print()
         {
@@ -389,7 +376,7 @@ namespace Applet.Nat.Api.Br.Models
                 livstrQR += Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(lioQRData)));
                 //Nodo Auth
 
-                livstr = lioUxAuth?.ivdtmAuthVenc==null? string.Empty: DateTime.ParseExact(lioUxAuth?.ivdtmAuthVenc??DateTime.MinValue.ToString(ListHelper.GetValue("FORMAT", "ApiDtm", mioContext)), ListHelper.GetValue("FORMAT", "ApiDtm", mioContext), null).ToString(ListHelper.GetValue("FORMAT", "XmlDtm", mioContext), null);
+                livstr = lioUxAuth?.ivdtmAuthVenc == null ? string.Empty : DateTime.ParseExact(lioUxAuth?.ivdtmAuthVenc ?? DateTime.MinValue.ToString(ListHelper.GetValue("FORMAT", "ApiDtm", mioContext)), ListHelper.GetValue("FORMAT", "ApiDtm", mioContext), null).ToString(ListHelper.GetValue("FORMAT", "XmlDtm", mioContext), null);
                 livstrXml = livstrXml.Replace("</DTE>", $"<Autorizacion><CodAut xmlns=\"http://www.afip.com.ar/fe\">{lioUxAuth?.ivstrAuthCode}</CodAut><FechaVtoAut xmlns=\"http://www.afip.com.ar/fe\">{livstr}</FechaVtoAut><TimeStampAut xmlns=\"http://www.afip.com.ar/fe\">{livstr}T00:00:00</TimeStampAut><BarCodeFont xmlns=\"http://www.afip.com.ar/fe\">{livstrQR}</BarCodeFont><BarCode xmlns=\"http://www.afip.com.ar/fe\">{ListHelper.GetValue("PATH", "qr", mioContext)}</BarCode></Autorizacion></DTE>");
                 lioXmlDocument.LoadXml(livstrXml);    //Crystal
                 HttpClient lioHttpClient = new HttpClient();
@@ -429,9 +416,10 @@ namespace Applet.Nat.Api.Br.Models
             switch (ioDcModel.ivstrWs)
             {
                 case "wsfev1":
-                case "wsfe":
-                case "wsmtxca": { iTribDocument = new TribDocumentV1(ioDcModel, mioContext); break; }
+                case "wsfe": { iTribDocument = new TribDocumentV1(ioDcModel, mioContext); break; }
+                case "wsmtxca": { iTribDocument = new TribDocumentMTXCA(ioDcModel, mioContext); break; }
                 case "wsfexv1": { iTribDocument = new TribDocumentExp(ioDcModel, mioContext); break; }
+                case "wscdc": { iTribDocument = new TribDocumentCdc(ioDcModel, mioContext); break; }
                 default: throw new Exception(Resources.lioE_Svc_No);
             }
             iTribDocument.SetData(ioDocumentUser);

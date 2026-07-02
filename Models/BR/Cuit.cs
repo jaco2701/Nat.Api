@@ -18,7 +18,7 @@ namespace Applet.Nat.Api.Br.Models
                 mioConfiguration = vioConfiguration;
             CuitModel lioCuitModel = mioContext.Cuits.Find(vivlngCuit);
             if (lioCuitModel == null)
-                throw new Exception(string.Format(Resources.lioE_ObjectNoM, "C.U.I.T.", "a"));
+                throw new Exception($"CUIT {vivlngCuit} {Resources.lioE_ObjectNoM}");
             ioDcModel = lioCuitModel;
         }
         public Cuit(CuitModel vioCuitModel, NatContext vioContext, IConfiguration vioConfiguration)
@@ -38,7 +38,6 @@ namespace Applet.Nat.Api.Br.Models
             }
         }
         public eTask ieTask { get; set; }
-
         #endregion
         #region PRIVATE PROPS
         private IConfiguration mioConfiguration;
@@ -49,6 +48,7 @@ namespace Applet.Nat.Api.Br.Models
         {
             mioContext = vioContext;
         }
+ 
         public async Task Task()
         {
             switch (ieTask)
@@ -124,5 +124,10 @@ namespace Applet.Nat.Api.Br.Models
         #endregion
         #region PRIVATE METHODS
         #endregion
+    }
+    public class CuitToLoadInfo
+    {
+        public Cuit? ioCuit { get; set; }
+        public short ivnroLoadMethod { get; set; }
     }
 }

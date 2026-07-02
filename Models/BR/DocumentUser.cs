@@ -33,7 +33,7 @@ namespace Applet.Nat.Api.Br.Models
         [JsonProperty("IdCliente")] public string? ivstrIdCliente { get; set; } // Identificador interno del cliente asociado al documento
         [JsonProperty("IdSucursal")] public string? ivstrIdSucursal { get; set; } // Identificador interno de la sucursal
         [JsonProperty("DocumentosAsociados")] public List<UxDocumentAsociado>? coAsociados { get; set; } // Lista de documentos asociados (ej. notas de crédito, débito, etc.)
-        [JsonProperty("PeriodoAsociado")] public UxPeriodoAsociado ioPeriodoAsociado { get; set; } // Periodo Asociado al documento
+        [JsonProperty("PeriodoAsociado")] public UxPeriodoAsociado? ioPeriodoAsociado { get; set; } // Periodo Asociado al documento
         [JsonProperty("OtrosTributos")] public List<UxDocumentOtroTributo>? coOtrosTributos { get; set; } // Lista de otros tributos aplicables al documento
         [JsonProperty("Ivas")] public List<UxDocumentIva>? coIvas { get; set; } // Lista de alícuotas de IVA aplicables al documento
         [JsonProperty("Opcionales")] public List<UxDocumentOpcional>? coOpcionales { get; set; } // Lista de campos opcionales del documento
@@ -59,11 +59,14 @@ namespace Applet.Nat.Api.Br.Models
         [JsonProperty("CBU")] public string? ivstrCBU { get; set; }
         [JsonProperty("Transferencia")] public string? ivstrTransferencia { get; set; }
         [JsonProperty("Anulacion")] public string? ivstrAnulacion { get; set; }
+        [JsonProperty("Modo")] public string? ivstrCbteModo { get; set; }
+        [JsonProperty("CAE")] public string? ivstrCodAutorizacion    { get; set; }
         [JsonProperty("IdPermisoEmbarque")] public string? ivstrPEId { get; set; }
         [JsonProperty("DestinoMercaderia")] public int? ivnumPEDestMerc { get; set; }
+        [JsonProperty("Autorizar")] public bool? ivblnAuth { get; set; }
         [JsonIgnore] public bool? ivblnTaxInLines { get; set; }
         [JsonIgnore] public bool? ivblnCalcPermisoExistente { get; set; }
-        [JsonIgnore] public UxDocumentIntegracion ioIntegracion { get; set; } // Datos de integración del documento
+        [JsonIgnore] public UxDocumentIntegracion? ioIntegracion { get; set; } // Datos de integración del documento
         public void FormatAmounts()
         {
             short livnro;
@@ -244,6 +247,7 @@ namespace Applet.Nat.Api.Br.Models
             //}
         }
         [JsonIgnore] public string ivstrKey { get { return $"Doc:[{ivlngCuitEmisor.ToString() ?? string.Empty}-{ivnumPvta.ToString() ?? string.Empty}-{ivnroTipoDoc.ToString() ?? string.Empty}-{ivlngCbte.ToString() ?? string.Empty}]"; } }
+        [JsonIgnore] public long? ivnumUserOriginator { get; set; }
     }
     public class UxDomicilio
     {
@@ -336,7 +340,7 @@ namespace Applet.Nat.Api.Br.Models
     public class UxPeriodoAsociado
     {
         [JsonProperty("FechaDesde")] public string? ivstrFechaDesde { get; set; } // Fecha de inicio del período asociado
-        [JsonProperty("FechaHasta")] public string ivstrFechaHasta { get; set; } // Fecha de fin del período asociado
+        [JsonProperty("FechaHasta")] public string? ivstrFechaHasta { get; set; } // Fecha de fin del período asociado
     }
     public class UxDocumentPermisoExp
     {
@@ -388,6 +392,8 @@ namespace Applet.Nat.Api.Br.Models
         public string? ivstrDescStatus { get; set; }
         [JsonProperty("Integracion")]
         public string? ivstrIntegracion { get; set; }
+        [JsonProperty("Auth")]
+        public UxAuth? ioUxAuth { get; set; }
     }
     public class DocumentUploadRequest
     {
