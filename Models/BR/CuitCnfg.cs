@@ -34,6 +34,7 @@ namespace Applet.Nat.Api.Br
         public bool? ivblnRequired { get; set; }
         public bool ivblnIsNumeric { get { return !string.IsNullOrEmpty(ivstrProperty) && (ivstrProperty.Contains("ivnro") || ivstrProperty.Contains("ivnum") || ivstrProperty.Contains("ivlng") || ivstrProperty.Contains("ivdbl")); } }
         public string? ivstrDefault { get; set; }
+        public bool? ivblnColumnHeader { get; set; }
     }
     public class ServiceMapperItemXPath
     {

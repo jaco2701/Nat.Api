@@ -39,7 +39,7 @@ namespace Applet.Nat.Api.Br.Models
             {
                 if (miIRawDocument == null)
                 {
-                    miIRawDocument= DocHelper.getRawDocument(ioDcModel.ivstrInType??string.Empty, iTribDocument.ivCuitAutorizante, mioContext);
+                    miIRawDocument = DocHelper.getRawDocument(ioDcModel.ivstrInType ?? string.Empty, iTribDocument.ivCuitAutorizante, mioContext);
                     miIRawDocument.ivstrRaw = ioDcModel.ivstrInData;
                     miIRawDocument.ivstrKey = ivstrKey;
                 }
@@ -225,18 +225,20 @@ namespace Applet.Nat.Api.Br.Models
         {
             iTribDocument.Validate();
         }
-        public async Task Share(IConfiguration vioConfiguration)
+        public async Task<bool> Share(IConfiguration vioConfiguration)
         {
             if (ioDocumentUser == null)
                 throw new Exception(Resources.lioE_Mail_No);
             List<string> lcvstrAddresses = new List<string>();
+            Cuit lioCuit = new Cuit(ioDcModel.ivlngCuitEmisor, mioContext, vioConfiguration);
+            if ((lioCuit.ioCnfg?.coParameters.FirstOrDefault(x => x.ivstrId == "Delivery")?.ivstrValue??"0") == "0")
+                return false;          
             //correos del documento
             if (!string.IsNullOrEmpty(ioDocumentUser.ivstrEmail))
                 foreach (string livstrAddress in ioDocumentUser.ivstrEmail.Split(";", StringSplitOptions.TrimEntries).ToList())
                     if (MailHelper.IsValidEmail(livstrAddress) && !lcvstrAddresses.Contains(livstrAddress))
                         lcvstrAddresses.Add(livstrAddress);
             //correos del cuit emisor fijos
-            Cuit lioCuit = new Cuit(ioDcModel.ivlngCuitEmisor, mioContext, vioConfiguration);
             if (lioCuit.ioCnfg?.coParameters.FirstOrDefault(x => x.ivstrId == "Email") != null)
                 foreach (string livstrAddress in lioCuit.ioCnfg?.coParameters?.FirstOrDefault(x => x.ivstrId == "Email")?.ivstrValue?.Split(";", StringSplitOptions.TrimEntries))
                     if (MailHelper.IsValidEmail(livstrAddress) && !lcvstrAddresses.Contains(livstrAddress))
@@ -248,7 +250,7 @@ namespace Applet.Nat.Api.Br.Models
                     if (MailHelper.IsValidEmail(livstrAddress) && !lcvstrAddresses.Contains(livstrAddress))
                         lcvstrAddresses.Add(livstrAddress);
             if (lcvstrAddresses.Count == 0)
-                return;
+                return false;
             //mapeador
             ServiceMapper lioServiceMapper = lioCuit.ioCnfg.coServiceMappers.FirstOrDefault(x => x.ivstrWs == "mail" && (x.cvnroDocTypes[0] == 0 || x.cvnroDocTypes.Contains(ioDcModel.ivnroTipo)));
             if (lioServiceMapper == null || string.IsNullOrEmpty(lioServiceMapper.ivstrTemplate) || string.IsNullOrEmpty(lioServiceMapper.ivstrInputType))
@@ -275,6 +277,7 @@ namespace Applet.Nat.Api.Br.Models
                     70,
                     $"{Resources.lioL_Share}: {string.Join(',', lcvstrAddresses)}"
                 );
+            return true;
         }
         public string Tracking()
         {
@@ -420,6 +423,7 @@ namespace Applet.Nat.Api.Br.Models
                 case "wsmtxca": { iTribDocument = new TribDocumentMTXCA(ioDcModel, mioContext); break; }
                 case "wsfexv1": { iTribDocument = new TribDocumentExp(ioDcModel, mioContext); break; }
                 case "wscdc": { iTribDocument = new TribDocumentCdc(ioDcModel, mioContext); break; }
+                case "wsct": { iTribDocument = new TribDocumentCT(ioDcModel, mioContext); break; }
                 default: throw new Exception(Resources.lioE_Svc_No);
             }
             iTribDocument.SetData(ioDocumentUser);

@@ -22,6 +22,7 @@ namespace Applet.Nat.Api.Br.Models
         [JsonProperty("ImporteNoGravado")] public double? ivdblImporteNoGravado { get; set; } // Importe no gravado del documento
         [JsonProperty("ImporteExento")] public double? ivdblImporteExento { get; set; } // Importe exento del documento
         [JsonProperty("ImporteOtrosTributos")] public double? ivdblImporteOtrosTributos { get; set; } // Importe de otros tributos del documento
+        [JsonProperty("ImporteReintegro")] public double? ivdblImporteReintegro { get; set; } // Importe de reitegro del documento
         [JsonProperty("ImporteIva")] public double? ivdblImporteIva { get; set; } // Importe total del IVA del documento
         [JsonProperty("Moneda")] public string? ivstrMoneda { get; set; } // Moneda del documento (ej. ARS, USD, etc.)
         [JsonProperty("Cotizacion")] public double? ivdblCotizacion { get; set; } // Cotización de la moneda del documento
@@ -309,6 +310,7 @@ namespace Applet.Nat.Api.Br.Models
         [JsonProperty("Valor3")] public string? ivstrValor3 { get; set; }   // Valor del tercer campo adicional
         [JsonProperty("Valor4")] public string? ivstrValor4 { get; set; }    // Valor del cuarto campo adicional
         [JsonProperty("Valor5")] public string? ivstrValor5 { get; set; }   // Valor del quinto campo adicional
+        [JsonProperty("Valor6")] public string? ivstrValor6 { get; set; }   // Valor del quinto campo adicional
     }
     public class UxDocumentComprador
     {

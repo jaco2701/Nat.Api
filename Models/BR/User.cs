@@ -44,8 +44,16 @@ namespace Applet.Nat.Api.Br.Models
         #region PUBLIC PROPS
         public UserModel ioDcModel { get; set; }
         public string? ivstrPass { get; set; }
-        public eRol ieRol { get { return (eRol)(ioDcModel?.ivnroRol??0); } }
+        public eRol ieRol { get { return (eRol)(ioDcModel?.ivnroRole ?? 0); } }
         public eTask ieTask { get; set; }
+        public short[] cvnroActions
+        {
+            get {
+                if (mioContext == null || ioDcModel == null)
+                    return new short[0];    
+                return mioContext.RoleActions.Where(x => x.ivnroRole == ioDcModel.ivnroRole).Select(x => x.ivnroAction).ToArray(); 
+            }
+        }
         #endregion
         #region PRIVATE PROPS
         private NatContext mioContext;
@@ -75,7 +83,7 @@ namespace Applet.Nat.Api.Br.Models
                             lioDbUserModel.ivstrUserEmail = ioDcModel.ivstrUserEmail;
                             lioDbUserModel.ivblnEnable = ioDcModel.ivblnEnable;
                             lioDbUserModel.ivnrologonFails = ioDcModel.ivnrologonFails;
-                            lioDbUserModel.ivnroRol = ioDcModel.ivnroRol;
+                            lioDbUserModel.ivnroRole = ioDcModel.ivnroRole;
                             mioContext.Users.Update(lioDbUserModel);
                         }
                         else
@@ -146,9 +154,9 @@ namespace Applet.Nat.Api.Br.Models
             Cuit lioCuit;
             foreach (UserCuitModel lioO in coCuitsModels)
             {
-                lioCuit= new Cuit(lioO.ivlngCuit,mioContext,null);
+                lioCuit = new Cuit(lioO.ivlngCuit, mioContext, null);
                 lioO.ivstrRS = lioCuit.ioDcModel.ivstrCuitRS;
-                lioO.ivstrEncoding = lioCuit.ioCnfg?.coParameters.FirstOrDefault(x => x.ivstrId == "Encoding")?.ivstrValue ??string.Empty;
+                lioO.ivstrEncoding = lioCuit.ioCnfg?.coParameters.FirstOrDefault(x => x.ivstrId == "Encoding")?.ivstrValue ?? string.Empty;
             }
         }
         #endregion

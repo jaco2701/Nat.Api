@@ -156,8 +156,10 @@ namespace Applet.Nat.Api.Static
                                         lioDocument.ioDcModel.ivnroStatus = 100;
                                     else
                                     {
-                                        await lioDocument.Share(vioConfiguration);
-                                        lioDocument.ioDcModel.ivnroStatus = 70;
+                                        if (await lioDocument.Share(vioConfiguration))
+                                            lioDocument.ioDcModel.ivnroStatus = 70;
+                                        else
+                                            lioDocument.ioDcModel.ivnroStatus = 100;
                                     }
                                 }
                                 catch (Exception lioE)
@@ -251,7 +253,7 @@ namespace Applet.Nat.Api.Static
                             livnumOriginator = 0;
                             lcvnumCuitUsers= lioContext.UserCuits.Where(x => x.ivlngCuit == lioO.ioCuit.ioDcModel.ivlngCuit).Select(x=>x.ivnumUser).ToArray();
                             foreach (int livnumCuitUser in lcvnumCuitUsers)
-                                if (lioContext.Users.Find(livnumCuitUser)?.ivnroRol == (short)eRol.CuitAdmin)
+                                if (lioContext.Users.Find(livnumCuitUser)?.ivnroRole == (short)eRol.CuitAdmin)
                                 {
                                     livnumOriginator = livnumCuitUser;
                                     break;
