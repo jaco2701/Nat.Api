@@ -239,6 +239,8 @@ namespace Applet.Nat.Api.Static
                 case ".xml": return new InDocumentXMLNew(vivlngCuit, vioContext); 
                 case ".json": return new InDocumentJSON(vivlngCuit, vioContext); 
                 case ".txt": return new InDocumentTXT(vivlngCuit, vioContext);
+                case ".jpg":
+                case ".pdf": return new InDocumentIMG(vivlngCuit, vioContext);
                 default: throw new Exception($"Extension de Documento {Resources.lioE_ObjectNoM}");
             }
         }

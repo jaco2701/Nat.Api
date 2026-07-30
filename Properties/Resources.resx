@@ -534,4 +534,7 @@
   <data name="lioE_NoFilter" xml:space="preserve">
     <value>Filtro Invalido</value>
   </data>
+  <data name="lioE_DocRNo" xml:space="preserve">
+    <value>Error en recuperacion de documento tributario</value>
+  </data>
 </root>

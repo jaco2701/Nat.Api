@@ -86,7 +86,7 @@ namespace Applet.Nat.Api.Static
                             livbln1st = false;
                             if (lioDocument.ioDcModel.ivnroStatus == 35)
                             {
-                                //LogHelper.write($"{DateTime.Now} {string.Format(Resources.lioE_DocCorrel, $"[{lioDocument.ioDcModel.ivlngCuitEmisor}|{lioDocument.ioDcModel.ivnroTipo}|{lioDocument.ioDcModel.ivnumPvta}|{lioDocument.ioDcModel.ivlngCbte}]")}"); // se detiene el proceso
+                                LogHelper.writeinfo($"{DateTime.Now} {Resources.lioE_DocCorrel} {lioDocument.ivstrKey}", ListHelper.GetValue("FORMAT", "VERBOSE", lioContext) == "1");
                                 break;
                             }
                         }
@@ -120,78 +120,73 @@ namespace Applet.Nat.Api.Static
 
                     }
                     //documentos para otras tareas
+                    short livnroPrevStatus;
                     foreach (Document lioDocument in lcoDocuments.Where(x => !lcvnroStatusAuth.Contains(x.ioDcModel.ivnroStatus)).OrderBy(x => x.ioDcModel.ivlngCbte))
                     {
                         try
                         {
-                            //  LogHelper.write($"{DateTime.Now} {Resources.lioM_ProcDoc} {lioDocument.ivstrKey}");
-                            if (lioDocument.ioDcModel.ivnroStatus == 50)  //Aprobado
+                            LogHelper.writeinfo(
+                                $"{DateTime.Now} {Resources.lioM_ProcDoc} {lioDocument.ivstrKey}",
+                                ListHelper.GetValue("FORMAT", "VERBOSE", lioContext) == "1"
+                               );
+                            livnroPrevStatus = lioDocument.ioDcModel.ivnroStatus;
+                            switch (lioDocument.ioDcModel.ivnroStatus)
                             {
-                                try
-                                {
-                                    if (!lioDocument.ivblPrintable)
-                                        lioDocument.ioDcModel.ivnroStatus = 100;
-                                    else
+                                case (50):  //Aprobado
+                                    try
                                     {
-                                        await lioDocument.Print();
-                                        lioDocument.ioDcModel.ivnroStatus = 60;
+                                        if (lioDocument.ivblPrintable)
+                                        {
+                                            await lioDocument.Print();
+                                            lioDocument.ioDcModel.ivnroStatus = 60;
+                                        }
+                                        else if (await lioDocument.Share(vioConfiguration))
+                                            lioDocument.ioDcModel.ivnroStatus = 70;
+                                        else
+                                        {
+                                            lioDocument.ioDcModel.ivnroStatus = 100;
+                                            new DocumentTracking(lioContext, lioDocument.ioDcModel.ivlngDoc)
+                                               .addTrack(
+                                                 lioDocument.ioDcModel.ivnroStatus,
+                                                 string.Empty
+                                               );
+                                        }
+
                                     }
-                                }
-                                catch (Exception lioE)
-                                {
-                                    lioDocument.ioDcModel.ivnroStatus = 65;
-                                    new DocumentTracking(lioContext, lioDocument.ioDcModel.ivlngDoc)
-                                    .addTrack(
-                                      lioDocument.ioDcModel.ivnroStatus,
-                                      lioE.ToString()
-                                    );
-                                    LogHelper.write(lioE);
-                                }
-                            }
-                            else if (lioDocument.ioDcModel.ivnroStatus == 60) //Impreso
-                            {
-                                try
-                                {
-                                    if (!lioDocument.ivblPrintable)
-                                        lioDocument.ioDcModel.ivnroStatus = 100;
-                                    else
+                                    catch (Exception lioE)
+                                    {
+                                        lioDocument.ioDcModel.ivnroStatus = 65;
+                                        LogHelper.write(lioE);
+                                    }
+                                    break;
+                                case (60): //Impreso
+                                    try
                                     {
                                         if (await lioDocument.Share(vioConfiguration))
                                             lioDocument.ioDcModel.ivnroStatus = 70;
                                         else
+                                        {
                                             lioDocument.ioDcModel.ivnroStatus = 100;
+                                            new DocumentTracking(lioContext, lioDocument.ioDcModel.ivlngDoc)
+                                               .addTrack(
+                                                 lioDocument.ioDcModel.ivnroStatus,
+                                                 string.Empty
+                                               );
+                                        }
                                     }
-                                }
-                                catch (Exception lioE)
-                                {
-                                    lioDocument.ioDcModel.ivnroStatus = 80;
-                                    new DocumentTracking(lioContext, lioDocument.ioDcModel.ivlngDoc)
-                                    .addTrack(
-                                      lioDocument.ioDcModel.ivnroStatus,
-                                      lioE.ToString()
-                                    );
-                                    LogHelper.write(lioE);
-                                }
+                                    catch (Exception lioE)
+                                    {
+                                        lioDocument.ioDcModel.ivnroStatus = 80;
+                                        LogHelper.write(lioE);
+                                    }
+                                    break;
+                                case (70): //Distribuido
+                                case (80): //NoDistribuido
+                                    lioDocument.ioDcModel.ivnroStatus = 100;
+                                    break;
                             }
-                            else if (lioDocument.ioDcModel.ivnroStatus == 70) //Distribuido
-                            {
-                                lioDocument.ioDcModel.ivnroStatus = 100;
-                                new DocumentTracking(lioContext, lioDocument.ioDcModel.ivlngDoc)
-                               .addTrack(
-                                  lioDocument.ioDcModel.ivnroStatus,
-                                  string.Empty
-                               );
-                            }
-                            else if (lioDocument.ioDcModel.ivnroStatus == 80) //NoDistribuido
-                            {
-                                lioDocument.ioDcModel.ivnroStatus = 100;
-                                new DocumentTracking(lioContext, lioDocument.ioDcModel.ivlngDoc)
-                               .addTrack(
-                                  lioDocument.ioDcModel.ivnroStatus,
-                                  string.Empty
-                               );
-                            }
-                            lioDocument.Save();
+                            if (lioDocument.ioDcModel.ivnroStatus != livnroPrevStatus)
+                                lioDocument.Save();
                         }
                         catch (Exception lioE)
                         {
@@ -251,7 +246,7 @@ namespace Applet.Nat.Api.Static
                             IDocsIO liIDocsIO = lioO.ioCuit.getIDocsIO();
                             // originador por defecto del cuit, para usar en cargas via servicio o ftp es el primer usuario administrador del CUIT que encuentra
                             livnumOriginator = 0;
-                            lcvnumCuitUsers= lioContext.UserCuits.Where(x => x.ivlngCuit == lioO.ioCuit.ioDcModel.ivlngCuit).Select(x=>x.ivnumUser).ToArray();
+                            lcvnumCuitUsers = lioContext.UserCuits.Where(x => x.ivlngCuit == lioO.ioCuit.ioDcModel.ivlngCuit).Select(x => x.ivnumUser).ToArray();
                             foreach (int livnumCuitUser in lcvnumCuitUsers)
                                 if (lioContext.Users.Find(livnumCuitUser)?.ivnroRole == (short)eRol.CuitAdmin)
                                 {

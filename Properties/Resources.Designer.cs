@@ -223,6 +223,15 @@ namespace Nat.API.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error en recuperacion de documento tributario.
+        /// </summary>
+        internal static string lioE_DocRNo {
+            get {
+                return ResourceManager.GetString("lioE_DocRNo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to PDF No Encontrado.
         /// </summary>
         internal static string lioE_Document_NoPrint {

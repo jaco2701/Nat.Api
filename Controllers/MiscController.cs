@@ -33,19 +33,11 @@ namespace Applet.Nat.Api.Controllers
             lcoLists = mioContext.Lists.Where(x => lcoTypes.Contains(x.ivcodType)).ToList();
             foreach (IdentityProviderModel liO in mioContext.IdentityProviders.Where(x => x.ivblnEnable == true))
                 lcoLists.Add(new ListModel { ivcodType = "IDPROV", ivcodId = liO.ivnumIdentityProvider.ToString(), ivstrDesc = liO.ivstrIdentityProvider });
-            if (livnroNivel == 0)
-                return ResponseHelper.Get(lcoLists);
-            //Double livvalCtz;
-            //try
-            //{
-            //    TribDocumentV1 lio = new TribDocumentV1(new DocumentModel { ivlngCuitEmisor = long.Parse(ListHelper.GetValue("CUIT", "0", mioContext)) }, mioContext);
-            //    livvalCtz = await lio.GetCotizacion("DOL", DateTime.Today.AddDays(-1));
-            //    lcoLists.Add(new ListModel { ivcodType = "CTZ", ivcodId = "DOLV1", ivstrDesc = livvalCtz.ToString("N2", System.Globalization.CultureInfo.GetCultureInfo("es-AR")) });
-            //}
-            //catch (Exception lioE)
-            //{
-            //    LogHelper.write(lioE);
-            //}
+            // selecciona los roles que tienen la accion Cuits:Modificar , para que estos no se muestren en los combos de asignacion de roles a usuarios
+            short[] lconroRoles = mioContext.RoleActions.Where(x => x.ivnroAction == 17).Select(x => x.ivnroRole).Distinct().ToArray();
+            foreach (ListModel lioListModel in mioContext.Lists.Where(x => x.ivcodType == "ROL"))
+                if (!lconroRoles.Contains(short.Parse(lioListModel.ivcodId)))
+                    lcoLists.Add(new ListModel { ivcodType = "ROLCOMBO", ivcodId = lioListModel.ivcodId, ivstrDesc = lioListModel.ivstrDesc });
             return ResponseHelper.Get(lcoLists);
         }
         [HttpPost("Rs")]

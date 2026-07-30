@@ -1,4 +1,4 @@
-﻿namespace Nat.Api.Models.BR
+﻿namespace Nat.API.Models.Afip
 {
     public class QRData
     {

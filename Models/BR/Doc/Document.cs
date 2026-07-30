@@ -4,7 +4,7 @@ using Applet.Nat.Api.Models;
 using Applet.Nat.Api.Models.BR;
 using Applet.Nat.Api.Static;
 using Applet.Nat.BR;
-using Nat.Api.Models.BR;
+using Nat.API.Models.Afip;
 using Nat.API.Properties;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
@@ -398,6 +398,11 @@ namespace Applet.Nat.Api.Br.Models
                 PrintResponse lioPrintResponse = JsonConvert.DeserializeObject<PrintResponse>(livstrResponse);
                 if (lioPrintResponse == null || string.IsNullOrEmpty(lioPrintResponse.ivstrB64Pdf))
                     throw new Exception(JsonConvert.SerializeObject(lioPrintResponse));
+                new DocumentTracking(mioContext, ioDcModel.ivlngDoc)
+                  .addTrack(
+                      60,
+                      string.Empty
+                    );
                 return Convert.ToBase64String(Format.UnCompress2(lioPrintResponse.ivstrB64Pdf));
             }
             catch (Exception lioE)

@@ -136,10 +136,11 @@ namespace Applet.Nat.Api.Controllers
                 long livlngCuit = 0;
                 DocumentUser[] vcoDocumentUser = JsonConvert.DeserializeObject<DocumentUser[]>(vivstrBody);
                 foreach (DocumentUser lioO in vcoDocumentUser)
-                {   if (lioO.ivstrWs == "wscdc")
-                            livlngCuit = lioO.ivlngDocReceptor ?? 0;
+                {
+                    if (!string.IsNullOrEmpty(lioO.ivstrCbteModo))
+                        livlngCuit = lioO.ivlngDocReceptor ?? 0;
                     else
-                            livlngCuit = lioO.ivlngCuitEmisor ?? 0;
+                        livlngCuit = lioO.ivlngCuitEmisor ?? 0;
                     break;
                 }
                 DocumentUploadRequest lioDocumentUploadRequest = new DocumentUploadRequest

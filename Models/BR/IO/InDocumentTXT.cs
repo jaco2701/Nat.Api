@@ -73,7 +73,7 @@ namespace Applet.Nat.Api.Br.Models
                     lioDocumentUser.ivstrWs = lioServiceMapper.ivstrWs;
                     lioDocumentUser.ivblnTaxInLines = lioServiceMapper.ivblnTaxInLines ?? false;
                     lioDocumentUser.ivblnCalcPermisoExistente = lioServiceMapper.ivblnCalcPermisoExistente ?? false;
-                    lioDocumentUser.ivstrInputData = ivstrRaw;
+                    lioDocumentUser.ivstrInputData = Format.Compress(Convert.ToBase64String(lioCuit.GetEncoding().GetBytes(livstrRawDocument)));
                     lioDocumentUser.ioDomicilioReceptor = new UxDomicilio();
                     foreach (ServiceMapperItem lioMapperItem in lioServiceMapper.coItems)
                     {
