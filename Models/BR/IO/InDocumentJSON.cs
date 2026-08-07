@@ -121,13 +121,18 @@ namespace Applet.Nat.Api.Br.Models
                         livstrPropName = lcvstrPropertyValues[0];
                         if (livstrPropName.StartsWith("co")) continue;
                         lioPropInfo = typeof(DocumentUser).GetProperty(livstrPropName);
-                        if (lioPropInfo == null)
+                        if (lioPropInfo == null && (string.IsNullOrEmpty(lioMapperItem.ivstrCoord) || !lioMapperItem.ivstrCoord.Contains("FIX")))
                         {
                             lioSbErrors.AppendLine($"Propiedad {lioMapperItem.ivstrProperty} {Resources.lioE_ObjectNoF}");
                             continue;
                         }
-                        lioPropValue = lioPropInfo.GetValue(lioDocumentUser);
-                        livstrPropRawValue = FormatValue(lioMapperItem, lioPropValue?.ToString());
+                        if (lioPropInfo == null)
+                            livstrPropRawValue = FormatValue(lioMapperItem, null);
+                        else
+                        {
+                            lioPropValue = lioPropInfo.GetValue(lioDocumentUser);
+                            livstrPropRawValue = FormatValue(lioMapperItem, lioPropValue?.ToString());
+                        }
                         if (lioMapperItem.ivblnRequired ?? false && string.IsNullOrEmpty(livstrPropRawValue))
                         {
                             lioSbErrors.AppendLine($"Valor de propiedad {lioMapperItem.ivstrProperty} {Resources.lioE_ObjectNoM}");
@@ -205,9 +210,8 @@ namespace Applet.Nat.Api.Br.Models
                                 }
                                 continue;
                             }
-
                             lioPropInfo = lioType.GetProperty(livstrChildPropName);
-                            if (lioPropInfo == null)
+                            if (lioPropInfo == null && (string.IsNullOrEmpty(lioMapperItem.ivstrCoord) || !lioMapperItem.ivstrCoord.Contains("FIX")))
                             {
                                 lioSbErrors.AppendLine($"Propiedad {lioMapperItem.ivstrProperty} {Resources.lioE_ObjectNoF}");
                                 continue;
@@ -215,7 +219,13 @@ namespace Applet.Nat.Api.Br.Models
 
                             for (int livnumIdx = 0; livnumIdx < lcoItemsList.Count; livnumIdx++)
                             {
-                                lioPropValue = lcoItemsList[livnumIdx] != null ? lioPropInfo.GetValue(lcoItemsList[livnumIdx]) : null;
+                                if (lioPropInfo == null)
+                                    livstrPropRawValue = FormatValue(lioMapperItem,null);
+                                else
+                                {
+                                    lioPropValue = lcoItemsList[livnumIdx] != null ? lioPropInfo.GetValue(lcoItemsList[livnumIdx]) : null;
+                                    livstrPropRawValue = FormatValue(lioMapperItem, lioPropValue?.ToString()??string.Empty);
+                                }
                                 foreach (ServiceMapperItemXPath lioXPath in lioMapperItem.coXPaths)
                                 {
                                     try
@@ -269,7 +279,7 @@ namespace Applet.Nat.Api.Br.Models
                                             continue;
                                         }
 
-                                        lioNewNode.InnerText = FormatValue(lioMapperItem, lioPropValue?.ToString()); 
+                                        lioNewNode.InnerText = livstrPropRawValue ; 
                                     }
                                     catch (Exception lioE)
                                     {
@@ -290,14 +300,18 @@ namespace Applet.Nat.Api.Br.Models
                             }
 
                             lioPropInfo = lioParentType.GetProperty(livstrChildPropName);
-                            if (lioPropInfo == null)
+                            if (lioPropInfo == null && (string.IsNullOrEmpty(lioMapperItem.ivstrCoord) || !lioMapperItem.ivstrCoord.Contains("FIX")))
                             {
                                 lioSbErrors.AppendLine($"Propiedad {lioMapperItem.ivstrProperty} {Resources.lioE_ObjectNoF}");
                                 continue;
                             }
-
-                            lioPropValue = lioPropInfo.GetValue(lioParentValue);
-                            livstrPropRawValue = FormatValue(lioMapperItem, lioPropValue?.ToString());
+                            if (lioPropInfo == null)
+                                livstrPropRawValue = FormatValue(lioMapperItem, null);
+                            else
+                            {
+                                lioPropValue = lioPropInfo.GetValue(lioParentValue);
+                                livstrPropRawValue = FormatValue(lioMapperItem, lioPropValue?.ToString());
+                            }
 
                             if (lioMapperItem.ivblnRequired ?? false && string.IsNullOrEmpty(livstrPropRawValue))
                             {
@@ -337,7 +351,6 @@ namespace Applet.Nat.Api.Br.Models
             }
             return lioXmlToPrinter.OuterXml;
         }
-
         private string FormatValue(ServiceMapperItem vioMapperItem, string? vivstrValue)
         {
             if (vioMapperItem.ivstrCoord != null && vioMapperItem.ivstrCoord.Contains("FIX"))

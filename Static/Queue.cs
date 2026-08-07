@@ -28,7 +28,7 @@ namespace Applet.Nat.Api.Static
                 ListHelper.SetProcessRunning(vioContext, "0");
                 LogHelper.writeinfo($"{DateTime.Now} Procesando Documentos", ListHelper.Verbose(vioContext));
                 foreach (DocumentModel lioDocumentModel in vioContext.Documents
-                .Where(x => new short[] { 35, 10, 50, 70, 80, 60 }
+                .Where(x => new short[] { 10, 35, 50, 60, 70 }
                 .Contains(x.ivnroStatus))
                 .OrderBy(x => x.ivlngCuitEmisor).ThenBy(x => x.ivnroTipo).ThenBy(x => x.ivnumPvta)
                 )
@@ -133,30 +133,40 @@ namespace Applet.Nat.Api.Static
                             switch (lioDocument.ioDcModel.ivnroStatus)
                             {
                                 case (50):  //Aprobado
-                                    try
+                                    if (lioDocument.ivblPrintable)
                                     {
-                                        if (lioDocument.ivblPrintable)
+                                        try
                                         {
                                             await lioDocument.Print();
                                             lioDocument.ioDcModel.ivnroStatus = 60;
                                         }
-                                        else if (await lioDocument.Share(vioConfiguration))
-                                            lioDocument.ioDcModel.ivnroStatus = 70;
-                                        else
+                                        catch (Exception lioE)
                                         {
-                                            lioDocument.ioDcModel.ivnroStatus = 100;
-                                            new DocumentTracking(lioContext, lioDocument.ioDcModel.ivlngDoc)
-                                               .addTrack(
-                                                 lioDocument.ioDcModel.ivnroStatus,
-                                                 string.Empty
-                                               );
+                                            lioDocument.ioDcModel.ivnroStatus = 65;
+                                            LogHelper.write(lioE);
                                         }
-
                                     }
-                                    catch (Exception lioE)
+                                    else
                                     {
-                                        lioDocument.ioDcModel.ivnroStatus = 65;
-                                        LogHelper.write(lioE);
+                                        try
+                                        {
+                                            if (await lioDocument.Share(vioConfiguration))
+                                                lioDocument.ioDcModel.ivnroStatus = 70;
+                                            else
+                                            {
+                                                lioDocument.ioDcModel.ivnroStatus = 100;
+                                                new DocumentTracking(lioContext, lioDocument.ioDcModel.ivlngDoc)
+                                                   .addTrack(
+                                                     lioDocument.ioDcModel.ivnroStatus,
+                                                     string.Empty
+                                                   );
+                                            }
+                                        }
+                                        catch (Exception lioE)
+                                        {
+                                            lioDocument.ioDcModel.ivnroStatus = 80;
+                                            LogHelper.write(lioE);
+                                        }
                                     }
                                     break;
                                 case (60): //Impreso
@@ -181,8 +191,12 @@ namespace Applet.Nat.Api.Static
                                     }
                                     break;
                                 case (70): //Distribuido
-                                case (80): //NoDistribuido
                                     lioDocument.ioDcModel.ivnroStatus = 100;
+                                    new DocumentTracking(lioContext, lioDocument.ioDcModel.ivlngDoc)
+                                      .addTrack(
+                                        lioDocument.ioDcModel.ivnroStatus,
+                                        string.Empty
+                                      );
                                     break;
                             }
                             if (lioDocument.ioDcModel.ivnroStatus != livnroPrevStatus)
