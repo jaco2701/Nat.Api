@@ -7,6 +7,7 @@ using Applet.Nat.Api.Static;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.Mvc;
 using Nat.Api.Models.BR;
+using Nat.API.Models.BR;
 using Nat.API.Properties;
 using Newtonsoft.Json;
 using System.Data;
@@ -128,14 +129,54 @@ namespace Applet.Nat.Api.Controllers
             }
         }
         [HttpPost("Load")]
-        public async Task<Response> Load([FromBody] Object vioBody)
+        public async Task<object> Load([FromBody] object vioPayload)
         {
             try
             {
-                string vivstrBody = JsonConvert.SerializeObject(vioBody);
+                if (vioPayload == null)
+                    throw new Exception(Resources.lioE_NoDocs);
+                DocumentUploadRequest lioDocumentUploadRequest;
+                List<DocumentUploadResponse> lcoResponses;
+                #region OPERA
+                OperaFiscalPayload? lioOperaFiscalPayload = null;
+                string livstrBody = JsonConvert.SerializeObject(vioPayload);
+                try
+                {
+                    lioOperaFiscalPayload = JsonConvert.DeserializeObject<OperaFiscalPayload>(livstrBody);
+                    if (lioOperaFiscalPayload == null || lioOperaFiscalPayload.Header == null || lioOperaFiscalPayload.DocumentInfo == null ||   lioOperaFiscalPayload.HotelInfo == null )
+                        lioOperaFiscalPayload = null;
+                }
+                catch
+                {
+                    lioOperaFiscalPayload = null;
+                }
+                if (lioOperaFiscalPayload != null)
+                {
+                    if (lioOperaFiscalPayload.ivlngCuitEmisor == 0)
+                        throw new Exception("Cuit Emisor " + Resources.lioE_ObjectNoM);
+                    lioDocumentUploadRequest = new DocumentUploadRequest
+                    {
+                        ivblnComp = false,
+                        ivlngCuit = lioOperaFiscalPayload.ivlngCuitEmisor,
+                        ivstrData = Convert.ToBase64String(Encoding.UTF8.GetBytes(livstrBody)),
+                        ivstrName = $"Load_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.ojson"
+                    };
+                    lcoResponses = DocHelper.UploadDocument(lioDocumentUploadRequest, mioConfiguration, mioToken.ivnumUser);
+                    return ResponseHelper.Get(lcoResponses);
+                }
+                #endregion
+                #region NAT
                 long livlngCuit = 0;
-                DocumentUser[] vcoDocumentUser = JsonConvert.DeserializeObject<DocumentUser[]>(vivstrBody);
-                foreach (DocumentUser lioO in vcoDocumentUser)
+                DocumentUser[] lcoDocumentUser = [];
+                try
+                {
+                   lcoDocumentUser = JsonConvert.DeserializeObject<DocumentUser[]>(livstrBody);
+                }
+                catch
+                {
+                    throw new Exception("Docuemento " + Resources.lioE_ObjectNoM);
+                }
+                foreach (DocumentUser lioO in lcoDocumentUser)
                 {
                     if (!string.IsNullOrEmpty(lioO.ivstrCbteModo))
                         livlngCuit = lioO.ivlngDocReceptor ?? 0;
@@ -143,17 +184,17 @@ namespace Applet.Nat.Api.Controllers
                         livlngCuit = lioO.ivlngCuitEmisor ?? 0;
                     break;
                 }
-                DocumentUploadRequest lioDocumentUploadRequest = new DocumentUploadRequest
+                lioDocumentUploadRequest = new DocumentUploadRequest
                 {
                     ivblnComp = false,
                     ivlngCuit = livlngCuit,
-                    ivstrData = Convert.ToBase64String(Encoding.UTF8.GetBytes(vivstrBody)),
+                    ivstrData = Convert.ToBase64String(Encoding.UTF8.GetBytes(livstrBody)),
                     ivstrName = $"Load_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.json"
                 };
-                List<DocumentUploadResponse> lcoResponses = DocHelper.UploadDocument(lioDocumentUploadRequest, mioConfiguration, mioToken.ivnumUser);
+                lcoResponses = DocHelper.UploadDocument(lioDocumentUploadRequest, mioConfiguration, mioToken.ivnumUser);
                 Document lioDocument;
                 DocumentUploadResponse lioResponse;
-                foreach (DocumentUser lioO in vcoDocumentUser)
+                foreach (DocumentUser lioO in lcoDocumentUser)
                 {
                     lioResponse = lcoResponses.FirstOrDefault(x => x.ivlngCuitEmisor == lioO.ivlngCuitEmisor && x.ivnroTipoDoc == lioO.ivnroTipoDoc && x.ivnumPvta == lioO.ivnumPvta && x.ivlngCbte == lioO.ivlngCbte);
                     if (lioResponse == null || lioResponse.ivnroStatus != 1) continue;
@@ -163,6 +204,7 @@ namespace Applet.Nat.Api.Controllers
                     lioResponse.ioUxAuth = lioDocument.GetAuth();
                 }
                 return ResponseHelper.Get(lcoResponses);
+                #endregion
             }
             catch (Exception lioE)
             {

@@ -8,6 +8,7 @@ namespace Applet.Nat.Api.Br.Models
         [JsonProperty("TipoDocReceptor")] public short? ivnroTipoDocReceptor { get; set; } // Tipo de documento del receptor (ej. CUIT, CUIL, DNI, etc.)
         [JsonProperty("DocReceptor")] public long? ivlngDocReceptor { get; set; } // Número de documento del receptor
         [JsonProperty("TipoRespReceptor")] public short? ivnroTipoRespReceptor { get; set; } // Tipo de responsable del receptor (ej. Responsable Inscripto, Monotributista, etc.)
+        [JsonProperty("TipoRespReceptorPal")]    public string? ivstrTipoRespReceptor { get; set; } //Tipo de responsable del receptor (Palabra)
         [JsonProperty("PuntoVenta")] public int? ivnumPvta { get; set; } // Punto de venta del documento
         [JsonProperty("TipoDocumento")] public short? ivnroTipoDoc { get; set; } // Tipo de documento (ej. Factura A, Factura B, etc.)
         [JsonProperty("NroCbte")] public long? ivlngCbte { get; set; } // Número del comprobante
@@ -33,15 +34,6 @@ namespace Applet.Nat.Api.Br.Models
         [JsonProperty("Ws")] public string? ivstrWs { get; set; } // Web service utilizado para la emisión del documento
         [JsonProperty("IdCliente")] public string? ivstrIdCliente { get; set; } // Identificador interno del cliente asociado al documento
         [JsonProperty("IdSucursal")] public string? ivstrIdSucursal { get; set; } // Identificador interno de la sucursal
-        [JsonProperty("DocumentosAsociados")] public List<UxDocumentAsociado>? coAsociados { get; set; } // Lista de documentos asociados (ej. notas de crédito, débito, etc.)
-        [JsonProperty("PeriodoAsociado")] public UxPeriodoAsociado? ioPeriodoAsociado { get; set; } // Periodo Asociado al documento
-        [JsonProperty("OtrosTributos")] public List<UxDocumentOtroTributo>? coOtrosTributos { get; set; } // Lista de otros tributos aplicables al documento
-        [JsonProperty("Ivas")] public List<UxDocumentIva>? coIvas { get; set; } // Lista de alícuotas de IVA aplicables al documento
-        [JsonProperty("Opcionales")] public List<UxDocumentOpcional>? coOpcionales { get; set; } // Lista de campos opcionales del documento
-        [JsonProperty("Adicionales")] public List<UxDocumentAdicional>? coAdicionales { get; set; } // Lista de campos adicionales del documento
-        [JsonProperty("Compradores")] public List<UxDocumentComprador>? coCompradores { get; set; } // Lista de compradores del documento (en caso de ser un documento compartido)
-        [JsonProperty("Items")] public List<UxDocumentItem>? coItems { get; set; } // Lista de ítems del documento (productos o servicios facturados)
-        [JsonProperty("ItemsCT")] public List<UxDocumentItemCT>? coItemsCT { get; set; } // Lista de ítems de tipo "Código de Turismo" (CT) del documento
         [JsonProperty("CanMisMonExt")] public string? ivstrCanMisMonExt { get; set; } // Cantidad de monedas extranjeras utilizadas en el documento
         [JsonProperty("PermisoExistente")] public string? ivstrPermisoExistente { get; set; } // Permiso existente para la emisión del documento (si aplica)
         [JsonProperty("Cliente")] public string? ivstrCliente { get; set; } // Nombre del cliente asociado al documento
@@ -53,7 +45,6 @@ namespace Applet.Nat.Api.Br.Models
         [JsonProperty("Email")] public string? ivstrEmail { get; set; } // Email del receptor del documento
         [JsonProperty("TipoExpo")] public short? ivnroTipoExpo { get; set; } // Tipo de exportación del documento (ej. Definitiva, Temporal, etc.)
         [JsonProperty("DestinoCmp")] public short? ivnroDestinoCmp { get; set; } // Destino del comprobante (ej. Mercado Interno, Exportación, etc.)
-        [JsonProperty("PermisosExp")] public List<UxDocumentPermisoExp>? coPermisosExp { get; set; } // Lista de permisos de exportación asociados al documento
         [JsonProperty("LoadErrors")] public string? ivstrLoadErrors { get; set; }
         [JsonProperty("InputData")] public string? ivstrInputData { get; set; }
         [JsonProperty("IDImpositivo")] public long? ivlngIDImpositivo { get; set; } // Id Impositivo Expo
@@ -65,8 +56,20 @@ namespace Applet.Nat.Api.Br.Models
         [JsonProperty("IdPermisoEmbarque")] public string? ivstrPEId { get; set; }
         [JsonProperty("DestinoMercaderia")] public int? ivnumPEDestMerc { get; set; }
         [JsonProperty("Autorizar")] public bool? ivblnAuth { get; set; }
+        [JsonProperty("DocumentosAsociados")] public List<UxDocumentAsociado>? coAsociados { get; set; } // Lista de documentos asociados (ej. notas de crédito, débito, etc.)
+        [JsonProperty("PeriodoAsociado")] public UxPeriodoAsociado? ioPeriodoAsociado { get; set; } // Periodo Asociado al documento
+        [JsonProperty("OtrosTributos")] public List<UxDocumentOtroTributo>? coOtrosTributos { get; set; } // Lista de otros tributos aplicables al documento
+        [JsonProperty("Ivas")] public List<UxDocumentIva>? coIvas { get; set; } // Lista de alícuotas de IVA aplicables al documento
+        [JsonProperty("Opcionales")] public List<UxDocumentOpcional>? coOpcionales { get; set; } // Lista de campos opcionales del documento
+        [JsonProperty("Adicionales")] public List<UxDocumentAdicional>? coAdicionales { get; set; } // Lista de campos adicionales del documento
+        [JsonProperty("Compradores")] public List<UxDocumentComprador>? coCompradores { get; set; } // Lista de compradores del documento (en caso de ser un documento compartido)
+        [JsonProperty("Items")] public List<UxDocumentItem>? coItems { get; set; } // Lista de ítems del documento (productos o servicios facturados)
+        [JsonProperty("ItemsCT")] public List<UxDocumentItemCT>? coItemsCT { get; set; } // Lista de ítems de tipo "Código de Turismo" (CT) del documento
+        [JsonProperty("PermisosExp")] public List<UxDocumentPermisoExp>? coPermisosExp { get; set; } // Lista de permisos de exportación asociados al documento
+        [JsonProperty("Misc")] public List<UxMisc>? ioMisc { get; set; } // Lista de permisos de exportación asociados al documento
         [JsonIgnore] public bool? ivblnTaxInLines { get; set; }
         [JsonIgnore] public bool? ivblnCalcPermisoExistente { get; set; }
+        [JsonIgnore] public string? ivstrDocReceptor { get; set; }
         [JsonIgnore] public UxDocumentIntegracion? ioIntegracion { get; set; } // Datos de integración del documento
         public void FormatAmounts()
         {
@@ -272,6 +275,9 @@ namespace Applet.Nat.Api.Br.Models
         public string? ivstrCP { get; set; }// Código postal del domicilio
         [JsonProperty("Referencia")]
         public string? ivstrReferencia { get; set; } // Referencia adicional del domicilio (opcional)
+        [JsonProperty("PciaPal")]
+        public string? ivstrPcia { get; set; } // Provincia del domicilio (Palabra)
+        
     }
     public class UxDocumentAsociado
     {
@@ -348,6 +354,19 @@ namespace Applet.Nat.Api.Br.Models
     {
         [JsonProperty("DestMerc")] public int? ivnumDestMerc { get; set; } // Destino del mercaderia del permiso de exportación (ej. Mercado Interno, Exportación, etc.)
         [JsonProperty("Id")] public string? ivstrId { get; set; } // Identificador del permiso de exportación
+    }
+    public class UxMisc
+    {
+        [JsonProperty("Misc0")] public string? ivstrMisc0 { get; set; } // Identificador del permiso de exportación
+        [JsonProperty("Misc1")] public string? ivstrMisc1 { get; set; } // Identificador del permiso de exportación
+        [JsonProperty("Misc2")] public string? ivstrMisc2 { get; set; } // Identificador del permiso de exportación
+        [JsonProperty("Misc3")] public string? ivstrMisc3 { get; set; } // Identificador del permiso de exportación
+        [JsonProperty("Misc4")] public string? ivstrMisc4 { get; set; } // Identificador del permiso de exportación
+        [JsonProperty("Misc5")] public string? ivstrMisc5 { get; set; } // Identificador del permiso de exportación
+        [JsonProperty("Misc6")] public string? ivstrMisc6 { get; set; } // Identificador del permiso de exportación
+        [JsonProperty("Misc7")] public string? ivstrMisc7 { get; set; } // Identificador del permiso de exportación
+        [JsonProperty("Misc8")] public string? ivstrMisc8 { get; set; } // Identificador del permiso de exportación
+        [JsonProperty("Misc9")] public string? ivstrMisc9 { get; set; } // Identificador del permiso de exportación
     }
     public class UxAuth
     {

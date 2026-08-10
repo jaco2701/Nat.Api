@@ -6,6 +6,7 @@ using Applet.Nat.Api.Models.BR;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
+using Nat.API.Models.BR;
 using Nat.API.Properties;
 using Newtonsoft.Json;
 using System.Text;
@@ -237,7 +238,8 @@ namespace Applet.Nat.Api.Static
             switch (vivstrInType)
             {
                 case ".xml": return new InDocumentXMLNew(vivlngCuit, vioContext); 
-                case ".json": return new InDocumentJSON(vivlngCuit, vioContext); 
+                case ".json": return new InDocumentJSON(vivlngCuit, vioContext);
+                case ".ojson": return new InDocumentOpera(vivlngCuit, vioContext); 
                 case ".txt": return new InDocumentTXT(vivlngCuit, vioContext);
                 case ".jpg":
                 case ".pdf": return new InDocumentIMG(vivlngCuit, vioContext);
