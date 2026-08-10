@@ -51,6 +51,8 @@ namespace Applet.Nat.BR
         public List<DocumentComprador> coCompradores { get; set; }
         public List<DocumentAdicional> coAdicionales { get; set; }
         private List<DocumentItem> coItems { get; set; }
+        public long ivCuitAutorizante { get { return mioDcModel.ivlngCuitEmisor; } }
+        public string ivstrSR { get; set; } = "S";
         #endregion
         #region PUBLICS METHODS
         public void SetData(DocumentUser vioDocumentUser)
@@ -224,7 +226,7 @@ namespace Applet.Nat.BR
             AfipLoginResponse lioAfipLoginResponse = await lioAfipService.GetAfipLogin();
             AuthRequestType lioAutRequest = new AuthRequestType()
             {
-                cuitRepresentada = this.mioDcModel.ivlngCuitEmisor,
+                cuitRepresentada = ivCuitAutorizante,
                 sign = lioAfipLoginResponse.ivstrSign,
                 token = lioAfipLoginResponse.ivstrToken
             };

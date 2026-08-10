@@ -7,7 +7,7 @@ using Applet.Nat.OracleCanonical.Update;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Nat.API.Properties;
 using Newtonsoft.Json;
-using System.Net;
+using System.Net; 
 using System.Text;
 
 namespace Applet.Nat.Api.Br.Models
@@ -38,7 +38,7 @@ namespace Applet.Nat.Api.Br.Models
         public short ivnroRows { get; set; }
         #endregion
         #region PUBLIC METHODS  
-        public async Task DocsI()
+        public async Task DocsI(int vivnumUserOriginator)
         {
 
             using NatContext lioContext = NatContext.GetContext(mioConfiguration);
@@ -83,7 +83,7 @@ namespace Applet.Nat.Api.Br.Models
                         ivblnComp = false,
                         ivlngCuit = ivlngCuit
                     };
-                    List<DocumentUploadResponse> lcoUDocumentsUploadResponse = DocHelper.UploadDocument(lioDocumentsUploadRequest, mioConfiguration);
+                    List<DocumentUploadResponse> lcoUDocumentsUploadResponse = DocHelper.UploadDocument(lioDocumentsUploadRequest, mioConfiguration, vivnumUserOriginator);
                     //Documentos Cargados
                     List<Document> lcoDocumentsToUpdate = new List<Document>();
                     foreach (DocumentUploadResponse lioDocumentUploadResponse in lcoUDocumentsUploadResponse.Where(x => x.ivnroStatus == 1))

@@ -29,15 +29,31 @@ namespace Applet.Nat.Api.Controllers
         {
             try
             {
+                User lioFromUser = new User(mioToken.ivnumUser, mioContext, mioToken);
+                if (lioFromUser.ieRol == eRol.User)
+                    throw new Exception(Resources.lioE_NoAuth);
+                List<int> cvnumUsersThatAdmins = new List<int>();
+                if (lioFromUser.ieRol == eRol.CuitAdmin)
+                {
+                    List<long> cvlngCuitsThatAdmins = mioContext.UserCuits.Where(x => x.ivnumUser == lioFromUser.ioDcModel.ivnumUser).Select(x => x.ivlngCuit).ToList();
+                    cvnumUsersThatAdmins = mioContext.UserCuits.Where(x => cvlngCuitsThatAdmins.Contains(x.ivlngCuit)).Select(x => x.ivnumUser).ToList();
+                }
                 List<User> lcoUsers = new List<User>();
                 if (vioFilter == null || vioFilter.coFilterItems == null || vioFilter.coFilterItems.Count == 0)
-                    throw (new Exception("Filtro Invalido"));
-                if (vioFilter.coFilterItems == null)
+                    throw (new Exception(Resources.lioE_NoFilter));
+                if (vioFilter.coFilterItems == null || vioFilter.coFilterItems.Count() == 0)
                     vioFilter.coFilterItems = [];
-                foreach (UserModel lioUserModel in mioContext.Users.Where(x => x.ivstrUserName.Contains(vioFilter.coFilterItems[0].ivstrPropValue) || x.ivstrUserEmail.Contains(vioFilter.coFilterItems[0].ivstrPropValue) || x.ivstrUserId.Contains(vioFilter.coFilterItems[0].ivstrPropValue)))
+                UserModel[] lcoUserModels = null;
+                if (vioFilter.coFilterItems[0].ivstrPropValue == "*")
+                    lcoUserModels = mioContext.Users.ToArray();
+                else
+                    lcoUserModels = mioContext.Users.Where(x => x.ivstrUserName.Contains(vioFilter.coFilterItems[0].ivstrPropValue) || x.ivstrUserEmail.Contains(vioFilter.coFilterItems[0].ivstrPropValue) || x.ivstrUserId.Contains(vioFilter.coFilterItems[0].ivstrPropValue)).ToArray();
+                foreach (UserModel lioUserModel in lcoUserModels.Where(x=> ! (new string[] {"admin","services" }.Contains(x.ivstrUserId))))
                 {
                     try
                     {
+                        if (cvnumUsersThatAdmins.Count > 0 && !cvnumUsersThatAdmins.Contains(lioUserModel.ivnumUser))
+                            continue;
                         lcoUsers.Add(new User(lioUserModel, mioContext, mioToken));
                     }
                     catch (Exception lioE)

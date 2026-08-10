@@ -1,13 +1,16 @@
 using Applet.Nat.Api.Br;
 using Applet.Nat.Api.Br.Models;
 using Applet.Nat.Api.DC;
-using Microsoft.AspNetCore.Mvc;
-using Applet.Nat.Api.Static;
 using Applet.Nat.Api.Ifaces;
-using Nat.API.Properties;
-using Nat.Api.Models.BR;
-using System.Data;
 using Applet.Nat.Api.Models.BR;
+using Applet.Nat.Api.Static;
+using Microsoft.AspNetCore.Components.Routing;
+using Microsoft.AspNetCore.Mvc;
+using Nat.Api.Models.BR;
+using Nat.API.Properties;
+using Newtonsoft.Json;
+using System.Data;
+using System.Text;
 
 namespace Applet.Nat.Api.Controllers
 {
@@ -116,7 +119,50 @@ namespace Applet.Nat.Api.Controllers
         {
             try
             {
-                return ResponseHelper.Get(DocHelper.UploadDocument(vioDocumentsUpload, mioConfiguration));
+                return ResponseHelper.Get(DocHelper.UploadDocument(vioDocumentsUpload, mioConfiguration, mioToken.ivnumUser));
+            }
+            catch (Exception lioE)
+            {
+                LogHelper.write(lioE);
+                return ResponseHelper.Get(-1, lioE);
+            }
+        }
+        [HttpPost("Load")]
+        public async Task<Response> Load([FromBody] Object vioBody)
+        {
+            try
+            {
+                string vivstrBody = JsonConvert.SerializeObject(vioBody);
+                long livlngCuit = 0;
+                DocumentUser[] vcoDocumentUser = JsonConvert.DeserializeObject<DocumentUser[]>(vivstrBody);
+                foreach (DocumentUser lioO in vcoDocumentUser)
+                {
+                    if (!string.IsNullOrEmpty(lioO.ivstrCbteModo))
+                        livlngCuit = lioO.ivlngDocReceptor ?? 0;
+                    else
+                        livlngCuit = lioO.ivlngCuitEmisor ?? 0;
+                    break;
+                }
+                DocumentUploadRequest lioDocumentUploadRequest = new DocumentUploadRequest
+                {
+                    ivblnComp = false,
+                    ivlngCuit = livlngCuit,
+                    ivstrData = Convert.ToBase64String(Encoding.UTF8.GetBytes(vivstrBody)),
+                    ivstrName = $"Load_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.json"
+                };
+                List<DocumentUploadResponse> lcoResponses = DocHelper.UploadDocument(lioDocumentUploadRequest, mioConfiguration, mioToken.ivnumUser);
+                Document lioDocument;
+                DocumentUploadResponse lioResponse;
+                foreach (DocumentUser lioO in vcoDocumentUser)
+                {
+                    lioResponse = lcoResponses.FirstOrDefault(x => x.ivlngCuitEmisor == lioO.ivlngCuitEmisor && x.ivnroTipoDoc == lioO.ivnroTipoDoc && x.ivnumPvta == lioO.ivnumPvta && x.ivlngCbte == lioO.ivlngCbte);
+                    if (lioResponse == null || lioResponse.ivnroStatus != 1) continue;
+                    if (!lioO.ivblnAuth ?? false) continue;
+                    lioDocument = new Document(lioResponse.ivlngDoc ?? 0, mioContext, mioConfiguration);
+                    lioDocument.Auth().Wait();
+                    lioResponse.ioUxAuth = lioDocument.GetAuth();
+                }
+                return ResponseHelper.Get(lcoResponses);
             }
             catch (Exception lioE)
             {
@@ -129,10 +175,10 @@ namespace Applet.Nat.Api.Controllers
         {
             try
             {
-                User lioUser = new User(mioToken.ivnumUser, mioContext); 
+                User lioUser = new User(mioToken.ivnumUser, mioContext);
                 if (lioUser == null)
                     throw new Exception(Resources.lioE_NoCreds);
-                if (!lioUser.ioDcModel.ivblnEnable?? false)
+                if (!lioUser.ioDcModel.ivblnEnable ?? false)
                     throw new Exception(Resources.lioE_User_Block);
                 if ((vioDocumentTask.cvlngDocs == null || vioDocumentTask.cvlngDocs.Length == 0) && (vioDocumentTask.coKeys == null || vioDocumentTask.coKeys.Length == 0))
                     throw new Exception(Resources.lioE_NoDocs);
@@ -152,9 +198,9 @@ namespace Applet.Nat.Api.Controllers
                 DocumentTaskResponse lioDocumentTaskResponse;
                 foreach (DocumentModel lioDocumentModel in mioContext.Documents.Where(x => vioDocumentTask.cvlngDocs.Contains(x.ivlngDoc)))
                 {
-                    if (!lioUser.coCuitsModels.Any(x => x.ivlngCuit == lioDocumentModel.ivlngCuitEmisor))
-                        continue;
                     Document lioDocument = new Document(lioDocumentModel, mioContext, mioConfiguration);
+                    if (!lioUser.coCuitsModels.Any(x => x.ivlngCuit == lioDocument.iTribDocument.ivCuitAutorizante))
+                        continue;
                     lioDocumentTaskResponse = new DocumentTaskResponse
                     {
                         ivlngDoc = lioDocumentModel.ivlngDoc,

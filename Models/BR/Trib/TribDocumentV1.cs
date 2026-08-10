@@ -168,7 +168,7 @@ namespace Applet.Nat.Api.Br.Models
             AfipLoginResponse lioAfipLoginResponse = await lioAfipService.GetAfipLogin();
             FEAuthRequest lioAutRequest = new FEAuthRequest()
             {
-                Cuit = this.mioDcModel.ivlngCuitEmisor,
+                Cuit = ivCuitAutorizante,
                 Sign = lioAfipLoginResponse.ivstrSign,
                 Token = lioAfipLoginResponse.ivstrToken
             };
@@ -646,6 +646,8 @@ namespace Applet.Nat.Api.Br.Models
                 throw new Exception($"{Resources.lioE_Cotiz_No} => {lioFEParamGetCotizacionResponse.Body.FEParamGetCotizacionResult.Errors[0].Code}:{lioFEParamGetCotizacionResponse.Body.FEParamGetCotizacionResult.Errors[0].Msg}");
             return (double)lioFEParamGetCotizacionResponse.Body.FEParamGetCotizacionResult.ResultGet.MonCotiz;
         }
+        public long ivCuitAutorizante { get { return mioDcModel.ivlngCuitEmisor; } }
+        public string ivstrSR { get; set; } = "S";
         public UxAuth GetAuth()
         {
             short[] lcvnroStatusRTA = new short[] { 20, 35, 40, 50 };

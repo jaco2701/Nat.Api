@@ -12,6 +12,8 @@ namespace Applet.Nat.Api.Ifaces
         void SetContext(NatContext vioContext);
         UxAuth GetAuth();
         Task<double> GetCotizacion(string ivstrCurrency, DateTime livdtm);
+        long ivCuitAutorizante { get; }
+        string ivstrSR { get; set; }
     }
 }
 

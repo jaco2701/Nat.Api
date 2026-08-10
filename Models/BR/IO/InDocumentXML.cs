@@ -657,7 +657,7 @@ namespace Applet.Nat.Api.Br.Models
                 #endregion
                 #region Opcionales
                 livnroI = 1;
-                livstrPath = lioMapper.coItems.FirstOrDefault(x => x.ivstrProperty == "coOpcionales")?.coXPaths[0].ivstrData;
+                livstrPath = lioMapper.coItems.FirstOrDefault(x => x.ivstrProperty == "coAdicionales")?.coXPaths[0].ivstrData;
                 if (!string.IsNullOrEmpty(livstrPath))
                 {
                     lioXmlNodeList = xmlDocumentNode.SelectNodes(livstrPath, lioNsMngr);
@@ -671,7 +671,7 @@ namespace Applet.Nat.Api.Br.Models
                             {
                                 if (!String.IsNullOrEmpty(lioXmlNode.InnerXml))
                                 {
-                                    livstrPath = lioMapper.coItems.FirstOrDefault(x => x.ivstrProperty == "coOpcionales.ivstrId")?.coXPaths[0].ivstrData;
+                                    livstrPath = lioMapper.coItems.FirstOrDefault(x => x.ivstrProperty == "coAdicionales.ivstrId")?.coXPaths[0].ivstrData;
                                     if (!string.IsNullOrEmpty(livstrPath))
                                     {
                                         if (livstrPath.Contains("{"))
@@ -695,7 +695,7 @@ namespace Applet.Nat.Api.Br.Models
                                             continue;
                                         }
                                     }
-                                    livstrPath = lioMapper.coItems.FirstOrDefault(x => x.ivstrProperty == "coOpcionales.ivstrValor")?.coXPaths[0].ivstrData;
+                                    livstrPath = lioMapper.coItems.FirstOrDefault(x => x.ivstrProperty == "coAdicionales.ivstrValor")?.coXPaths[0].ivstrData;
                                     if (!string.IsNullOrEmpty(livstrPath))
                                     {
                                         if (livstrPath.Contains("{"))

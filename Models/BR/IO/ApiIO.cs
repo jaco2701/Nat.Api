@@ -35,7 +35,7 @@ namespace Nat.API.Models.BR
         public ServiceMapper ioMapper { get; set; }
         #endregion
         #region PUBLIC METHODS  
-        public async Task DocsI()
+        public async Task DocsI(int vivnumUserOriginator)
         {
         }
         public async Task DocO(Document[] vcoDocuments)

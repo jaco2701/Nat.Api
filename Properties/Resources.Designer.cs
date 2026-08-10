@@ -223,6 +223,15 @@ namespace Nat.API.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error en recuperacion de documento tributario.
+        /// </summary>
+        internal static string lioE_DocRNo {
+            get {
+                return ResourceManager.GetString("lioE_DocRNo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to PDF No Encontrado.
         /// </summary>
         internal static string lioE_Document_NoPrint {
@@ -322,6 +331,15 @@ namespace Nat.API.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Operación no Autorizada.
+        /// </summary>
+        internal static string lioE_NoAuth {
+            get {
+                return ResourceManager.GetString("lioE_NoAuth", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Credenciales Invalidas.
         /// </summary>
         internal static string lioE_NoCreds {
@@ -336,6 +354,15 @@ namespace Nat.API.Properties {
         internal static string lioE_NoDocs {
             get {
                 return ResourceManager.GetString("lioE_NoDocs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Filtro Invalido.
+        /// </summary>
+        internal static string lioE_NoFilter {
+            get {
+                return ResourceManager.GetString("lioE_NoFilter", resourceCulture);
             }
         }
         
@@ -367,7 +394,7 @@ namespace Nat.API.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to no Encontrada o con forrmato erroneo..
+        ///   Looks up a localized string similar to no Encontrada o con formato erroneo..
         /// </summary>
         internal static string lioE_ObjectNoF {
             get {
@@ -376,7 +403,7 @@ namespace Nat.API.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to no Encontrado o con forrmato erroneo..
+        ///   Looks up a localized string similar to no Encontrado o con formato erroneo..
         /// </summary>
         internal static string lioE_ObjectNoM {
             get {

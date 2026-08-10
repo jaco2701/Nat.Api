@@ -240,7 +240,7 @@ namespace Applet.Nat.Api.Br.Models
                     #endregion
                     #region Opcionales
                     UxDocumentOpcional lioUxDocumentOpcional;
-                    livstr = lioServiceMapper.coItems.FirstOrDefault(x => x.ivstrProperty == "coOpcionales")?.coXPaths[0].ivstrData;
+                    livstr = lioServiceMapper.coItems.FirstOrDefault(x => x.ivstrProperty == "coAdicionales")?.coXPaths[0].ivstrData;
                     if (!string.IsNullOrEmpty(livstr))
                     {
                         lioXmlNodeList = lioXmlDocument.SelectNodes(livstr);
@@ -252,7 +252,7 @@ namespace Applet.Nat.Api.Br.Models
                             lioXmlNodeDocument.LoadXml(lioXmlNode.OuterXml);
                             lioUxDocumentOpcional = new UxDocumentOpcional();
                             livblnLoadChild = false;
-                            foreach (ServiceMapperItem lioServiceMapperItem in lioServiceMapper.coItems.Where(x => x.ivstrProperty.StartsWith("coOpcionales.")))
+                            foreach (ServiceMapperItem lioServiceMapperItem in lioServiceMapper.coItems.Where(x => x.ivstrProperty.StartsWith("coAdicionales.")))
                             {
                                 try
                                 {

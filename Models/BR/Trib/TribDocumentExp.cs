@@ -8,7 +8,6 @@ using Applet.Nat.Api.Static;
 using Nat.API.Properties;
 using Newtonsoft.Json;
 using System.Net;
-using Opcional = Applet.Nat.Afip.ServicesFEX.Opcional;
 using ServiceSoapClient = Applet.Nat.Afip.ServicesFEX.ServiceSoapClient;
 
 namespace Applet.Nat.Api.Br.Models
@@ -46,6 +45,8 @@ namespace Applet.Nat.Api.Br.Models
         public DateTime? ivdtmVtopago { get; set; }
         List<DocumentPermisoExp> coPermisos { get; set; }
         List<DocumentItem> coItems { get; set; }
+        public long ivCuitAutorizante { get { return mioDcModel.ivlngCuitEmisor; } }
+        public string ivstrSR { get; set; } = "S";
         #endregion
         #region PRIVATE PROPS
         private NatContext mioContext { get; set; }
@@ -201,7 +202,7 @@ namespace Applet.Nat.Api.Br.Models
             AfipLoginResponse lioAfipLoginResponse = await lioAfipService.GetAfipLogin();
             ClsFEXAuthRequest lioAutRequest = new ClsFEXAuthRequest
             {
-                Cuit = this.mioDcModel.ivlngCuitEmisor,
+                Cuit = ivCuitAutorizante,
                 Sign = lioAfipLoginResponse.ivstrSign,
                 Token = lioAfipLoginResponse.ivstrToken
             };

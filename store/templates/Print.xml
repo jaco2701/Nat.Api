@@ -40,7 +40,7 @@
 			</Emisor>
 			<Receptor>
 				<DIRcp/>
-				<TpoDIRcp>0</TpoDIRcp>
+				<TpoDIRcp/>
 				<NmbRcp/>
 				<TpoRespIVA>0</TpoRespIVA>
 				<FechaIniAct>2000-01-01</FechaIniAct>
@@ -87,7 +87,7 @@
 				<TipoImp>IVA</TipoImp>
 				<TasaImp>0</TasaImp>
 				<CodTipoIVA>0</CodTipoIVA>
-				<BaseImp>0</BaseImp>
+                                <BaseImp>0</BaseImp>
 				<ImpteImp>0</ImpteImp>
 				<CodJurisImp/>
 				<Descripcion/>
@@ -237,6 +237,7 @@
 			<StringField name="Inco"/>
 			<StringField name="IncoDes"/>
 			<StringField name="Letra"/>
+			<StringField name="Leyenda"/>
 			<StringField name="LocalidadRcp"/>
 			<StringField name="LocalidadRes"/>
 			<StringField name="LocalidadRpt"/>
@@ -248,9 +249,11 @@
 			<StringField name="NroRef"/>
 			<StringField name="NroRI"/>
 			<StringField name="NumeroRpt"/>
+			<StringField name="Observaciones1"/>
 			<StringField name="OrdenCompra"/>
 			<StringField name="OrdenVenta"/>
 			<StringField name="Origen"/>
+			<StringField name="OC"/>
 			<StringField name="OV"/>
 			<StringField name="PaisEntrega"/>
 			<StringField name="PaisRcp"/>

@@ -14,8 +14,8 @@ namespace Applet.Nat.Api.DC
         public string? ivstrUserId { get; set; }
         [Column("strUserName")]
         public string? ivstrUserName { get; set; }
-        [Column("blnAdmin")]
-        public bool? ivblnAdmin { get; set; }
+        [Column("nroRole")]
+        public short? ivnroRole { get; set; }
         [Column("blnEnable")]
         public bool? ivblnEnable { get; set; }
         [Column("nrologonFails")]

@@ -202,10 +202,10 @@
     <value>Numero de Comprobante Invalido.</value>
   </data>
   <data name="lioE_ObjectNoF" xml:space="preserve">
-    <value>no Encontrada o con forrmato erroneo.</value>
+    <value>no Encontrada o con formato erroneo.</value>
   </data>
   <data name="lioE_ObjectNoM" xml:space="preserve">
-    <value>no Encontrado o con forrmato erroneo.</value>
+    <value>no Encontrado o con formato erroneo.</value>
   </data>
   <data name="lioE_Opcional_No" xml:space="preserve">
     <value>Tipo de Opcional [{0}] invalido.</value>
@@ -527,5 +527,14 @@
   </data>
   <data name="lioE_CAENoSts" xml:space="preserve">
     <value>Documento no posee datos de Autorizacion</value>
+  </data>
+  <data name="lioE_NoAuth" xml:space="preserve">
+    <value>Operación no Autorizada</value>
+  </data>
+  <data name="lioE_NoFilter" xml:space="preserve">
+    <value>Filtro Invalido</value>
+  </data>
+  <data name="lioE_DocRNo" xml:space="preserve">
+    <value>Error en recuperacion de documento tributario</value>
   </data>
 </root>
