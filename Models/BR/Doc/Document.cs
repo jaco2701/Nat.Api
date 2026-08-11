@@ -143,7 +143,8 @@ namespace Applet.Nat.Api.Br.Models
                 if (lioO == null)
                     throw new Exception($"Version de Plantillas {Resources.lioE_ObjectNoM}");
                 ioDcModel.ivnroTemplateVersion = lioO.ivnroTemplateVersion;
-
+                if (string.IsNullOrEmpty(ioDcModel.ivstrRazonSocialE))
+                    ioDcModel.ivstrRazonSocialE = mioContext.Cuits.FirstOrDefault(x => x.ivlngCuit == ioDcModel.ivlngCuitEmisor)?.ivstrCuitRS ?? string.Empty;
                 short livnroRetries = 0;
                 const short livnroMaxRetries = 5;
                 bool livblnSaved = false;
