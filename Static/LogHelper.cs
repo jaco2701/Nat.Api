@@ -3,9 +3,9 @@ using System.IO;
 
 namespace Applet.Nat.Api.Static
 {
-    internal class loginternal
+    internal class LogInternal
     {
-        public loginternal()
+        public LogInternal()
         {
             mioPath = "./log";
             if (!Directory.Exists(mioPath))
@@ -61,7 +61,7 @@ namespace Applet.Nat.Api.Static
 
         if (e != null)
         {
-            loginternal liologinternal = new loginternal();
+            LogInternal liologinternal = new LogInternal();
             liologinternal.escribir($"{DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss")}==>{e.Message}");
             liologinternal.escribir(e.StackTrace);
             if (e.InnerException != null)
@@ -80,7 +80,7 @@ namespace Applet.Nat.Api.Static
     public static void writeinfo(string _message, bool livblnVerbose)
     {
         if (!livblnVerbose) return;
-        loginternal liologinternal = new loginternal();
+        LogInternal liologinternal = new LogInternal();
         liologinternal.escribir($"{DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss")}==>{_message}");
         liologinternal.cerrar();
     }

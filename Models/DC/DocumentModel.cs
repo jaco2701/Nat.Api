@@ -40,5 +40,7 @@ namespace Applet.Nat.Api.DC
         public string? ivstrMoneda { get; set; }
         [Column("strSR")]
         public string? ivstrSR { get; set; }
+        [Column("strRazonSocialE")]
+        public string? ivstrRazonSocialE { get; set; }
     }
 }

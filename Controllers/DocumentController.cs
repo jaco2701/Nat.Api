@@ -114,6 +114,73 @@ namespace Applet.Nat.Api.Controllers
                 return ResponseHelper.Get(-1, lioE);
             }
         }
+        [HttpPost("ExportR")]
+        public Response ExportR([FromBody] Filter? vioFilter)
+        {
+            try
+            {
+                vioFilter.ivstrDtmFormat = ListHelper.GetValue("Format", "ApiDtm", mioContext);
+                Document lioDocument;
+                if (vioFilter == null)
+                    vioFilter = new Filter();
+                if (vioFilter.coFilterItems == null)
+                    vioFilter.coFilterItems = [];
+                DataSet lioDS = new DataSet();
+                DataTable lioDT = new DataTable("Documents");
+                // Add columns to the DataTable
+                lioDT.Columns.Add("Id.", typeof(long));
+                lioDT.Columns.Add("C.U.I.T.", typeof(long));
+                lioDT.Columns.Add("Razon Social", typeof(string));
+                lioDT.Columns.Add("Fecha Emision", typeof(string));
+                lioDT.Columns.Add("Tipo", typeof(string));
+                lioDT.Columns.Add("Punto de Venta", typeof(int));
+                lioDT.Columns.Add("Nro.", typeof(long));
+                lioDT.Columns.Add("Importe", typeof(double));
+                lioDT.Columns.Add("Moneda", typeof(string));
+                lioDT.Columns.Add("Estado", typeof(string));
+                lioDT.Columns.Add("CAE", typeof(string));
+                lioDT.Columns.Add("Fecha Vencimiento CAE", typeof(string));
+                lioDT.Columns.Add("Nro.Interno", typeof(string));
+                ListModel[] lcoStatus = ListHelper.GetAll("STATUS", mioContext);
+                ListModel[] lcoTypes = ListHelper.GetAll("TCOMP", mioContext);
+                UxAuth? lioUxAuth;
+                foreach (DocumentModel lioDocumentModel in mioContext.Documents.Where(vioFilter.Build<DocumentModel>()))
+                {
+                    lioDocument = new Document(lioDocumentModel, mioContext, mioConfiguration);
+                    try
+                    {
+                        lioUxAuth = lioDocument.GetAuth();
+                    }
+                    catch
+                    {
+                        lioUxAuth = null;
+                    }
+                    DataRow row = lioDT.NewRow();
+                    row["Id."] = lioDocumentModel.ivlngDoc;
+                    row["C.U.I.T."] = lioDocumentModel.ivlngCuitEmisor;
+                    row["Razon Social"] = lioDocument.ioDcModel?.ivstrRazonSocialE ?? string.Empty;
+                    row["Fecha Emision"] = (lioDocumentModel.ivdtmEmision ?? DateTime.MinValue).ToString("dd/MM/yyyy");
+                    row["Tipo"] = lcoTypes.FirstOrDefault(x => x.ivcodId == lioDocumentModel.ivnroTipo.ToString())?.ivstrDesc ?? string.Empty; ;
+                    row["Punto de Venta"] = lioDocumentModel.ivnumPvta;
+                    row["Nro."] = lioDocumentModel.ivlngCbte;
+                    row["Importe"] = lioDocumentModel.ivdblImporte;
+                    row["Moneda"] = lioDocument.ioDocumentUser?.ivstrMoneda ?? string.Empty;
+                    row["Estado"] = lcoStatus.FirstOrDefault(x => x.ivcodId == lioDocumentModel.ivnroStatus.ToString())?.ivstrDesc ?? string.Empty;
+                    row["CAE"] = lioUxAuth?.ivstrAuthCode ?? string.Empty;
+                    row["Fecha Vencimiento CAE"] = string.IsNullOrEmpty(lioUxAuth?.ivdtmAuthVenc) ? string.Empty : DateTime.ParseExact(lioUxAuth.ivdtmAuthVenc, "yyyyMMdd", null).ToString("dd/MM/yyyy");
+                    row["Nro.Interno"] = lioDocument.ioDcModel.ivstrIdCliente;
+                    lioDT.Rows.Add(row);
+                }
+                lioDS.Tables.Add(lioDT);
+                return ResponseHelper.Get(Convert.ToBase64String(Excel.GenerateFormDataSet(lioDS, "Documentos", "10,10,20,10,10,10,10,10,10,10").ToArray()));
+            }
+            catch (Exception lioE)
+            {
+                LogHelper.write(lioE);
+                return ResponseHelper.Get(-1, lioE);
+            }
+        }
+
         [HttpPost("Upload")]
         public Response Upload([FromBody] DocumentUploadRequest vioDocumentsUpload)
         {
@@ -175,7 +242,7 @@ namespace Applet.Nat.Api.Controllers
         {
             try
             {
-                User lioUser = new User(mioToken.ivnumUser, mioContext);
+                User lioUser = new User(mioToken.ivnumUser, mioContext, mioToken);
                 if (lioUser == null)
                     throw new Exception(Resources.lioE_NoCreds);
                 if (!lioUser.ioDcModel.ivblnEnable ?? false)

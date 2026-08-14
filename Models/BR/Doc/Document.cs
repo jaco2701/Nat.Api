@@ -79,12 +79,11 @@ namespace Applet.Nat.Api.Br.Models
         }
         #endregion
         #region CONSTRUCT
-        public Document() { }
         public Document(long vivlngDoc, NatContext vioContext, IConfiguration vioConfiguration)
         {
             mioContext = vioContext;
             mioConfiguration = vioConfiguration;
-            DocumentModel lioDocumentModel = mioContext.Documents.Find(vivlngDoc);
+            DocumentModel? lioDocumentModel = mioContext.Documents.Find(vivlngDoc);
             if (lioDocumentModel == null)
                 throw new Exception(string.Format(Resources.lioE_ObjectNoM, "Documento", "o"));
             ioDcModel = lioDocumentModel;
@@ -103,29 +102,33 @@ namespace Applet.Nat.Api.Br.Models
         {
             mioContext = vioContext;
             mioConfiguration = vioConfiguration;
-            ioDcModel = new DocumentModel
+            if (vioDocumentUser != null)
             {
-                ivlngCuitEmisor = vioDocumentUser.ivlngCuitEmisor ?? 0,
-                ivnroTipo = vioDocumentUser.ivnroTipoDoc ?? 0,
-                ivnumPvta = vioDocumentUser.ivnumPvta ?? 0,
-                ivlngCbte = vioDocumentUser.ivlngCbte ?? 0,
-                ivdtmEmision = Format.DateFromUX(vioDocumentUser.ivstrFechaEmision, ListHelper.GetValue("Format", "ApiDtm", mioContext)),
-                ivlngCuitReceptor = vioDocumentUser.ivlngDocReceptor ?? 0,
-                ivstrWs = vioDocumentUser.ivstrWs,
-                ivstrInData = Convert.ToBase64String(Encoding.UTF8.GetBytes(vioDocumentUser.ivstrInputData)),
-                ivdblImporte = Math.Abs(Math.Round(vioDocumentUser.ivdblImporteTotal ?? 0, 2)),
-                ivstrIdCliente = vioDocumentUser.ivstrIdCliente ?? string.Empty,
-                ivstrMoneda = vioDocumentUser.ivstrMoneda ?? string.Empty,
-                ivstrRazonSocial = vioDocumentUser.ivstrRazonSocial ?? string.Empty
-            };
-            mioDocumentUser = vioDocumentUser;
+                ioDcModel = new DocumentModel
+                {
+                    ivlngCuitEmisor = vioDocumentUser.ivlngCuitEmisor ?? 0,
+                    ivnroTipo = vioDocumentUser.ivnroTipoDoc ?? 0,
+                    ivnumPvta = vioDocumentUser.ivnumPvta ?? 0,
+                    ivlngCbte = vioDocumentUser.ivlngCbte ?? 0,
+                    ivdtmEmision = Format.DateFromUX(vioDocumentUser?.ivstrFechaEmision ?? string.Empty, ListHelper.GetValue("Format", "ApiDtm", mioContext)),
+                    ivlngCuitReceptor = vioDocumentUser?.ivlngDocReceptor ?? 0,
+                    ivstrWs = vioDocumentUser?.ivstrWs,
+                    ivstrInData = Convert.ToBase64String(Encoding.UTF8.GetBytes(vioDocumentUser?.ivstrInputData ?? string.Empty)),
+                    ivdblImporte = Math.Abs(Math.Round(vioDocumentUser?.ivdblImporteTotal ?? 0, 2)),
+                    ivstrIdCliente = vioDocumentUser?.ivstrIdCliente ?? string.Empty,
+                    ivstrMoneda = vioDocumentUser?.ivstrMoneda ?? string.Empty,
+                    ivstrRazonSocial = vioDocumentUser?.ivstrRazonSocial ?? string.Empty
+                };
+                mioDocumentUser = vioDocumentUser??new DocumentUser();
+            }
             setITribDocument();
         }
         #endregion
         #region PUBLICS METHODS
         public void Save()
         {
-            DocumentModel lioDBDocumentModel = mioContext.Documents.FirstOrDefault(
+            if (ioDcModel == null) return;
+            DocumentModel? lioDBDocumentModel = mioContext.Documents.FirstOrDefault(
                 x =>
                 x.ivlngCuitEmisor == ioDcModel.ivlngCuitEmisor &&
                 x.ivnroTipo == ioDcModel.ivnroTipo &&
@@ -143,7 +146,8 @@ namespace Applet.Nat.Api.Br.Models
                 if (lioO == null)
                     throw new Exception($"Version de Plantillas {Resources.lioE_ObjectNoM}");
                 ioDcModel.ivnroTemplateVersion = lioO.ivnroTemplateVersion;
-
+                if (string.IsNullOrEmpty(ioDcModel.ivstrRazonSocialE))
+                    ioDcModel.ivstrRazonSocialE = mioContext.Cuits.FirstOrDefault(x => x.ivlngCuit == ioDcModel.ivlngCuitEmisor)?.ivstrCuitRS ?? string.Empty;
                 short livnroRetries = 0;
                 const short livnroMaxRetries = 5;
                 bool livblnSaved = false;

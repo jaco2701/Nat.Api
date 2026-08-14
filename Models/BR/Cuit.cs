@@ -11,7 +11,7 @@ namespace Applet.Nat.Api.Br.Models
     {
         #region CONSTRUCT
         public Cuit() { }
-        public Cuit(long vivlngCuit, NatContext vioContext, IConfiguration vioConfiguration)
+        public Cuit(long vivlngCuit, NatContext vioContext, IConfiguration? vioConfiguration=null)
         {
             mioContext = vioContext;
             if (vioConfiguration != null)

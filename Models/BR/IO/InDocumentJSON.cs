@@ -62,6 +62,8 @@ namespace Applet.Nat.Api.Br.Models
                 if (lioSbErrors.Length > 0)
                     lioDocumentUser.ivstrLoadErrors = lioSbErrors.ToString();
                 livnroI++;
+                lioDocumentUser.FormatAmounts();
+
             }
             return lcoDocumentUser.ToArray();
         }

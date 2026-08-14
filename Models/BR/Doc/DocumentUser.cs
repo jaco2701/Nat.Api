@@ -41,6 +41,7 @@ namespace Applet.Nat.Api.Br.Models
         [JsonProperty("Adicionales")] public List<UxDocumentAdicional>? coAdicionales { get; set; } // Lista de campos adicionales del documento
         [JsonProperty("Compradores")] public List<UxDocumentComprador>? coCompradores { get; set; } // Lista de compradores del documento (en caso de ser un documento compartido)
         [JsonProperty("Items")] public List<UxDocumentItem>? coItems { get; set; } // Lista de ítems del documento (productos o servicios facturados)
+        [JsonProperty("Pagos")] public List<UxDocumentPago>? coPagos { get; set; } // Lista de ítems de tipo "Código de Turismo" (CT) del documento
         [JsonProperty("ItemsCT")] public List<UxDocumentItemCT>? coItemsCT { get; set; } // Lista de ítems de tipo "Código de Turismo" (CT) del documento
         [JsonProperty("CanMisMonExt")] public string? ivstrCanMisMonExt { get; set; } // Cantidad de monedas extranjeras utilizadas en el documento
         [JsonProperty("PermisoExistente")] public string? ivstrPermisoExistente { get; set; } // Permiso existente para la emisión del documento (si aplica)
@@ -61,7 +62,7 @@ namespace Applet.Nat.Api.Br.Models
         [JsonProperty("Transferencia")] public string? ivstrTransferencia { get; set; }
         [JsonProperty("Anulacion")] public string? ivstrAnulacion { get; set; }
         [JsonProperty("Modo")] public string? ivstrCbteModo { get; set; }
-        [JsonProperty("CAE")] public string? ivstrCodAutorizacion    { get; set; }
+        [JsonProperty("CAE")] public string? ivstrCodAutorizacion { get; set; }
         [JsonProperty("IdPermisoEmbarque")] public string? ivstrPEId { get; set; }
         [JsonProperty("DestinoMercaderia")] public int? ivnumPEDestMerc { get; set; }
         [JsonProperty("Autorizar")] public bool? ivblnAuth { get; set; }
@@ -129,6 +130,18 @@ namespace Applet.Nat.Api.Br.Models
                 }
                 coOtrosTributos = lcoOtrosTributos;
             }
+            if (coPagos != null && coPagos.Count > 0)
+            {
+                ivdblImporteGravado = 0;
+                ivdblImporteTotal = 0;
+                foreach (UxDocumentPago lioO in coPagos.OrderBy(x => x.ivstrFechaPago))
+                {
+                    if (string.IsNullOrEmpty(ivstrFechaVtopago))
+                        ivstrFechaVtopago = lioO.ivstrFechaPago;
+                    ivdblImporteGravado += lioO.ivdblImporteGravado ?? 0; 
+                    ivdblImporteTotal += lioO.ivdblImporteTotal ?? 0; 
+                }
+            }
             if (ivblnTaxInLines ?? false)
             {
                 // Obtension de montos desde los impuestos
@@ -161,12 +174,12 @@ namespace Applet.Nat.Api.Br.Models
                         ivdblImporteOtrosTributos += lioO.ivdblImporte ?? 0;
             }
             //redondeos y valor absoluto
-            ivdblImporteTotal = Math.Abs(Math.Round(ivdblImporteTotal ?? 0, 2));
             ivdblImporteGravado = Math.Abs(Math.Round(ivdblImporteGravado ?? 0, 2));
             ivdblImporteNoGravado = Math.Abs(Math.Round(ivdblImporteNoGravado ?? 0, 2));
             ivdblImporteExento = Math.Abs(Math.Round(ivdblImporteExento ?? 0, 2));
             ivdblImporteOtrosTributos = Math.Abs(Math.Round(ivdblImporteOtrosTributos ?? 0, 2));
             ivdblImporteIva = Math.Abs(Math.Round(ivdblImporteIva ?? 0, 2));
+            ivdblImporteTotal = Math.Abs(Math.Round(ivdblImporteTotal ?? 0, 2));
             //
             if (coIvas != null && coIvas.Count > 0)
                 foreach (UxDocumentIva lioO in coIvas)
@@ -206,46 +219,6 @@ namespace Applet.Nat.Api.Br.Models
                         lioO.ivdblImporteTotal = Math.Abs(lioO.ivdblImporteTotal ?? 0);
                     }
                 }
-            // inversion de signo para notas de credito
-            //if (new short[] { 3, 8, 13, 21, 203, 208 }.Contains(ivnroTipoDoc ?? 0))
-            //{
-            //    ivdblImporteTotal = -(ivdblImporteTotal ?? 0);
-            //    ivdblImporteGravado = -(ivdblImporteGravado ?? 0);
-            //    ivdblImporteNoGravado = -(ivdblImporteNoGravado ?? 0);
-            //    ivdblImporteExento = -(ivdblImporteExento ?? 0);
-            //    ivdblImporteOtrosTributos = -(ivdblImporteOtrosTributos ?? 0);
-            //    ivdblImporteIva = -(ivdblImporteIva ?? 0);
-            //    if (coIvas != null && coIvas.Count > 0)
-            //        foreach (UxDocumentIva lioO in coIvas)
-            //        {
-            //            lioO.ivdblBaseImponible = -lioO.ivdblBaseImponible;
-            //            lioO.ivdblImporte = -lioO.ivdblImporte;
-            //        }
-            //    if (coOtrosTributos != null && coOtrosTributos.Count > 0)
-            //        foreach (UxDocumentOtroTributo lioO in coOtrosTributos)
-            //        {
-            //            lioO.ivdblBaseImponible = -lioO.ivdblBaseImponible;
-            //            lioO.ivdblAlicuota = -lioO.ivdblAlicuota;
-            //            lioO.ivdblImporte = -lioO.ivdblImporte;
-            //        }
-            //    if (coItems != null && coItems.Count > 0)
-            //        foreach (UxDocumentItem lioO in coItems)
-            //        {
-            //            if (new short[] { 97, 99 }.Contains(lioO.ivnroUM ?? 0))
-            //            {
-            //                lioO.ivdblCantidad = -lioO.ivdblCantidad;
-            //                lioO.ivdblImporteIVA = -lioO.ivdblImporteIVA;
-            //                lioO.ivdblImporteTotal = -lioO.ivdblImporteTotal;
-            //            }
-            //            else
-            //            {
-            //                lioO.ivdblCantidad = Math.Abs(lioO.ivdblCantidad ?? 0);
-            //                lioO.ivdblImporteIVA = Math.Abs(lioO.ivdblImporteIVA ?? 0);
-            //                lioO.ivdblImporteTotal = Math.Abs(lioO.ivdblImporteTotal ?? 0);
-            //            }
-            //            lioO.ivdblPrecioUnitario = Math.Abs(lioO.ivdblPrecioUnitario ?? 0);
-            //        }
-            //}
         }
         [JsonIgnore] public string ivstrKey { get { return $"Doc:[{ivlngCuitEmisor.ToString() ?? string.Empty}-{ivnumPvta.ToString() ?? string.Empty}-{ivnroTipoDoc.ToString() ?? string.Empty}-{ivlngCbte.ToString() ?? string.Empty}]"; } }
         [JsonIgnore] public long? ivnumUserOriginator { get; set; }
@@ -289,7 +262,13 @@ namespace Applet.Nat.Api.Br.Models
         [JsonProperty("Alicuota")] public Double? ivdblAlicuota { get; set; } // Alícuota del otro tributo
         [JsonProperty("Importe")] public Double? ivdblImporte { get; set; } // Importe total del otro tributo
         [JsonProperty("Jurisdiccion")] public string? ivstrJurisdiccion { get; set; } // Id del otro tributo
-
+    }
+    public class UxDocumentPago
+    {
+        [JsonProperty("Fecha")] public string? ivstrFechaPago { get; set; } // Fecha de pago
+        [JsonProperty("ImporteGravado")] public Double? ivdblImporteGravado { get; set; }  // Neto
+        [JsonProperty("ImporteImpuestos")] public Double? ivdblImporteImpuestos { get; set; }  // Impuestos
+        [JsonProperty("ImporteTotal")] public Double? ivdblImporteTotal { get; set; } // Importe total del otro tributo
     }
     public class UxDocumentIva
     {

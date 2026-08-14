@@ -1582,6 +1582,7 @@ namespace Applet.Nat.Api.Br.Models
                 LogHelper.writeinfo(lioDocumentUser.ivstrKey, true);
                 LogHelper.write(lioE);
                 lioDocumentUser.ivstrLoadErrors = lioE.Message;
+                lioDocumentUser.FormatAmounts();
                 return [lioDocumentUser];
             }
         }
@@ -1642,6 +1643,8 @@ namespace Applet.Nat.Api.Br.Models
                     // se para en la linea relativa
                     livnumLine += livnumInicio;
                     if (cvstrInDocumentLines[livnumLine].Length < livnumOffset) continue;
+                    if (cvstrInDocumentLines[livnumLine].Length < livnumOffset - 1 + livnumLen)
+                        livnumLen = cvstrInDocumentLines[livnumLine].Length - livnumOffset + 1;
                     if (lioMapperItem.ivstrCoord.Contains("FIX"))
                         livstrPropertyValue = lioMapperItem.ivstrformat;
                     else

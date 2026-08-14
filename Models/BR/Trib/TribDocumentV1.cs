@@ -54,7 +54,6 @@ namespace Applet.Nat.Api.Br.Models
         public void SetData(DocumentUser vioDocumentUser)
         {
             string livstrApiDtmFormat = ListHelper.GetValue("Format", "ApiDtm", mioContext);
-            vioDocumentUser.FormatAmounts();
             ivnroConcepto = vioDocumentUser.ivnroConcepto ?? 0;
             ivdblImporteNoGravado = vioDocumentUser.ivdblImporteNoGravado ??0;
             ivdblImporteGravado = vioDocumentUser.ivdblImporteGravado ?? 0;
