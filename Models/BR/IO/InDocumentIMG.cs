@@ -5,7 +5,6 @@ using Applet.Nat.Api.Static;
 using Microsoft.AspNetCore.Mvc;
 using Nat.API.Models.Afip;
 using Nat.API.Properties;
-using PdfiumViewer;
 using SkiaSharp;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -42,17 +41,17 @@ namespace Applet.Nat.Api.Br.Models
                 Result lioResult;
                 if (ivstrName.EndsWith(".pdf"))
                 {
-                    using PdfDocument lioPdfDocument = PdfDocument.Load(new MemoryStream(Convert.FromBase64String(ivstrRaw ?? string.Empty)));
-                    using var lioBMP = lioPdfDocument.Render(0, 300, 300, false);
-                    lioMS = new MemoryStream();
-                    lioBMP.Save(lioMS, System.Drawing.Imaging.ImageFormat.Jpeg);
+                  //  using PdfDocument lioPdfDocument = PdfDocument.Load(new MemoryStream(Convert.FromBase64String(ivstrRaw ?? string.Empty)));
+                  //  using var lioBMP = lioPdfDocument.Render(0, 300, 300, false);
+                   // lioMS = new MemoryStream();
+                  //  lioBMP.Save(lioMS, System.Drawing.Imaging.ImageFormat.Jpeg);
                 }
                 else
                 {
                     lcoBytes = Convert.FromBase64String(ivstrRaw ?? string.Empty);
                     lioMS = new MemoryStream(lcoBytes);
                 }
-                SKBitmap lioSKBitmap = SKBitmap.Decode(lioMS);
+                SKBitmap lioSKBitmap = null;// SKBitmap.Decode(lioMS);
                 if (lioSKBitmap == null) throw new Exception("No se pudo decodificar la imagen"); ;
                 BarcodeReader lioBarcodeReader = new BarcodeReader
                 {

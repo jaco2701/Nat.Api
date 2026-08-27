@@ -1,5 +1,7 @@
+using Applet.Misc.EncDec;
 using Applet.Nat.Api.DC;
 using Applet.Nat.Api.Static;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Nat.API.Properties;
 namespace Applet.Nat.Api.Br.Models
@@ -8,7 +10,7 @@ namespace Applet.Nat.Api.Br.Models
     {
         #region CONSTRUCT
         public User() { }
-        public User(int vivnumUser, NatContext vioContext, Token vioToken=null)
+        public User(int vivnumUser, NatContext vioContext, Token vioToken = null)
         {
             mioToken = vioToken;
             mioContext = vioContext;
@@ -18,7 +20,7 @@ namespace Applet.Nat.Api.Br.Models
             ioDcModel = lioUserModel;
             FillCuits();
         }
-        public User(string vivstrUser, NatContext vioContext, Token vioToken=null)
+        public User(string vivstrUser, NatContext vioContext, Token vioToken = null)
         {
             mioToken = vioToken;
             mioContext = vioContext;
@@ -32,7 +34,7 @@ namespace Applet.Nat.Api.Br.Models
             ioDcModel = lioUserModel;
             FillCuits();
         }
-        public User(UserModel vioUserModel, NatContext vioContext, Token vioToken=null)
+        public User(UserModel vioUserModel, NatContext vioContext, Token vioToken = null)
         {
             mioToken = vioToken;
             mioContext = vioContext;
@@ -48,10 +50,11 @@ namespace Applet.Nat.Api.Br.Models
         public eTask ieTask { get; set; }
         public short[] cvnroActions
         {
-            get {
+            get
+            {
                 if (mioContext == null || ioDcModel == null)
-                    return new short[0];    
-                return mioContext.RoleActions.Where(x => x.ivnroRole == ioDcModel.ivnroRole).Select(x => x.ivnroAction).ToArray(); 
+                    return new short[0];
+                return mioContext.RoleActions.Where(x => x.ivnroRole == ioDcModel.ivnroRole).Select(x => x.ivnroAction).ToArray();
             }
         }
         #endregion
@@ -99,16 +102,22 @@ namespace Applet.Nat.Api.Br.Models
                             foreach (UserCuitModel lioCuitModel in coCuitsModels)
                             {
                                 lioCuitModel.ivnumUser = ioDcModel.ivnumUser;
-                                mioContext.UserCuits.Add(lioCuitModel);
+                                mioContext?.UserCuits.Add(lioCuitModel);
                             }
-                            mioContext.SaveChanges();
+                            mioContext?.SaveChanges();
                         }
                         break;
                     }
                 case eTask.Auth:
                     {
-                        string livstrQry = $"SELECT * FROM users WHERE numuser={ioDcModel.ivnumUser} AND PWDCOMPARE('{ivstrPass}',struserPass) = 1";
-                        int livnum = mioContext.Users.FromSqlRaw(livstrQry).Count();
+                        int livnum = 0;
+                        if (!string.IsNullOrEmpty(ioDcModel.ivstrUserPwd))
+                            livnum = Chain.Decrypt(ioDcModel.ivstrUserPwd) == ivstrPass ? 1 : 0;
+                        else
+                        {   // login anterior se validado con la contraseña encriptada en BD, ahora se valida con la contraseña encriptada en struserPwd
+                            string livstrQry = $"SELECT * FROM users WHERE numuser={ioDcModel.ivnumUser} AND PWDCOMPARE('{ivstrPass}',struserPass) = 1";
+                            livnum = mioContext.Users.FromSqlRaw(livstrQry).Count();
+                        }
                         if (livnum == 0)
                         {
                             ioDcModel.ivnrologonFails++;
@@ -126,6 +135,8 @@ namespace Applet.Nat.Api.Br.Models
                         ioDcModel.ivblnEnable = true;
                         ioDcModel.ivnrologonFails = 0;
                         mioContext.Users.Update(ioDcModel);
+                        if (string.IsNullOrEmpty(ioDcModel.ivstrUserPwd))
+                            ioDcModel.ivstrUserPwd = Chain.Encrypt(ivstrPass ?? string.Empty);
                         mioContext.SaveChanges();
                         break;
                     }

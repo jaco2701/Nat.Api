@@ -40,16 +40,17 @@ namespace Applet.Nat.Api.Static
         }
         public static Token DeserializeToken(string vivstrToken, NatContext vioContext)
         {
-            vivstrToken = vivstrToken.Replace("NatToken ", "");
+            vivstrToken = vivstrToken.Replace("NatToken ", "").Replace("Bearer ", "");
             if (!(new JwtSecurityTokenHandler().ReadToken(vivstrToken) is JwtSecurityToken lioJwtSecurityToken))
-                throw new Exception(Resources.lioE_TokenNo);
-            Claim lioClaim = lioJwtSecurityToken.Claims.FirstOrDefault(c => c.Type == "Claim");
+                throw new SecurityTokenArgumentException(Resources.lioE_TokenNo);
+            Claim? lioClaim = lioJwtSecurityToken.Claims.FirstOrDefault(c => c.Type == "Claim");
             if (lioClaim == null)
-                throw new Exception(Resources.lioE_TokenNo);
-            Token lioToken = JsonSerializer.Deserialize<Token>(lioClaim.Value);
+                throw new SecurityTokenArgumentException(Resources.lioE_TokenNo);
+            Token? lioToken = JsonSerializer.Deserialize<Token>(lioClaim.Value);
             if (lioToken == null)
-                throw new Exception(Resources.lioE_TokenNo);
-
+                throw new SecurityTokenArgumentException(Resources.lioE_TokenNo);
+            if (!vioContext.Users.Any(x=>x.ivnumUser == lioToken.ivnumUser && (x.ivblnEnable??false)))   
+                throw new SecurityTokenArgumentException(Resources.lioE_TokenNo);
             return lioToken;
         }
         private static string GetJwtSecurityTokenHandler(Token vioTokenModel, string vivstrClaimType, int numHoursTokenExpiration)
@@ -69,58 +70,7 @@ namespace Applet.Nat.Api.Static
                 signingCredentials: lioSigningCredentials);
             return new JwtSecurityTokenHandler().WriteToken(lioToken);
         }
-        public static string Encrypt(string vivstr)
-        {
-            SymmetricSecurityKey lioKey = GetKey();
-            Byte[] lcoEncryptor = lioKey.Key;
-
-            using (var lioAes = Aes.Create())
-            {
-                lioAes.Key = lcoEncryptor;
-                lioAes.GenerateIV();
-                var lioIV = lioAes.IV;
-
-                using (var lioCryptorTransform = lioAes.CreateEncryptor(lioAes.Key, lioIV))
-                using (var lioMS = new MemoryStream())
-                {
-                    lioMS.Write(lioIV, 0, lioIV.Length);
-                    using (var cs = new CryptoStream(lioMS, lioCryptorTransform, CryptoStreamMode.Write))
-                    using (var sw = new StreamWriter(cs))
-                    {
-                        sw.Write(vivstr);
-                    }
-                    return Convert.ToBase64String(lioMS.ToArray());
-                }
-            }
-
-        }
-        public static string Decrypt(string vivstr)
-        {
-            var lioRegValue = Microsoft.Win32.Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Applet\Nat", "DcKey", null);
-            if (lioRegValue == null)
-            {
-                throw new InvalidOperationException("Key no encontrada");
-            }
-            SymmetricSecurityKey lioKey = GetKey();
-            Byte[] lcoEncryptor = lioKey.Key; var cipherBytes = Convert.FromBase64String(vivstr);
-
-            using (var lioAes = Aes.Create())
-            {
-                lioAes.Key = lcoEncryptor;
-
-                // Extract IV from the encrypted data
-                var iv = new byte[lioAes.BlockSize / 8];
-                Array.Copy(cipherBytes, iv, iv.Length);
-
-                using (var decryptorTransform = lioAes.CreateDecryptor(lioAes.Key, iv))
-                using (var ms = new MemoryStream(cipherBytes, iv.Length, cipherBytes.Length - iv.Length))
-                using (var cs = new CryptoStream(ms, decryptorTransform, CryptoStreamMode.Read))
-                using (var sr = new StreamReader(cs))
-                {
-                    return sr.ReadToEnd();
-                }
-            }
-        }
+    
         private static SymmetricSecurityKey GetKey()
         {
             var lioRegValue = Microsoft.Win32.Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Applet\Nat", "DcKey", null);
@@ -141,7 +91,7 @@ namespace Applet.Nat.Api.Static
             if (string.IsNullOrEmpty(Format.SanitizeBase64String(livstrCreds)))
                 throw new Exception("Cabecera de Autorizacion invalida");
             Encoding encoding = Encoding.GetEncoding("iso-8859-1");
-            if (vioAuthenticationHeaderValue.Scheme == "NatAuth" || vioAuthenticationHeaderValue.Scheme == "VwAuth" || vioAuthenticationHeaderValue.Scheme == "NatSvc")
+            if (vioAuthenticationHeaderValue.Scheme == "NatAuth" || vioAuthenticationHeaderValue.Scheme == "VwAuth" || vioAuthenticationHeaderValue.Scheme == "NatSvc" || vioAuthenticationHeaderValue.Scheme == "Basic")
             {
                 List<string> lcvstrRet = new List<string>();
                 lcvstrRet.Add(vioAuthenticationHeaderValue.Scheme);
@@ -154,6 +104,8 @@ namespace Applet.Nat.Api.Static
                 return lcvstrRet.ToArray();
             }
             if (vioAuthenticationHeaderValue.Scheme == "NatToken")
+                return new string[] { livstrCreds };
+            if (vioAuthenticationHeaderValue.Scheme == "Bearer")
                 return new string[] { livstrCreds };
             throw new Exception("Cabecera de Autorizacion invalida");
         }

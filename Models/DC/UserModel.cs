@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Applet.Nat.Api.DC
 {
@@ -20,6 +21,9 @@ namespace Applet.Nat.Api.DC
         public bool? ivblnEnable { get; set; }
         [Column("nrologonFails")]
         public short? ivnrologonFails { get; set; }
+        [JsonIgnore]
+        [Column("strUserPwd")]
+        public string? ivstrUserPwd { get; set; }
 
     }
 }

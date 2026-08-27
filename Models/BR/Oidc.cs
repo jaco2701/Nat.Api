@@ -3,8 +3,8 @@ namespace Applet.Nat.Api.Br
 {
     public class OidcRequest
     {
-        public short ivnroType { get; set; } 
-        public int ivnumIdentityProvider { get; set; } = 0;
+        public short? ivnroType { get; set; } 
+        public int? ivnumIdentityProvider { get; set; } = 0;
         public string? ivstrState { get; set; }
         public string? ivstrCode { get; set; }
         public string? ivstrToken { get; set; }
@@ -17,9 +17,11 @@ namespace Applet.Nat.Api.Br
     }
     public class Oauth2Response
     {
-        public string AccessToken { get; set; }
-        public string RefreshToken { get; set; }
-        public string IdToken { get; set; }
-        public int ExpiresIn { get; set; }
+        public string? AccessToken { get; set; }
+        public string? RefreshToken { get; set; }
+        public string? IdToken { get; set; }
+        public int? ExpiresIn { get; set; }
+        public string? Error { get; set; }
+        
     }
 }

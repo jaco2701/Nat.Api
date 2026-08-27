@@ -25,6 +25,7 @@ namespace Applet.Nat.Api.DC
             modelBuilder.Entity<CuitCuitModel>().HasKey(x => new { x.ivlngCuit, x.ivlngCuitReceptor });
             modelBuilder.Entity<RoleActionModel>().HasKey(x => new { x.ivnroRole, x.ivnroAction });
         }
+        public DbSet<ClientModel> Clients { get; set; }
         public DbSet<IdentityProviderModel> IdentityProviders { get; set; }
         public DbSet<CuitCuitModel> CuitCuits { get; set; }
         public DbSet<CuitModel> Cuits { get; set; }

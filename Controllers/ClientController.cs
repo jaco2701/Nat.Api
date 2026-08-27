@@ -1,9 +1,11 @@
-﻿using Applet.Nat.Api.Br;
+﻿using Applet.Misc.EncDec;
+using Applet.Nat.Api.Br;
 using Applet.Nat.Api.Br.Models;
 using Applet.Nat.Api.DC;
 using Applet.Nat.Api.Ifaces;
 using Applet.Nat.Api.Static;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Nat.API.Properties;
 using System.Net.Http.Headers;
@@ -13,32 +15,55 @@ namespace Applet.Nat.Api.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class MiscController : ControllerBase
+    public class ClientController : ControllerBase
     {
         private readonly NatContext mioContext;
         private readonly IConfiguration mioConfiguration;
-        public MiscController(NatContext vioContext, IConfiguration vioConfiguration)
+        public ClientController(NatContext vioContext, IConfiguration vioConfiguration)
         {
             mioContext = vioContext;
             mioConfiguration = vioConfiguration;
         }
-        [HttpGet("Statics/{livnroNivel}")]
-        public async Task<Response> Statics(short livnroNivel)
+        [HttpGet("authorize")]
+        public async Task<ActionResult> Authorize()
         {
+            try
+            {
+                if (string.IsNullOrEmpty(HttpContext.Request.Headers.Authorization.ToString()))
+                    throw new Exception(Resources.lioE_NoCreds);
+                string[] lcvstrCreds = HttpsHeaderHelper.GetCredencials(AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]));
+                if (lcvstrCreds.Length != 3)
+                    throw new Exception("invalid_request");
+                ClientModel? lioClientModel = mioContext.Clients.Find(lcvstrCreds[1]);
+                if (lioClientModel == null)
+                    throw new Exception("invalid_client");
+                if (!mioContext.Users.Any(x => x.ivnumUser == lioClientModel.ivnumUser && (x.ivblnEnable ?? false)))
+                    throw new Exception(Resources.lioE_TokenNo);
+                if (Chain.Decrypt(lioClientModel.ivstrClientSecret ?? string.Empty) != lcvstrCreds[2])
+                    throw new Exception("invalid_client_secret");
+                lioClientModel.ivstrToken = Auth.Get(lioClientModel.ivnumUser ?? 0, mioContext, lcvstrCreds[1]);
+                mioContext.Clients.Update(lioClientModel);
+                mioContext.SaveChanges();
+                return Ok(
+                    new Oauth2Response
+                    {
+                        AccessToken = lioClientModel.ivstrToken,
+                        ExpiresIn = int.Parse(ListHelper.GetValue("Expire", "Token", mioContext))*3600,
+                        IdToken = "nat"
+                    }
+                );
+            }
+            catch (Exception lioE)
+            {
+                return BadRequest(
+                    new Oauth2Response
+                    {
+                        Error = lioE.Message
+                    }
+                );
 
-            List<ListModel> lcoLists = new List<ListModel>();
-            string[] lcoTypes = ListHelper.GetValue("STATICS", livnroNivel.ToString(), mioContext).Split(',');
-            if (lcoTypes.Length == 0)
-                throw new Exception(Resources.lioE_NoStatics);
-            lcoLists = mioContext.Lists.Where(x => lcoTypes.Contains(x.ivcodType)).ToList();
-            foreach (IdentityProviderModel liO in mioContext.IdentityProviders.Where(x => x.ivblnEnable == true))
-                lcoLists.Add(new ListModel { ivcodType = "IDPROV", ivcodId = liO.ivnumIdentityProvider.ToString(), ivstrDesc = liO.ivstrIdentityProvider });
-            // selecciona los roles que tienen la accion Cuits:Modificar , para que estos no se muestren en los combos de asignacion de roles a usuarios
-            short[] lconroRoles = mioContext.RoleActions.Where(x => x.ivnroAction == 17).Select(x => x.ivnroRole).Distinct().ToArray();
-            foreach (ListModel lioListModel in mioContext.Lists.Where(x => x.ivcodType == "ROL"))
-                if (!lconroRoles.Contains(short.Parse(lioListModel.ivcodId)))
-                    lcoLists.Add(new ListModel { ivcodType = "ROLCOMBO", ivcodId = lioListModel.ivcodId, ivstrDesc = lioListModel.ivstrDesc });
-            return ResponseHelper.Get(lcoLists);
+            }
+
         }
         [HttpPost("Rs")]
         public Response Rs([FromBody] long vivlngCuit)
