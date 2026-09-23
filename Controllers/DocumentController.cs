@@ -195,14 +195,13 @@ namespace Applet.Nat.Api.Controllers
             }
         }
         [HttpPost("Load")]
-        public async Task<Response> Load([FromBody] Object vioBody)
+        public async Task<Response> Load([FromBody] DocumentUser[] vioBody)
         {
             try
             {
                 string vivstrBody = JsonConvert.SerializeObject(vioBody);
                 long livlngCuit = 0;
-                DocumentUser[] vcoDocumentUser = JsonConvert.DeserializeObject<DocumentUser[]>(vivstrBody);
-                foreach (DocumentUser lioO in vcoDocumentUser)
+				foreach (DocumentUser lioO in vioBody)
                 {
                     if (!string.IsNullOrEmpty(lioO.ivstrCbteModo))
                         livlngCuit = lioO.ivlngDocReceptor ?? 0;
@@ -219,18 +218,18 @@ namespace Applet.Nat.Api.Controllers
                 };
                 List<DocumentUploadResponse> lcoResponses = DocHelper.UploadDocument(lioDocumentUploadRequest, mioConfiguration, mioToken.ivnumUser);
                 Document lioDocument;
-                DocumentUploadResponse lioResponse;
-                foreach (DocumentUser lioO in vcoDocumentUser)
+                DocumentUploadResponse? lioResponse;
+                foreach (DocumentUser lioO in vioBody)
                 {
-                    lioResponse = lcoResponses.FirstOrDefault(x => x.ivlngCuitEmisor == lioO.ivlngCuitEmisor && x.ivnroTipoDoc == lioO.ivnroTipoDoc && x.ivnumPvta == lioO.ivnumPvta && x.ivlngCbte == lioO.ivlngCbte);
-                    if (lioResponse == null || lioResponse.ivnroStatus != 1) continue;
+                    lioResponse = lcoResponses.FirstOrDefault(x => x.ivnroStatus==1 && x.ivlngCuitEmisor == lioO.ivlngCuitEmisor && x.ivnroTipoDoc == lioO.ivnroTipoDoc && x.ivnumPvta == lioO.ivnumPvta && x.ivlngCbte == lioO.ivlngCbte);
+                    if (lioResponse == null) continue;
                     if (!lioO.ivblnAuth ?? false) continue;
                     lioDocument = new Document(lioResponse.ivlngDoc ?? 0, mioContext, mioConfiguration);
                     lioDocument.Auth().Wait();
                     lioResponse.ioUxAuth = lioDocument.GetAuth();
                 }
                 return ResponseHelper.Get(lcoResponses);
-            }
+			}
             catch (Exception lioE)
             {
                 LogHelper.write(lioE);
@@ -284,22 +283,32 @@ namespace Applet.Nat.Api.Controllers
                         case eTask.GetPdf:
                             if (!lioDocument.ivblPrintable)
                                 throw new Exception(Resources.lioE_DocNoPrint);
-                            lioDocumentTaskResponse.ioData = await lioDocument.Print();
+                            lioDocumentTaskResponse.ioData = await lioDocument.Print(false);
                             if (lioDocument.ioDcModel.ivnroStatus == 65)
                             {
                                 lioDocument.ioDcModel.ivnroStatus = 60;
                                 lioDocument.Save();
+                                new DocumentTracking(mioContext, lioDocument.ioDcModel.ivlngDoc)
+                                    .addTrack(
+                                        60,
+                                        string.Empty
+                                    );
                             }
-                            new DocumentTracking(mioContext, lioDocument.ioDcModel.ivlngDoc)
-                                .addTrack(
-                                    60,
-                                    string.Empty
-                                );
                             break;
                         case eTask.Share:
                             if (!lioDocument.ivblPrintable)
                                 throw new Exception(Resources.lioE_DocNoPrint);
-                            await lioDocument.Share(mioConfiguration);
+                            await lioDocument.Share(mioConfiguration,false);
+                            if (lioDocument.ioDcModel.ivnroStatus == 80)
+                            {
+                                lioDocument.ioDcModel.ivnroStatus = 70;
+                                lioDocument.Save();
+                                new DocumentTracking(mioContext, lioDocument.ioDcModel.ivlngDoc)
+                                    .addTrack(
+                                        70,
+                                        string.Empty
+                                    );
+                            }
                             lioDocumentTaskResponse.ioData = "OK";
                             break;
                         case eTask.Original:

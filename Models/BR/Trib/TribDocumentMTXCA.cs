@@ -25,6 +25,8 @@ namespace Applet.Nat.BR
         #region PRIVATE PROPS
         private NatContext mioContext { get; set; }
         private DocumentModel mioDcModel { get; set; }
+        private string mivstrAuthResponse { get; set; }
+        private short mivnroNextStatus { get; set; }
         #endregion
         #region PUBLIC PROPS
         public short ivnroConcepto { get; set; }
@@ -53,6 +55,8 @@ namespace Applet.Nat.BR
         private List<DocumentItem> coItems { get; set; }
         public long ivCuitAutorizante { get { return mioDcModel.ivlngCuitEmisor; } }
         public string ivstrSR { get; set; } = "S";
+        public bool ivblnCalcNN { get; set; } = false;
+        public long ivlngCbte { get; set; }
         #endregion
         #region PUBLICS METHODS
         public void SetData(DocumentUser vioDocumentUser)
@@ -220,7 +224,7 @@ namespace Applet.Nat.BR
         public async Task<short> Auth()
         {
             //TOKEN
-            short livnroNextStatus = 0;
+            mivnroNextStatus = 0;
             DocumentTracking lioDocumentTracking = new DocumentTracking(mioContext, mioDcModel.ivlngDoc);
             AfipService lioAfipService = new AfipService { ivstrName = ivstrDocWs, ioContext = mioContext };
             AfipLoginResponse lioAfipLoginResponse = await lioAfipService.GetAfipLogin();
@@ -244,56 +248,60 @@ namespace Applet.Nat.BR
                 }
             );
             consultarUltimoComprobanteAutorizadoResponse lioconsultarUltimoComprobanteAutorizadoResponse = await lioService.consultarUltimoComprobanteAutorizadoAsync(lioconsultarUltimoComprobanteAutorizadoRequest);
-            //EL DOCUMENTO ES MAYOR AL ULTIMO AUTORIZADO ==> EsperaPredecesor
-            if (lioconsultarUltimoComprobanteAutorizadoResponse != null && lioconsultarUltimoComprobanteAutorizadoResponse.numeroComprobante + 1 < this.mioDcModel.ivlngCbte)
+            if (lioconsultarUltimoComprobanteAutorizadoResponse == null)
+                throw new Exception($"{Resources.lioE_HeaderAuth}:{Resources.lioE_AfipRespNo}");
+            if (ivblnCalcNN)
+                mioDcModel.ivlngCbte = lioconsultarUltimoComprobanteAutorizadoResponse.numeroComprobante + 1;
+            else
             {
-                livnroNextStatus = 35;
-                lioDocumentTracking.addTrack(
-                    livnroNextStatus,
-                    JsonConvert.SerializeObject(
+                //EL DOCUMENTO ES MAYOR AL ULTIMO AUTORIZADO ==> EsperaPredecesor
+                if (lioconsultarUltimoComprobanteAutorizadoResponse != null && lioconsultarUltimoComprobanteAutorizadoResponse.numeroComprobante + 1 < this.mioDcModel.ivlngCbte)
+                {
+                    mivnroNextStatus = 35;
+                    mivstrAuthResponse = JsonConvert.SerializeObject(
                         new
                         {
                             Request = lioconsultarUltimoComprobanteAutorizadoRequest,
                             Response = lioconsultarUltimoComprobanteAutorizadoResponse
                         }
-                    )
-                );
-                return livnroNextStatus;
-            }
-            //EL DOCUMENTO ES MENOR AL ULTIMO AUTORIZADO  ==> CONSULTAR CAE
-            if (lioconsultarUltimoComprobanteAutorizadoResponse != null && lioconsultarUltimoComprobanteAutorizadoResponse.numeroComprobante + 1 > this.mioDcModel.ivlngCbte)
-            {
-                consultarComprobanteRequest lioFECompConsultaReq = new consultarComprobanteRequest
+                    );
+                    lioDocumentTracking.addTrack(mivnroNextStatus, mivstrAuthResponse);
+                    return mivnroNextStatus;
+                }
+                //EL DOCUMENTO ES MENOR AL ULTIMO AUTORIZADO  ==> CONSULTAR CAE
+                if (lioconsultarUltimoComprobanteAutorizadoResponse != null && lioconsultarUltimoComprobanteAutorizadoResponse.numeroComprobante + 1 > this.mioDcModel.ivlngCbte)
                 {
-                    authRequest = new AuthRequestType
+                    consultarComprobanteRequest lioFECompConsultaReq = new consultarComprobanteRequest
                     {
-                        cuitRepresentada = this.mioDcModel.ivlngCuitEmisor,
-                        sign = lioAfipLoginResponse.ivstrSign,
-                        token = lioAfipLoginResponse.ivstrToken
-                    },
-                    consultaComprobanteRequest = new ConsultaComprobanteRequestType
-                    {
-                        numeroComprobante = this.mioDcModel.ivlngCbte,
-                        codigoTipoComprobante = this.mioDcModel.ivnroTipo,
-                        numeroPuntoVenta = this.mioDcModel.ivnumPvta,
-                    }
-                };
-                livnroNextStatus = 40;
-                consultarComprobanteResponse lioFECompConsultarResponse = await lioService.consultarComprobanteAsync(lioFECompConsultaReq);
-                if (lioFECompConsultarResponse != null && lioFECompConsultarResponse.comprobante != null && lioFECompConsultarResponse.comprobante.codigoAutorizacion != 0)
-                    livnroNextStatus =50;
-                lioDocumentTracking.addTrack(
-                    livnroNextStatus,
-                    JsonConvert.SerializeObject(
+                        authRequest = new AuthRequestType
+                        {
+                            cuitRepresentada = this.mioDcModel.ivlngCuitEmisor,
+                            sign = lioAfipLoginResponse.ivstrSign,
+                            token = lioAfipLoginResponse.ivstrToken
+                        },
+                        consultaComprobanteRequest = new ConsultaComprobanteRequestType
+                        {
+                            numeroComprobante = this.mioDcModel.ivlngCbte,
+                            codigoTipoComprobante = this.mioDcModel.ivnroTipo,
+                            numeroPuntoVenta = this.mioDcModel.ivnumPvta,
+                        }
+                    };
+                    mivnroNextStatus = 40;
+                    consultarComprobanteResponse lioFECompConsultarResponse = await lioService.consultarComprobanteAsync(lioFECompConsultaReq);
+                    if (lioFECompConsultarResponse != null && lioFECompConsultarResponse.comprobante != null && lioFECompConsultarResponse.comprobante.codigoAutorizacion != 0)
+                        mivnroNextStatus = 50;
+                    mivstrAuthResponse = JsonConvert.SerializeObject(
                         new
                         {
                             Request = lioFECompConsultaReq,
                             Response = lioconsultarUltimoComprobanteAutorizadoResponse
                         }
-                    )
-                );
-                return livnroNextStatus;
+                    );
+                    lioDocumentTracking.addTrack(mivnroNextStatus, mivstrAuthResponse);
+                    return mivnroNextStatus;
+                }
             }
+            ivlngCbte = mioDcModel.ivlngCbte;
             //EL DOCUMENTO ES EL SIGUIENTE  ==> AUTORIZAR
             ComprobanteType lioComprobanteType = new ComprobanteType
             {
@@ -400,27 +408,34 @@ namespace Applet.Nat.BR
             }
             autorizarComprobanteRequest lioautorizarComprobanteRequest = new autorizarComprobanteRequest(lioAutRequest, lioComprobanteType);
             autorizarComprobanteResponse lioautorizarComprobanteResponse = await lioService.autorizarComprobanteAsync(lioautorizarComprobanteRequest);
-            livnroNextStatus = 40;
+            mivnroNextStatus = 40;
             if (lioautorizarComprobanteResponse != null && lioautorizarComprobanteResponse?.comprobanteResponse != null && lioautorizarComprobanteResponse.comprobanteResponse.CAE != 0)
-                livnroNextStatus =50;
-            lioDocumentTracking.addTrack(
-                livnroNextStatus,
-                JsonConvert.SerializeObject(
-                    new
-                    {
-                        Request = lioautorizarComprobanteRequest,
-                        Response = lioautorizarComprobanteResponse
-                    }
-                )
+                mivnroNextStatus =50;
+            mivstrAuthResponse = JsonConvert.SerializeObject(
+                new
+                {
+                    Request = lioautorizarComprobanteRequest,
+                    Response = lioautorizarComprobanteResponse
+                }
             );
-            return livnroNextStatus;
+            if (ivblnCalcNN && mivnroNextStatus == 50) // si autonumera y lo autoriza se crea el documento
+            {
+                Document lioDocument = new Document(mioDcModel, mioContext);
+                lioDocument.Save();
+                lioDocumentTracking = new DocumentTracking(mioContext, lioDocument.ioDcModel.ivlngDoc);
+            }
+            lioDocumentTracking.addTrack(mivnroNextStatus, mivstrAuthResponse);
+            return mivnroNextStatus;
         }
         public UxAuth GetAuth()
         {
             short[] lcvnroStatusRTA = new short[] { 20, 35, 40, 50 };
             DocumentTrackingModel[] lcoTracks = mioContext.DocumentTrackings.OrderByDescending(x => x.ivdtmTrack).Where(x => x.ivlngDoc == mioDcModel.ivlngDoc).ToArray();
             if (lcoTracks == null || lcoTracks.Length == 0 || !lcoTracks.Any(x => lcvnroStatusRTA.Contains(x.ivnroStatus)))
-                throw new Exception($"{Resources.lioE_CAENoSts}: ivlngDoc {mioDcModel.ivlngDoc}");
+                if (!string.IsNullOrEmpty(mivstrAuthResponse))
+                    lcoTracks = new DocumentTrackingModel[] { new DocumentTrackingModel { ivdtmTrack = DateTime.Now, ivnumTrack = 0, ivnroStatus = mivnroNextStatus, ivlngDoc = 0, ivstrData = mivstrAuthResponse } };
+                else
+                    throw new Exception($"{Resources.lioE_CAENoSts}: ivlngDoc {mioDcModel.ivlngDoc}");
             DocumentTrackingModel lioTrack = lcoTracks.FirstOrDefault(x => lcvnroStatusRTA.Contains(x.ivnroStatus));
             if (lioTrack == null || string.IsNullOrEmpty(lioTrack.ivstrData))
                 throw new Exception($"{Resources.lioE_CAERespErr}: ivlngDoc {mioDcModel.ivlngDoc}");

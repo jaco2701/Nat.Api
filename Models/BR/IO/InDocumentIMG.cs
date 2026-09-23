@@ -1,18 +1,16 @@
-﻿using Applet.Nat.Afip.ServicesV1;
-using Applet.Nat.Api.DC;
+﻿using Applet.Nat.Api.DC;
 using Applet.Nat.Api.Ifaces;
 using Applet.Nat.Api.Static;
-using Microsoft.AspNetCore.Mvc;
 using Nat.API.Models.Afip;
 using Nat.API.Properties;
-using SkiaSharp;
+using PdfiumViewer;
 using System.Drawing;
-using System.Drawing.Imaging;
+using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.Text;
 using System.Web;
 using ZXing;
-using ZXing.SkiaSharp;
+using ZXing.Windows.Compatibility;
 namespace Applet.Nat.Api.Br.Models
 {
     public class InDocumentIMG : IRawDocument
@@ -37,74 +35,37 @@ namespace Applet.Nat.Api.Br.Models
             {
                 Cuit lioCuit = new Cuit(mivlngCuit, mioContext, null);
                 byte[] lcoBytes = [];
-                MemoryStream lioMS;
-                Result lioResult;
-                if (ivstrName.EndsWith(".pdf"))
+                Bitmap lioBMPVanilla;
+                if ((ivstrName ?? string.Empty).EndsWith(".pdf"))
                 {
-                  //  using PdfDocument lioPdfDocument = PdfDocument.Load(new MemoryStream(Convert.FromBase64String(ivstrRaw ?? string.Empty)));
-                  //  using var lioBMP = lioPdfDocument.Render(0, 300, 300, false);
-                   // lioMS = new MemoryStream();
-                  //  lioBMP.Save(lioMS, System.Drawing.Imaging.ImageFormat.Jpeg);
+                    PdfDocument lioPdfDocument = PdfDocument.Load(new MemoryStream(Convert.FromBase64String(ivstrRaw ?? string.Empty)));
+                    lioBMPVanilla = (Bitmap)lioPdfDocument.Render(0, 300, 300, PdfRenderFlags.CorrectFromDpi);
                 }
                 else
-                {
-                    lcoBytes = Convert.FromBase64String(ivstrRaw ?? string.Empty);
-                    lioMS = new MemoryStream(lcoBytes);
-                }
-                SKBitmap lioSKBitmap = null;// SKBitmap.Decode(lioMS);
-                if (lioSKBitmap == null) throw new Exception("No se pudo decodificar la imagen"); ;
-                BarcodeReader lioBarcodeReader = new BarcodeReader
-                {
-                    AutoRotate = true,
-                    Options = new ZXing.Common.DecodingOptions
-                    {
-                        TryHarder = true,
-                        PossibleFormats = new[] { BarcodeFormat.QR_CODE },
-                    }
-                };
-                var S = Convert.ToBase64String(lioSKBitmap.Bytes);
-                lioResult = lioBarcodeReader.Decode(lioSKBitmap);
-                short livnroCuadrante = 0; // 0 = superior izquierdo, 1 = superior derecho, 2 = inferior izquierdo, 3 = inferior derecho
-                Rectangle lioCenterRectangle;
-                while (true)
-                {
-                    //divide en 4 la image y le hace zoom a la parte central para intentar leer el QR
-                    if (lioResult != null || livnroCuadrante >= 4) break;
-                    switch (livnroCuadrante)
-                    {
-                        case 0:
-                            lioCenterRectangle = new Rectangle(0, 0, (lioSKBitmap.Width / 2) - 1, (lioSKBitmap.Height / 2) - 1);
-                            break;
-                        case 1:
-                            lioCenterRectangle = new Rectangle(lioSKBitmap.Width / 2, 0, (lioSKBitmap.Width / 2) - 1, (lioSKBitmap.Height / 2) - 1);
-                            break;
-                        case 2:
-                            lioCenterRectangle = new Rectangle(0, lioSKBitmap.Height / 2, (lioSKBitmap.Width / 2) - 1, (lioSKBitmap.Height / 2) - 1);
-                            break;
-                        case 3:
-                            lioCenterRectangle = new Rectangle(lioSKBitmap.Width / 2, lioSKBitmap.Height / 2, (lioSKBitmap.Width / 2) - 1, (lioSKBitmap.Height / 2) - 1);
-                            break;
-                        default:
-                            throw new Exception("Cuadrante inválido");
-                    }
-                    using SKBitmap lioZoomedImage = new SKBitmap(lioCenterRectangle.Width, lioCenterRectangle.Height);
-                    using var canvas = new SKCanvas(lioZoomedImage);
-                    // Set high-quality scaling algorithms to prevent pixelation blurring
-                    using var paint = new SKPaint { FilterQuality = SKFilterQuality.High };
+                    lioBMPVanilla = (Bitmap)Image.FromStream(new MemoryStream(Convert.FromBase64String(ivstrRaw ?? string.Empty)));
+                Result? lioResult;
 
-                    var sourceRect = new SKRect(lioCenterRectangle.X, lioCenterRectangle.Y, lioCenterRectangle.X + lioCenterRectangle.Width, lioCenterRectangle.Y + lioCenterRectangle.Height);
-                    var destRect = new SKRect(0, 0, lioZoomedImage.Width, lioZoomedImage.Height);
-
-                    canvas.DrawBitmap(lioSKBitmap, sourceRect, destRect, paint);
-                    using var ms = new MemoryStream();
-                    S = Convert.ToBase64String(lioZoomedImage.Bytes);
-                    lioResult = lioBarcodeReader.Decode(lioZoomedImage);
-                    livnroCuadrante++;
+                using (lioBMPVanilla)
+                {
+                    BarcodeReader lioBarcodeReader = new BarcodeReader();
+                    lioResult = null;
+                    double livdblScale;
+                    // zoom livdblScale de 100% a 500%
+                    for (int livnumZoomPercent = 100; livnumZoomPercent <= 500; livnumZoomPercent += 100)
+                    {
+                        livdblScale = livnumZoomPercent / 100.0;
+                        if (livnumZoomPercent == 100)
+                            lioResult = lioBarcodeReader.Decode(lioBMPVanilla);
+                        else
+                            using (Bitmap lioBMPZommed = ResizeImage(lioBMPVanilla, livdblScale))
+                            {
+                                lioResult = lioBarcodeReader.Decode(lioBMPZommed);
+                            }
+                        if (lioResult != null) break;
+                    }
                 }
                 if (lioResult == null)
                     throw new Exception("QR no encontrado ");
-
-
                 Uri uri = new Uri(lioResult?.Text ?? string.Empty);
                 string livstr = HttpUtility.ParseQueryString(uri.Query).Get("p");
                 if (string.IsNullOrEmpty(livstr))
@@ -176,6 +137,22 @@ namespace Applet.Nat.Api.Br.Models
         private NatContext mioContext;
         #endregion
         #region PRIVATE METHODS
+        private static Bitmap ResizeImage(Bitmap vioBMP, double vivdblScale)
+        {
+            int newWidth = (int)(vioBMP.Width * vivdblScale);
+            int newHeight = (int)(vioBMP.Height * vivdblScale);
+            Bitmap newImage = new Bitmap(newWidth, newHeight);
+            using (Graphics lioGraphic = Graphics.FromImage(newImage))
+            {
+                lioGraphic.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                lioGraphic.SmoothingMode = SmoothingMode.HighQuality;
+                lioGraphic.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                lioGraphic.CompositingQuality = CompositingQuality.HighQuality;
+                lioGraphic.DrawImage(vioBMP, 0, 0, newWidth, newHeight);
+            }
+
+            return newImage;
+        }
         #endregion
     }
 }

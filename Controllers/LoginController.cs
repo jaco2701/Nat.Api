@@ -65,7 +65,47 @@ namespace Applet.Nat.Api.Controllers
                 return ResponseHelper.Get(-1, lioE);
             }
         }
+        [HttpGet("client")]
+        public async Task<ActionResult> Authorize()
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(HttpContext.Request.Headers.Authorization.ToString()))
+                    throw new Exception(Resources.lioE_NoCreds);
+                string[] lcvstrCreds = HttpsHeaderHelper.GetCredencials(AuthenticationHeaderValue.Parse(Request.Headers["Authorization"].ToString() ?? string.Empty));
+                if (lcvstrCreds.Length != 3)
+                    throw new Exception("invalid_request");
+                ClientModel? lioClientModel = mioContext.Clients.Find(lcvstrCreds[1]);
+                if (lioClientModel == null)
+                    throw new Exception("invalid_client");
+                if (!mioContext.Users.Any(x => x.ivnumUser == lioClientModel.ivnumUser && (x.ivblnEnable ?? false)))
+                    throw new Exception(Resources.lioE_TokenNo);
+                if (Chain.Decrypt(lioClientModel.ivstrClientSecret ?? string.Empty) != lcvstrCreds[2])
+                    throw new Exception("invalid_client_secret");
+                lioClientModel.ivstrToken = Auth.Get(lioClientModel.ivnumUser ?? 0, mioContext, lcvstrCreds[1]);
+                mioContext.Clients.Update(lioClientModel);
+                mioContext.SaveChanges();
+                return Ok(
+                    new Oauth2Response
+                    {
+                        AccessToken = lioClientModel.ivstrToken,
+                        ExpiresIn = int.Parse(ListHelper.GetValue("Expire", "Token", mioContext)) * 3600,
+                        IdToken = "nat"
+                    }
+                );
+            }
+            catch (Exception lioE)
+            {
+                return BadRequest(
+                    new Oauth2Response
+                    {
+                        Error = lioE.Message
+                    }
+                );
 
+            }
+
+        }
         [HttpPost("OidcState")]
         public async Task<Response> OidcState([FromBody] OidcRequest vioOidcRequest)
         {

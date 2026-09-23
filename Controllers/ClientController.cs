@@ -1,4 +1,4 @@
-﻿using Applet.Misc.EncDec;
+using Applet.Misc.EncDec;
 using Applet.Nat.Api.Br;
 using Applet.Nat.Api.Br.Models;
 using Applet.Nat.Api.DC;
@@ -7,7 +7,10 @@ using Applet.Nat.Api.Static;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Nat.API.Models.BR;
 using Nat.API.Properties;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
 using System.Text;
 
@@ -19,289 +22,59 @@ namespace Applet.Nat.Api.Controllers
     {
         private readonly NatContext mioContext;
         private readonly IConfiguration mioConfiguration;
-        public ClientController(NatContext vioContext, IConfiguration vioConfiguration)
+        private readonly Token mioToken;
+        public ClientController(NatContext vioContext, IConfiguration vioConfiguration, IHttpContextAccessor vioHttpContextAccessor)
         {
             mioContext = vioContext;
             mioConfiguration = vioConfiguration;
+            mioToken = Auth.DeserializeToken(vioHttpContextAccessor.HttpContext.Request.Headers.Authorization, vioContext);
         }
-        [HttpGet("authorize")]
-        public async Task<ActionResult> Authorize()
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(HttpContext.Request.Headers.Authorization.ToString()))
-                    throw new Exception(Resources.lioE_NoCreds);
-                string[] lcvstrCreds = HttpsHeaderHelper.GetCredencials(AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]));
-                if (lcvstrCreds.Length != 3)
-                    throw new Exception("invalid_request");
-                ClientModel? lioClientModel = mioContext.Clients.Find(lcvstrCreds[1]);
-                if (lioClientModel == null)
-                    throw new Exception("invalid_client");
-                if (!mioContext.Users.Any(x => x.ivnumUser == lioClientModel.ivnumUser && (x.ivblnEnable ?? false)))
-                    throw new Exception(Resources.lioE_TokenNo);
-                if (Chain.Decrypt(lioClientModel.ivstrClientSecret ?? string.Empty) != lcvstrCreds[2])
-                    throw new Exception("invalid_client_secret");
-                lioClientModel.ivstrToken = Auth.Get(lioClientModel.ivnumUser ?? 0, mioContext, lcvstrCreds[1]);
-                mioContext.Clients.Update(lioClientModel);
-                mioContext.SaveChanges();
-                return Ok(
-                    new Oauth2Response
-                    {
-                        AccessToken = lioClientModel.ivstrToken,
-                        ExpiresIn = int.Parse(ListHelper.GetValue("Expire", "Token", mioContext))*3600,
-                        IdToken = "nat"
-                    }
-                );
-            }
-            catch (Exception lioE)
-            {
-                return BadRequest(
-                    new Oauth2Response
-                    {
-                        Error = lioE.Message
-                    }
-                );
 
-            }
-
-        }
-        [HttpPost("Rs")]
-        public Response Rs([FromBody] long vivlngCuit)
+        [HttpPost("load")]
+        public async Task<ActionResult> Load([FromBody] Object vioPayload)
         {
             try
             {
-                string livstrCuitRS = string.Empty;
-                try
+                LogHelper.writeinfo(JsonConvert.SerializeObject(vioPayload), ListHelper.GetValue("FORMAT", "VERBOSE", mioContext) == "1");
+                JObject lioJObject = JObject.Parse(JsonConvert.SerializeObject(vioPayload));
+                JToken? lioToken = lioJObject.SelectToken("DocumentInfo.PropertyTaxNumber");
+                if (lioToken == null || lioToken.Type == JTokenType.Null || string.IsNullOrWhiteSpace(lioToken.ToString()))
+                    throw new Exception($"Cuit [DocumentInfo.PropertyTaxNumber] {Resources.lioE_ObjectNoM}");
+                if (!long.TryParse(lioToken.ToString().Replace("-", ""), out long livlngCuitEmisor))
+                    throw new Exception("DocumentInfo.PropertyTaxNumber " + Resources.lioE_ObjectNoM);
+                DocumentUploadRequest lioDocumentUploadRequest = new DocumentUploadRequest
                 {
-                    CuitModel lioCuitModel = mioContext.Cuits.Find(vivlngCuit);
-                    livstrCuitRS = lioCuitModel?.ivstrCuitRS ?? string.Empty;
-                }
-                catch (Exception lioE)
-                {
-                    {
-                        LogHelper.write(lioE);
-                    }
-                }
-                return ResponseHelper.Get(livstrCuitRS);
-
-            }
-            catch (Exception lioE)
-            {
-                LogHelper.write(lioE);
-                return ResponseHelper.Get(-1, lioE);
-            }
-        }
-        [HttpPost("Log")]
-        public Response Log([FromBody] string vivFilename)
-        {
-            try
-            {
-                string livstrCuitRS = string.Empty;
-                try
-                {
-                    bool livblnClear = vivFilename.StartsWith("CLEAR");
-                    vivFilename = vivFilename.Replace("CLEAR", "");
-                    string livstrPath = "./log";
-                    if (!Directory.Exists(livstrPath))
-                        Directory.CreateDirectory(livstrPath);
-                    livstrPath += "/";
-                    livstrPath += vivFilename;
-                    StringResponse lioStringResponse = new StringResponse();
-                    if (!System.IO.File.Exists(livstrPath))
-                        return ResponseHelper.Get(string.Empty);
-                    if (livblnClear)
-                        System.IO.File.WriteAllText(livstrPath, string.Empty);
-                    return ResponseHelper.Get(Convert.ToBase64String(System.IO.File.ReadAllBytes(livstrPath)));
-                }
-                catch (Exception lioE)
-                {
-                    LogHelper.write(lioE);
-                    return ResponseHelper.Get(-1, lioE);
-                }
-
-            }
-            catch (Exception lioE)
-            {
-                LogHelper.write(lioE);
-                return ResponseHelper.Get(-1, lioE);
-            }
-        }
-        [HttpGet("Queue")]
-        public async Task<Response> Queue()
-        {
-            try
-            {
-                //VALIDACION
-                string[] lcvstrCreds = HttpsHeaderHelper.GetCredencials(AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]));
-                if (lcvstrCreds.Length != 3)
-                    throw new Exception(Resources.lioE_NoCreds);
-                User lioUser = new User(lcvstrCreds[1], mioContext);
-                lioUser.ivstrPass = lcvstrCreds[2];
-                lioUser.ieTask = eTask.Auth;
-                lioUser.Task();
-                //EJECUCION
-                await Static.Queue.Run(mioContext, mioConfiguration);
-                return ResponseHelper.Get("OK");
-            }
-            catch (Exception lioE)
-            {
-                return ResponseHelper.Get(-1, lioE);
-            }
-        }
-        [HttpPost("CompUncomp")]
-        public string unzip([FromBody] DocumentUploadRequest vioO)
-        {
-            try
-            {
-                string livstr;
-                if (vioO.ivstrName.StartsWith("U"))
-                {
-                    livstr = Format.UnCompress(vioO.ivstrData, Encoding.UTF8);
-                    if (vioO.ivstrName.EndsWith("64"))
-                        livstr = Encoding.UTF8.GetString(Convert.FromBase64String(livstr));
-                }
-                else
-                {
-                    if (vioO.ivstrName.EndsWith("64"))
-                        livstr = Convert.ToBase64String(Encoding.UTF8.GetBytes(vioO.ivstrData));
-                    else
-                        livstr = vioO.ivstrData;
-                    livstr = Format.Compress(livstr);
-                }
-                return livstr;
-            }
-            catch (Exception lioE)
-            {
-                LogHelper.write(lioE);
-                return string.Empty;
-            }
-        }
-        //[HttpPost("fixv1")]
-        //public string fixv1([FromBody] DocumentUploadRequest vioO)
-        //{
-        //    try
-        //    {
-        //        long[] lcvlngDoc = { };
-        //        DocumentModel[] lcoDocs;
-        //        DocumentUser[] lcoDocumentUsers;
-        //        IRawDocument liiInDocument;
-        //        if (!string.IsNullOrEmpty(vioO.ivstrData))
-        //        {
-        //            lcvlngDoc = vioO.ivstrData.Split(',').Select(x => long.Parse(x)).ToArray();
-        //            lcoDocs = mioContext.Documents.Where(x => x.ivdblImporte == null && lcvlngDoc.Contains(x.ivlngDoc)).ToArray();
-        //        }
-        //        else
-        //            lcoDocs = mioContext.Documents.Where(x => x.ivdblImporte == null).ToArray();
-        //        foreach (DocumentModel lioDoc in lcoDocs)
-        //        {
-        //            try
-        //            {
-        //                if (string.IsNullOrEmpty(lioDoc.ivstrInData)) continue;
-        //                string livstrRaw = Format.UnCompress(lioDoc.ivstrInData).Replace("<Document>", "<Document><ws>wsfe</ws>");
-        //                livstrRaw = Format.Compress(Convert.ToBase64String(Encoding.UTF8.GetBytes(livstrRaw)));
-        //                liiInDocument = new InDocumentXML(new Token { ivlngCuit = 301710061447 }, mioContext) { ivstrRaw = livstrRaw };
-        //                lcoDocumentUsers = liiInDocument.ToUserDocuments();
-        //                if (lcoDocumentUsers != null && lcoDocumentUsers.Length > 0)
-        //                {
-        //                    lioDoc.ivdblImporte = lcoDocumentUsers[0].ivdblImporteTotal ?? 0;
-        //                    lioDoc.ivstrFechaEmision = DateTime.ParseExact(lcoDocumentUsers[0].ivstrFechaEmision, "yyyyMMdd", null, System.Globalization.DateTimeStyles.None);
-        //                    lioDoc.ivstrInData = livstrRaw;
-        //                    mioContext.Documents.Update(lioDoc);
-        //                }
-        //            }
-        //            catch (Exception lioE)
-        //            {
-        //                LogHelper.write(lioE);
-        //                continue;
-        //            }
-        //        }
-
-        //        DocumentTrackingModel[] lcoDocumentTrackingModels;
-        //        if (!string.IsNullOrEmpty(vioO.ivstrData))
-        //        {
-        //            lcvlngDoc = vioO.ivstrData.Split(',').Select(x => long.Parse(x)).ToArray();
-        //            lcoDocumentTrackingModels = mioContext.DocumentTrackings.Where(x => lcvlngDoc.Contains(x.ivlngDoc)).OrderBy(x => x.ivlngDoc).ThenBy(x => x.ivdtmTrack).ToArray();
-        //        }
-        //        else
-        //            lcoDocumentTrackingModels = mioContext.DocumentTrackings.OrderBy(x => x.ivlngDoc).ThenBy(x => x.ivdtmTrack).ToArray();
-        //        long livlngDoc = 0;
-        //        short livnroStatus = 0;
-        //        int livnumTrack = 0;
-        //        XmlDocument lioXml;
-        //        foreach (DocumentTrackingModel lioDocumentTrackingModel in lcoDocumentTrackingModels)
-        //        {
-        //            try
-        //            {
-        //                if (livlngDoc != lioDocumentTrackingModel.ivlngDoc)
-        //                {
-        //                    livlngDoc = lioDocumentTrackingModel.ivlngDoc;
-        //                    livnumTrack = 0;
-        //                    if (livnroStatus == 0)
-        //                    {
-        //                        DocumentModel lioDocumentModel = mioContext.Documents.Find(livlngDoc);
-        //                        if (lioDocumentModel != null)
-        //                            livnroStatus = lioDocumentModel.ivnroStatus;
-        //                    }
-        //                }
-        //                livnumTrack++;
-        //                lioDocumentTrackingModel.ivnumTrack = livnumTrack;
-        //                if (!string.IsNullOrEmpty(lioDocumentTrackingModel.ivstrwsData))
-        //                {
-        //                    lioDocumentTrackingModel.ivstrData = lioDocumentTrackingModel.ivstrwsData;
-        //                }
-        //                if (!string.IsNullOrEmpty(lioDocumentTrackingModel.ivstrData) && lioDocumentTrackingModel.ivstrData.StartsWith("<FECAEResponse")) //busca autorizacion
-        //                {
-        //                    lioXml = new XmlDocument();
-        //                    lioXml.LoadXml(lioDocumentTrackingModel.ivstrData.Substring(0, lioDocumentTrackingModel.ivstrData.Length - 1));
-        //                    lioDocumentTrackingModel.ivnroStatus = lioXml.SelectSingleNode("//FECAEResponse/FeDetResp/FECAEDetResponse/Resultado")?.InnerXml == "A" ?50 : 40;
-        //                    livnroStatus = lioDocumentTrackingModel.ivnroStatus;
-        //                }
-        //                mioContext.DocumentTrackings.Update(lioDocumentTrackingModel);
-        //            }
-        //            catch (Exception lioE)
-        //            {
-        //                LogHelper.write(lioE);
-        //                continue;
-        //            }
-        //        }
-        //        if (livnroStatus == 0)
-        //        {
-        //            DocumentModel lioDocumentModel = mioContext.Documents.Find(livlngDoc);
-        //            if (lioDocumentModel != null)
-        //                livnroStatus = lioDocumentModel.ivnroStatus;
-        //        }
-        //        mioContext.SaveChanges();
-        //        return "OK";
-        //    }
-        //    catch (Exception lioE)
-        //    {
-        //        LogHelper.write(lioE);
-        //        return string.Empty;
-        //    }
-        //}
-        [HttpGet("fixRsMoneda")]
-        public string fixRsMoneda()
-        {
-            try
-            {
-                long[] lcvlngDoc = { };
+                    ivblnComp = false,
+                    ivlngCuit = livlngCuitEmisor,
+                    ivstrData = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(vioPayload))),
+                    ivstrName = $"Load_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.json"
+                };
+                List<DocumentUploadResponse> lcoResponses = DocHelper.UploadDocument(lioDocumentUploadRequest, mioConfiguration, mioToken.ivnumUser);
                 Document lioDocument;
-                DocumentUser[] lcoDocumentUsers;
-                IRawDocument liiInDocument;
-                foreach (DocumentModel lioDocumentModel in mioContext.Documents.Where(x => string.IsNullOrEmpty(x.ivstrMoneda) || string.IsNullOrEmpty(x.ivstrRazonSocial)))
+                string livstrRawResponse = "[";
+                foreach (DocumentUploadResponse lioResponse in lcoResponses)
                 {
-                    lioDocument = new Document(lioDocumentModel, mioContext, mioConfiguration);
-                    lioDocument.ioDcModel.ivstrMoneda = lioDocument.ioDocumentUser?.ivstrMoneda ?? string.Empty;
-                    lioDocument.ioDcModel.ivstrRazonSocial = lioDocument.ioDocumentUser?.ivstrRazonSocial ?? string.Empty;
-                    mioContext.Documents.Update(lioDocument.ioDcModel);
-                    mioContext.SaveChanges();
+                    if (lioResponse == null) continue;
+                    if (lioResponse.ivnroStatus == 1)
+                    {
+                        if (lioResponse.ioDocumentUser == null || (lioResponse.ioDocumentUser.ivblnSaveOnLoad ?? true))
+                            lioDocument = new Document(lioResponse.ivlngDoc ?? 0, mioContext, mioConfiguration);
+                        else
+                            lioDocument = new Document(lioResponse.ioDocumentUser, mioContext, mioConfiguration);
+                        await lioDocument.Auth();
+                        livstrRawResponse += await lioDocument.SendResponse();
+                    }
+                    else
+                        livstrRawResponse += DocHelper.BuildDocumentResponse(livlngCuitEmisor, mioConfiguration, lioResponse.ivstrDescStatus??string.Empty);
                 }
-                return "OK";
+                livstrRawResponse += "]";
+                LogHelper.writeinfo(livstrRawResponse, true);
+                return Ok(JsonConvert.DeserializeObject(livstrRawResponse));
             }
             catch (Exception lioE)
             {
                 LogHelper.write(lioE);
-                return string.Empty;
+                return BadRequest(lioE.Message);
             }
         }
     }

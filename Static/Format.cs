@@ -300,26 +300,7 @@ namespace Applet.Nat.Api.Static
                         rivException = String.Empty;
                         return livlng + livdec;*/
         }
-        public static string Property(string vivstrPropName, string vivstrPropValue)
-        {
-            if (!vivstrPropName.Contains("dbl"))
-                return vivstrPropValue;
-            if (!vivstrPropValue.Contains(","))
-                return vivstrPropValue;
-            //tiene ,
-            int livnumIdxPto = vivstrPropValue.IndexOf(".");
-            int livnumIdxComa = vivstrPropValue.IndexOf(",");
-            if (livnumIdxPto != -1 && livnumIdxComa != -1 && livnumIdxPto > livnumIdxComa)
-                //tiene , y . y la , es antes que el .
-                return vivstrPropValue.Replace(",", string.Empty);
-            if (livnumIdxPto != -1 && livnumIdxComa != -1 && livnumIdxPto < livnumIdxComa)
-                //tiene , y . y la , es despues que el .
-                return vivstrPropValue.Replace(".", string.Empty).Replace(",", ".");
-            if (livnumIdxPto == -1)
-                //tiene , y no tiene .
-                return vivstrPropValue.Replace(",", ".");
-            return vivstrPropValue;
-        }
+      
 
         public static double? GetDoubleFromString(string vivstrDoubleval, short vivnroDecpos)
         {

@@ -14,6 +14,8 @@ namespace Applet.Nat.Api.Ifaces
         Task<double> GetCotizacion(string ivstrCurrency, DateTime livdtm);
         long ivCuitAutorizante { get; }
         string ivstrSR { get; set; }
+        bool ivblnCalcNN { get; set; } 
+        long ivlngCbte { get; set; }
     }
 }
 

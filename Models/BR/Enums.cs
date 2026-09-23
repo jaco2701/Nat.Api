@@ -19,6 +19,7 @@ namespace Applet.Nat.Api.Br.Models
         Pass =11,
         Rta = 12,
         UploadDocs = 13,
+        GetDocRec = 14,
     }
     public enum eLoadMethod : short
     {

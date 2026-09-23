@@ -137,7 +137,7 @@ namespace Applet.Nat.Api.Static
                                     {
                                         try
                                         {
-                                            await lioDocument.Print();
+                                            await lioDocument.Print(true);
                                             lioDocument.ioDcModel.ivnroStatus = 60;
                                         }
                                         catch (Exception lioE)
@@ -150,7 +150,7 @@ namespace Applet.Nat.Api.Static
                                     {
                                         try
                                         {
-                                            if (await lioDocument.Share(vioConfiguration))
+                                            if (await lioDocument.Share(vioConfiguration,true))
                                                 lioDocument.ioDcModel.ivnroStatus = 70;
                                             else
                                             {
@@ -172,7 +172,7 @@ namespace Applet.Nat.Api.Static
                                 case (60): //Impreso
                                     try
                                     {
-                                        if (await lioDocument.Share(vioConfiguration))
+                                        if (await lioDocument.Share(vioConfiguration,true))
                                             lioDocument.ioDcModel.ivnroStatus = 70;
                                         else
                                         {

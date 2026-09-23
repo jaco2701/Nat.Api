@@ -1,0 +1,1 @@
+{"FiscalBillGenerationDateTime":"{ivdtmGen}","FiscalFolioNo":"{ivnumPvta}-{ivlngCbte}","FiscalOutputs":{"Output":[{"Name":"CAE","Value":"{ivstrAuthCode}"},{"Name":"VTO_CAE","Value":"{ivdtmAuthVenc}"},{"Name":"FOLIO_TYPE","Value":"{ivnroTipo}"}]},"StatusMessages":{"Messages":[{"Description":"{ivstrAuthObs}","Type":""}]}}

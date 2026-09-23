@@ -4,8 +4,11 @@ using Applet.Nat.Api.Static;
 using Nat.API.Properties;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Xml;
@@ -18,6 +21,7 @@ namespace Applet.Nat.Api.Br.Models
         {
             mivlngCuit = vivlngCuit;
             mioContext = vioContext;
+            ivstrKey = string.Empty;
         }
         #endregion
         public string? ivstrRaw { get; set; }
@@ -29,41 +33,195 @@ namespace Applet.Nat.Api.Br.Models
             Cuit lioCuit = new Cuit(mivlngCuit, mioContext, null);
             ServiceMapper lioServiceMapper = GetMapper();
             string livstr = lioCuit.GetEncoding().GetString(Convert.FromBase64String(Format.UnCompress(ivstrRaw ?? string.Empty, lioCuit.GetEncoding()))),
-                    livstrApiDtmFormat = ListHelper.GetValue("Format", "ApiDtm", mioContext);
+                    livstrApiDtmFormat = ListHelper.GetValue("Format", "ApiDtm", mioContext),
+                    livstrPropName, livstrParentPropName, livstrRawPropValue;
+            string[] lcvstrPropertyValues;
             DateTime livdtm;
             StringBuilder lioSbErrors = new StringBuilder();
-            List<DocumentUser> lcoDocumentUser = JsonConvert.DeserializeObject<List<DocumentUser>>(livstr);
-            short livnroI = 0;
-            foreach (DocumentUser lioDocumentUser in lcoDocumentUser)
+            DocumentUser? lioDocumentUser;
+            List<DocumentUser> lcoDocumentUser = new List<DocumentUser>();
+            if (lioServiceMapper.ivblnMapping ?? false)
             {
-                lioDocumentUser.ivstrInputData = Format.Compress(Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new List<DocumentUser> { lioDocumentUser }, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }))));
-                lioDocumentUser.ivblnTaxInLines = lioServiceMapper.ivblnTaxInLines ?? false;
-                lioDocumentUser.ivblnCalcPermisoExistente = lioServiceMapper.ivblnCalcPermisoExistente ?? false;
-                lioDocumentUser.ivstrLoadErrors = string.Empty;
-                if (!string.IsNullOrEmpty(lioDocumentUser.ivstrCbteModo))
+                JToken lioRootToken = JToken.Parse(livstr);
+                IEnumerable<JToken> lcoDocTokens;
+                if (!string.IsNullOrEmpty(lioServiceMapper.ivstrSplitter))
                 {
-                    lioDocumentUser.ivstrWs = "wscdc";
-                    lioDocumentUser.ivstrIdCliente = "NatOrigen2";
+                    string livstrSplitterPath = lioServiceMapper.ivstrSplitter.Trim();
+                    if (!livstrSplitterPath.StartsWith("$"))
+                    {
+                        livstrSplitterPath = "$." + livstrSplitterPath;
+                    }
+                    lcoDocTokens = lioRootToken.SelectTokens(livstrSplitterPath);
                 }
-                if (lioDocumentUser.ivnroTipoDoc == null)
+                else if (lioRootToken is JArray lcoOs)
+                    lcoDocTokens = lcoOs;
+                else
+                    lcoDocTokens = new List<JToken> { lioRootToken };
+
+                Type lioType, lioParentType;
+                PropertyInfo? lioPropInfo, lioParentPropInfo;
+                bool livblnIsCollection;
+                // carga el root para colecciones, para poder mapearlas luego
+                Dictionary<string, string> lcoCollectionRootTokens = new Dictionary<string, string>();
+                foreach (ServiceMapperItem lioO in lioServiceMapper.coItems?.Where(x =>
+                                                                    !string.IsNullOrEmpty(x.ivstrProperty) &&
+                                                                    !string.IsNullOrEmpty(x.ivstrCoord) &&
+                                                                    x.ivstrProperty.Split('.').Length == 1 &&
+                                                                    x.ivstrProperty.Split('.')[0].StartsWith("co")
+                                                                    ) ?? Enumerable.Empty<ServiceMapperItem>())
+                {
+                    if (!lcoCollectionRootTokens.ContainsKey(lioO.ivstrProperty ?? string.Empty))
+                        lcoCollectionRootTokens[lioO.ivstrProperty ?? string.Empty] = lioO.ivstrCoord ?? string.Empty;
+                }
+                //recorre cada documento y mapea sus propiedades
+                foreach (JToken lioDocToken in lcoDocTokens)
+                {
+                    lioDocumentUser = new DocumentUser();
+                    lioDocumentUser.ivblnSaveOnLoad = lioServiceMapper.ivblnSaveOnLoad ?? true;
+                    lioSbErrors.Clear();
+                    foreach (ServiceMapperItem lioServiceMapperItem in lioServiceMapper.coItems?.Where(x => x != null && !string.IsNullOrEmpty(x.ivstrProperty) && !string.IsNullOrEmpty(x.ivstrCoord)) ?? Enumerable.Empty<ServiceMapperItem>())
+                    {
+                        try
+                        {
+                            if (string.IsNullOrEmpty(lioServiceMapperItem.ivstrProperty)) continue;
+                            if (string.IsNullOrEmpty(lioServiceMapperItem.ivstrCoord)) continue;
+                            lcvstrPropertyValues = (lioServiceMapperItem.ivstrProperty ?? string.Empty).Split('.');
+                            if (lcvstrPropertyValues.Length == 1) // Propiedad en raíz
+                            {
+                                livstrPropName = lcvstrPropertyValues[0];
+                                if (livstrPropName.StartsWith("co")) continue;
+                                lioPropInfo = typeof(DocumentUser).GetProperty(livstrPropName);
+                                if (lioPropInfo != null)
+                                {
+                                    JToken? lioTokenVal = SelectJsonToken(lioDocToken, lioServiceMapperItem.ivstrCoord);
+                                    livstrRawPropValue = lioTokenVal?.ToString() ?? string.Empty;
+                                    SetPropertyValue(lioDocumentUser, lioPropInfo, lioServiceMapperItem, livstrRawPropValue);
+                                }
+                            }
+                            else if (lcvstrPropertyValues.Length == 2) // Objeto anidado o Colección
+                            {
+                                livstrParentPropName = lcvstrPropertyValues[0];
+                                livstrPropName = lcvstrPropertyValues[1];
+                                livblnIsCollection = lcoCollectionRootTokens.ContainsKey(livstrParentPropName);
+                                lioParentPropInfo = typeof(DocumentUser).GetProperty(livstrParentPropName);
+                                if (lioParentPropInfo == null) continue;
+                                lioParentType = lioParentPropInfo.PropertyType;
+                                lioType = lioParentType;
+
+                                if (!livblnIsCollection)
+                                {
+                                    object? lioParentObj = lioParentPropInfo.GetValue(lioDocumentUser);
+                                    if (lioParentObj == null)
+                                    {
+                                        lioParentObj = Activator.CreateInstance(lioParentType);
+                                        lioParentPropInfo.SetValue(lioDocumentUser, lioParentObj);
+                                    }
+                                    if (lioParentObj != null)
+                                    {
+                                        lioPropInfo = lioParentType.GetProperty(livstrPropName);
+                                        if (lioPropInfo != null)
+                                        {
+                                            JToken? lioTokenVal = SelectJsonToken(lioDocToken, lioServiceMapperItem.ivstrCoord);
+                                            livstrRawPropValue = lioTokenVal?.ToString() ?? string.Empty;
+                                            SetPropertyValue(lioParentObj, lioPropInfo, lioServiceMapperItem, livstrRawPropValue);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    if (lioParentType.IsGenericType && lioParentType.GetGenericTypeDefinition() == typeof(List<>))
+                                        lioType = lioParentType.GetGenericArguments()[0];
+                                    else if (lioParentType.IsArray)
+                                        lioType = lioParentType.GetElementType()!;
+                                    else if (typeof(IEnumerable).IsAssignableFrom(lioParentType) && lioParentType != typeof(string))
+                                        if (lioParentType.IsGenericType)
+                                            lioType = lioParentType.GetGenericArguments()[0];
+                                    IEnumerable<JToken> lcoItemTokens = SelectJsonTokens(lioDocToken, lcoCollectionRootTokens[livstrParentPropName]);
+                                    if (lcoItemTokens != null && lcoItemTokens.Any())
+                                    {
+                                        IList? lcoList = lioParentPropInfo.GetValue(lioDocumentUser) as IList;
+                                        if (lcoList == null)
+                                        {
+                                            Type lioListType = typeof(List<>).MakeGenericType(lioType);
+                                            lcoList = Activator.CreateInstance(lioListType) as IList;
+                                            lioParentPropInfo.SetValue(lioDocumentUser, lcoList);
+                                        }
+                                        lioPropInfo = lioType.GetProperty(livstrPropName);
+                                        if (lcoList != null)
+                                        {
+                                            int livnumIdx = 0;
+                                            foreach (JToken lioItemToken in lcoItemTokens)
+                                            {
+                                                object? lioItemObj = null;
+                                                if (livnumIdx < lcoList.Count)
+                                                    lioItemObj = lcoList[livnumIdx];
+                                                else
+                                                {
+                                                    lioItemObj = Activator.CreateInstance(lioType);
+                                                    lcoList.Add(lioItemObj);
+                                                }
+                                                if (lioItemObj != null && lioPropInfo != null)
+                                                {
+                                                    livstrRawPropValue = string.Empty;
+                                                    if (lioItemToken is JValue)
+                                                        livstrRawPropValue = lioItemToken.ToString();
+                                                    else
+                                                    {
+                                                        JToken? lioChildToken = lioItemToken.SelectToken(lioServiceMapperItem.ivstrCoord) ?? lioItemToken.SelectToken("$." + livstrPropName);
+                                                        livstrRawPropValue = lioChildToken != null ? lioChildToken.ToString() : lioItemToken.ToString();
+                                                    }
+                                                    SetPropertyValue(lioItemObj, lioPropInfo, lioServiceMapperItem, livstrRawPropValue);
+                                                }
+                                                livnumIdx++;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        catch (Exception lioE)
+                        {
+                            lioSbErrors.AppendLine($"{lioServiceMapperItem.ivstrProperty}: {lioE.Message}");
+                        }
+                    }
+                    if (lioDocumentUser != null)
+                    {
+                        lioDocumentUser.ivstrLoadErrors = lioSbErrors.ToString();
+                        lcoDocumentUser.Add(lioDocumentUser);
+                    }
+                }
+            }
+            else
+                lcoDocumentUser = JsonConvert.DeserializeObject<List<DocumentUser>>(livstr) ?? new List<DocumentUser>();
+            short livnroI = 0;
+            foreach (DocumentUser lioDocUser in lcoDocumentUser.Where(x=>string.IsNullOrEmpty(x.ivstrLoadErrors)))
+            {
+                lioDocUser.ivstrInputData = Format.Compress(Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new List<DocumentUser> { lioDocUser }, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }))));
+                lioDocUser.ivblnTaxInLines = lioServiceMapper.ivblnTaxInLines ?? false;
+                lioDocUser.ivblnCalcPermisoExistente = lioServiceMapper.ivblnCalcPermisoExistente ?? false;
+                if (!string.IsNullOrEmpty(lioDocUser.ivstrCbteModo))
+                {
+                    lioDocUser.ivstrWs = "wscdc";
+                    lioDocUser.ivstrIdCliente = "NatOrigen2";
+                }
+                if (lioDocUser.ivnroTipoDoc == null)
                     lioSbErrors.AppendLine($"[{livnroI}] Tipo de Documento {Resources.lioE_ObjectNoM}");
-                if (lioDocumentUser.ivnumPvta == null)
+                if (lioDocUser.ivnumPvta == null)
                     lioSbErrors.AppendLine($"[{livnroI}] Punto de Venta {Resources.lioE_ObjectNoM}");
-                if (lioDocumentUser.ivlngCbte == null)
+                if (lioDocUser.ivlngCbte == null && (lioDocUser.ivblnSaveOnLoad ?? true))
                     lioSbErrors.AppendLine($"[{livnroI}] Numero de Comprobante {Resources.lioE_ObjectNoM}");
-                if (lioDocumentUser.ivstrFechaEmision == null || !DateTime.TryParseExact(lioDocumentUser.ivstrFechaEmision, livstrApiDtmFormat, null, DateTimeStyles.None, out livdtm))
+                if (lioDocUser.ivstrFechaEmision == null || !DateTime.TryParseExact(lioDocUser.ivstrFechaEmision, livstrApiDtmFormat, null, DateTimeStyles.None, out livdtm))
                     lioSbErrors.AppendLine($"[{livnroI}] Fecha de Comprobante {Resources.lioE_ObjectNoF}");
-                if (lioDocumentUser.ivlngCuitEmisor == null)
+                if (lioDocUser.ivlngCuitEmisor == null)
                     lioSbErrors.AppendLine($"[{livnroI}] CUIT Emisor {Resources.lioE_ObjectNoF}");
-                if (lioDocumentUser.ivlngDocReceptor == null)
+                if (lioDocUser.ivlngDocReceptor == null)
                     lioSbErrors.AppendLine($"[{livnroI}] Numero de documento receptor {Resources.lioE_ObjectNoM}");
-                if (lioDocumentUser.ivnroTipoDocReceptor == null)
+                if (lioDocUser.ivnroTipoDocReceptor == null)
                     lioSbErrors.AppendLine($"[{livnroI}] Tipo de documento receptor {Resources.lioE_ObjectNoM}");
                 if (lioSbErrors.Length > 0)
-                    lioDocumentUser.ivstrLoadErrors = lioSbErrors.ToString();
+                    lioDocUser.ivstrLoadErrors += lioSbErrors.ToString();
                 livnroI++;
-                lioDocumentUser.FormatAmounts();
-
+                lioDocUser.FormatAmounts();
             }
             return lcoDocumentUser.ToArray();
         }
@@ -91,7 +249,8 @@ namespace Applet.Nat.Api.Br.Models
             Dictionary<string, string> lcoParentXPaths = new Dictionary<string, string>();
             DocumentUser lioDocumentUser = lcoDocuments[0];
             string[] lcvstrPropertyValues;
-            string livstrPropName, livstrPropRawValue, livstrParentPropName, livstrChildPropName, livstrParentXPath;
+            string livstrPropName, livstrParentPropName, livstrChildPropName, livstrParentXPath;
+            string? livstrPropRawValue;
             object? lioPropValue, lioParentValue;
             Type lioType, lioParentType;
             PropertyInfo? lioPropInfo, lioParentPropInfo;
@@ -101,23 +260,21 @@ namespace Applet.Nat.Api.Br.Models
             XmlNode? lioNode, lioSourceNode, lioNewNode, lioParentContainerNode, lioCurrentParentNode;
             bool livblnIsCollection;
             // diccionario con padres de colecciones y sus xPaths
-            foreach (ServiceMapperItem lioMapperItem in lioServiceMapper.coItems)
+            foreach (ServiceMapperItem lioMapperItem in lioServiceMapper.coItems?? [])
             {
                 if (string.IsNullOrEmpty(lioMapperItem.ivstrProperty)) continue;
                 lcvstrPropertyValues = lioMapperItem.ivstrProperty.Split('.');
-                if (lcvstrPropertyValues.Length > 1 || !lcvstrPropertyValues[0].StartsWith("co") || lioMapperItem.coXPaths == null && lioMapperItem.coXPaths.Length == 0) continue;
+                if (lcvstrPropertyValues.Length > 1 || !lcvstrPropertyValues[0].StartsWith("co") || lioMapperItem.coXPaths == null || lioMapperItem.coXPaths.Length == 0 || string.IsNullOrEmpty(lioMapperItem.coXPaths[0].ivstrData)) continue;
                 lcoParentXPaths[lcvstrPropertyValues[0]] = lioMapperItem.coXPaths[0].ivstrData;
             }
-
             // CAMPOS
-            foreach (ServiceMapperItem lioMapperItem in lioServiceMapper.coItems)
+            foreach (ServiceMapperItem lioMapperItem in lioServiceMapper.coItems?? [])
             {
                 if (string.IsNullOrEmpty(lioMapperItem.ivstrProperty)) continue;
                 if (lioMapperItem.coXPaths == null || lioMapperItem.coXPaths.Length == 0) continue;
                 try
                 {
                     lcvstrPropertyValues = lioMapperItem.ivstrProperty.Split('.');
-                    if (lcvstrPropertyValues.Length == 0) continue;
                     if (lcvstrPropertyValues.Length == 1)  //propiedades en raiz
                     {
                         livstrPropName = lcvstrPropertyValues[0];
@@ -129,11 +286,11 @@ namespace Applet.Nat.Api.Br.Models
                             continue;
                         }
                         if (lioPropInfo == null)
-                            livstrPropRawValue = FormatValue(lioMapperItem, null);
+                            livstrPropRawValue = null;
                         else
                         {
                             lioPropValue = lioPropInfo.GetValue(lioDocumentUser);
-                            livstrPropRawValue = FormatValue(lioMapperItem, lioPropValue?.ToString());
+                            livstrPropRawValue = lioMapperItem.FormatPropertyValue(lioPropValue?.ToString() ?? string.Empty);
                         }
                         if (lioMapperItem.ivblnRequired ?? false && string.IsNullOrEmpty(livstrPropRawValue))
                         {
@@ -144,7 +301,7 @@ namespace Applet.Nat.Api.Br.Models
                         {
                             try
                             {
-                                string livstrTargetXPath = lioXPath.ivstrData.Replace("{N}", "1");
+                                string livstrTargetXPath = lioXPath.ivstrData?.Replace("{N}", "1") ?? string.Empty;
                                 lioNode = lioXmlToPrinter.SelectSingleNode(livstrTargetXPath, lioNsMngr);
                                 if (lioNode == null)
                                 {
@@ -222,19 +379,19 @@ namespace Applet.Nat.Api.Br.Models
                             for (int livnumIdx = 0; livnumIdx < lcoItemsList.Count; livnumIdx++)
                             {
                                 if (lioPropInfo == null)
-                                    livstrPropRawValue = FormatValue(lioMapperItem,null);
+                                    livstrPropRawValue = null;
                                 else
                                 {
                                     lioPropValue = lcoItemsList[livnumIdx] != null ? lioPropInfo.GetValue(lcoItemsList[livnumIdx]) : null;
-                                    livstrPropRawValue = FormatValue(lioMapperItem, lioPropValue?.ToString()??string.Empty);
+                                    livstrPropRawValue = lioMapperItem.FormatPropertyValue(lioPropValue?.ToString() ?? string.Empty);
                                 }
                                 foreach (ServiceMapperItemXPath lioXPath in lioMapperItem.coXPaths)
                                 {
                                     try
                                     {
                                         lioNode = null;
-                                        livstrParentXPath = lcoParentXPaths.ContainsKey(livstrParentPropName) ? lcoParentXPaths[livstrParentPropName] : null;
-                                        if (!string.IsNullOrEmpty(livstrParentXPath))
+                                        livstrParentXPath = string.Empty;
+                                        if (lcoParentXPaths.TryGetValue(livstrParentPropName, out livstrParentXPath))
                                         {
                                             lcoNodes = lioXmlToPrinter.SelectNodes(livstrParentXPath, lioNsMngr);
                                             if (lcoNodes == null || lcoNodes.Count == 0)
@@ -262,7 +419,7 @@ namespace Applet.Nat.Api.Br.Models
                                                 lcoNodes = lioXmlToPrinter.SelectNodes(livstrParentXPath, lioNsMngr);
                                             }
 
-                                            lioCurrentParentNode  = lcoNodes?.Item(livnumIdx);
+                                            lioCurrentParentNode = lcoNodes?.Item(livnumIdx);
                                             string livstrDataPath = lioXPath.ivstrData.Replace("{N}", (livnumIdx + 1).ToString());
 
                                             lioNewNode = lioCurrentParentNode?.SelectSingleNode(livstrDataPath, lioNsMngr);
@@ -281,7 +438,7 @@ namespace Applet.Nat.Api.Br.Models
                                             continue;
                                         }
 
-                                        lioNewNode.InnerText = livstrPropRawValue ; 
+                                        lioNewNode.InnerText = livstrPropRawValue??string.Empty;
                                     }
                                     catch (Exception lioE)
                                     {
@@ -308,11 +465,11 @@ namespace Applet.Nat.Api.Br.Models
                                 continue;
                             }
                             if (lioPropInfo == null)
-                                livstrPropRawValue = FormatValue(lioMapperItem, null);
+                                livstrPropRawValue = null;
                             else
                             {
                                 lioPropValue = lioPropInfo.GetValue(lioParentValue);
-                                livstrPropRawValue = FormatValue(lioMapperItem, lioPropValue?.ToString());
+                                livstrPropRawValue = lioMapperItem.FormatPropertyValue(lioPropValue?.ToString() ?? string.Empty);
                             }
 
                             if (lioMapperItem.ivblnRequired ?? false && string.IsNullOrEmpty(livstrPropRawValue))
@@ -325,14 +482,14 @@ namespace Applet.Nat.Api.Br.Models
                             {
                                 try
                                 {
-                                    string livstrTargetXPath = lioXPath.ivstrData.Replace("{N}", "1");
+                                    string livstrTargetXPath = lioXPath?.ivstrData?.Replace("{N}", "1")??string.Empty;
                                     lioNode = lioXmlToPrinter.SelectSingleNode(livstrTargetXPath, lioNsMngr);
                                     if (lioNode == null)
                                     {
                                         lioSbErrors.AppendLine($"XPath {lioMapperItem.ivstrProperty} {Resources.lioE_ObjectNoM}");
                                         continue;
                                     }
-                                    lioNode.InnerText = livstrPropRawValue;
+                                    lioNode.InnerText = livstrPropRawValue??string.Empty;
                                 }
                                 catch (Exception lioE)
                                 {
@@ -353,43 +510,6 @@ namespace Applet.Nat.Api.Br.Models
             }
             return lioXmlToPrinter.OuterXml;
         }
-        private string FormatValue(ServiceMapperItem vioMapperItem, string? vivstrValue)
-        {
-            if (vioMapperItem.ivstrCoord != null && vioMapperItem.ivstrCoord.Contains("FIX"))
-            {
-                return vioMapperItem.ivstrformat ?? string.Empty;
-            }
-
-            string livstrValue = vivstrValue ?? string.Empty;
-
-            if (vioMapperItem.coConversion != null && vioMapperItem.coConversion.ContainsKey(livstrValue))
-            {
-                livstrValue = vioMapperItem.coConversion[livstrValue];
-            }
-
-            if (string.IsNullOrEmpty(livstrValue) && !string.IsNullOrEmpty(vioMapperItem.ivstrDefault))
-            {
-                livstrValue = vioMapperItem.ivstrDefault;
-            }
-
-            if (!string.IsNullOrEmpty(vioMapperItem.ivstrformat))
-            {
-                if (vioMapperItem.ivstrformat.Contains("{"))
-                {
-                    livstrValue = string.Format(vioMapperItem.ivstrformat, livstrValue);
-                }
-                else if (vioMapperItem.ivstrformat.Contains("=>"))
-                {
-                    string[] lcvstrFmt = vioMapperItem.ivstrformat.Split("=>");
-                    if (DateTime.TryParseExact(livstrValue, lcvstrFmt[0], null, DateTimeStyles.None, out DateTime livdtm))
-                    {
-                        livstrValue = livdtm.ToString(lcvstrFmt[1], CultureInfo.InvariantCulture);
-                    }
-                }
-            }
-
-            return livstrValue;
-        }
         #endregion
         #region PRIVATE PROPS
         private long mivlngCuit;
@@ -407,10 +527,109 @@ namespace Applet.Nat.Api.Br.Models
                 throw new Exception($"Nombre de Archivo de Ingreso {Resources.lioE_ObjectNoM}");
             if (lioCuit.ioCnfg?.coServiceMappers?.Count() == 0)
                 throw new Exception($"Mapeadores {Resources.lioE_ObjectNoM}");
-            ServiceMapper lioServiceMapper = lioCuit?.ioCnfg?.coServiceMappers?.FirstOrDefault(x => x.ivstrInputType == "json");
+            ServiceMapper? lioServiceMapper = lioCuit?.ioCnfg?.coServiceMappers?.FirstOrDefault(x => x.ivstrInputType == "json");
             if (lioServiceMapper == null)
                 throw new Exception($"Mapeador JSON {Resources.lioE_ObjectNoM}");
             return lioServiceMapper;
+        }
+        private JToken? SelectJsonToken(JToken vioToken, string? vivstrCoord)
+        {
+            if (string.IsNullOrEmpty(vivstrCoord)) return null;
+            try
+            {
+                string livstrPath = vivstrCoord.Trim();
+                if (!livstrPath.StartsWith("$"))
+                {
+                    livstrPath = "$." + livstrPath;
+                }
+                return vioToken.SelectToken(livstrPath);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        private IEnumerable<JToken> SelectJsonTokens(JToken vioToken, string? vivstrCoord)
+        {
+            if (string.IsNullOrEmpty(vivstrCoord)) return Enumerable.Empty<JToken>();
+            try
+            {
+                string livstrPath = vivstrCoord.Trim();
+                if (!livstrPath.StartsWith("$"))
+                {
+                    livstrPath = "$." + livstrPath;
+                }
+                IEnumerable<JToken> lcoTokens = vioToken.SelectTokens(livstrPath);
+                if (lcoTokens.Count() == 1 && lcoTokens.First() is JArray lioArr)
+                {
+                    return lioArr.Children();
+                }
+                return lcoTokens;
+            }
+            catch
+            {
+                return Enumerable.Empty<JToken>();
+            }
+        }
+        private void SetPropertyValue(object vioTargetObj, PropertyInfo vioPropInfo, ServiceMapperItem vioMapperItem, string? vivstrRawValue)
+        {
+            string? livstrFormatted = vioMapperItem.FormatPropertyValue(vivstrRawValue??string.Empty);
+            if (string.IsNullOrEmpty(livstrFormatted) && vioPropInfo.PropertyType != typeof(string)) return;
+
+            Type lioTargetType = Nullable.GetUnderlyingType(vioPropInfo.PropertyType) ?? vioPropInfo.PropertyType;
+
+            object? lioConvertedValue = null;
+            if (lioTargetType == typeof(string))
+            {
+                lioConvertedValue = livstrFormatted;
+            }
+            else if (lioTargetType == typeof(short))
+            {
+                if (short.TryParse(livstrFormatted, NumberStyles.Any, CultureInfo.InvariantCulture, out short livnroVal))
+                    lioConvertedValue = livnroVal;
+            }
+            else if (lioTargetType == typeof(int))
+            {
+                if (int.TryParse(livstrFormatted, NumberStyles.Any, CultureInfo.InvariantCulture, out int livnumVal))
+                    lioConvertedValue = livnumVal;
+            }
+            else if (lioTargetType == typeof(long))
+            {
+                if (long.TryParse(livstrFormatted, NumberStyles.Any, CultureInfo.InvariantCulture, out long livlngVal))
+                    lioConvertedValue = livlngVal;
+            }
+            else if (lioTargetType == typeof(double))
+            {
+                if (double.TryParse(livstrFormatted, NumberStyles.Any, CultureInfo.InvariantCulture, out double livdblVal))
+                    lioConvertedValue = livdblVal;
+            }
+            else if (lioTargetType == typeof(bool))
+            {
+                if (bool.TryParse(livstrFormatted, out bool livblnVal))
+                    lioConvertedValue = livblnVal;
+                else if (livstrFormatted == "1" || livstrFormatted.Equals("S", StringComparison.OrdinalIgnoreCase) || livstrFormatted.Equals("True", StringComparison.OrdinalIgnoreCase))
+                    lioConvertedValue = true;
+                else if (livstrFormatted == "0" || livstrFormatted.Equals("N", StringComparison.OrdinalIgnoreCase) || livstrFormatted.Equals("False", StringComparison.OrdinalIgnoreCase))
+                    lioConvertedValue = false;
+            }
+            else if (lioTargetType == typeof(DateTime))
+            {
+                if (DateTime.TryParse(livstrFormatted, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime livdtmVal))
+                    lioConvertedValue = livdtmVal;
+            }
+            else
+            {
+                try
+                {
+                    lioConvertedValue = Convert.ChangeType(livstrFormatted, lioTargetType, CultureInfo.InvariantCulture);
+                }
+                catch { }
+            }
+
+            if (lioConvertedValue != null || (vioPropInfo.PropertyType == typeof(string) && vivstrRawValue != null))
+            {
+                vioPropInfo.SetValue(vioTargetObj, lioConvertedValue);
+            }
         }
         #endregion
     }

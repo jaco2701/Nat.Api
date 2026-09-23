@@ -1,17 +1,20 @@
 ﻿using Applet.Nat.Api.DC;
 using Applet.Nat.Api.Ifaces;
 using Applet.Nat.Api.Static;
-using Nat.API.Properties;
 using Nat.API.Models.BR;
+using Nat.API.Properties;
 using Newtonsoft.Json;
 using System.Text;
+using System.Xml;
+using System.Threading.Tasks;
+//using Microsoft.Playwright;
 namespace Applet.Nat.Api.Br.Models
 {
     public class Cuit
     {
         #region CONSTRUCT
         public Cuit() { }
-        public Cuit(long vivlngCuit, NatContext vioContext, IConfiguration? vioConfiguration=null)
+        public Cuit(long vivlngCuit, NatContext vioContext, IConfiguration? vioConfiguration = null)
         {
             mioContext = vioContext;
             if (vioConfiguration != null)
@@ -48,7 +51,7 @@ namespace Applet.Nat.Api.Br.Models
         {
             mioContext = vioContext;
         }
- 
+
         public async Task Task()
         {
             switch (ieTask)
@@ -69,8 +72,105 @@ namespace Applet.Nat.Api.Br.Models
                         mioContext.Cuits.Add(ioDcModel);
                     mioContext.SaveChanges();
                     break;
+                case eTask.GetDocRec:
+                    //string cuit = "20123456789";
+                    //string claveFiscal = "TuClaveSegura123";
+                    //string fechaDesde = "01/02/2026"; 
+                    //string fechaHasta = "28/02/2026";
+
+                    //using var playwright = await Playwright.CreateAsync();
+
+                    //// Lanzamos el navegador (Headless = false para ver lo que hace el robot en desarrollo)
+                    //await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
+                    //{
+                    //    Headless = false,
+                    //    SlowMo = 500 // Retraso de 500ms entre acciones para simular comportamiento humano
+                    //});
+
+                    //var context = await browser.NewContextAsync();
+                    //var page = await context.NewPageAsync();
+
+                    //try
+                    //{
+                    //    Console.WriteLine("1. Iniciando sesión en ARCA...");
+                    //    await page.GotoAsync("https://afip.gob.ar");
+
+                    //    // Ingreso de CUIT
+                    //    await page.FillAsync("#F1\\:username", cuit);
+                    //    await page.ClickAsync("#F1\\:btnSiguiente");
+
+                    //    // Ingreso de Clave Fiscal
+                    //    await page.FillAsync("#F1\\:password", claveFiscal);
+                    //    await page.ClickAsync("#F1\\:btnIngresar");
+
+                    //    // Esperar a que cargue el panel principal (Home)
+                    //    await page.WaitForURLAsync("**/zonaPrivada.xhtml**");
+                    //    Console.WriteLine("¡Login exitoso!");
+
+                    //    Console.WriteLine("2. Buscando el servicio 'Mis Comprobantes'...");
+                    //    // Usamos un selector robusto basado en el texto del servicio
+                    //    var servicioMisComprobantes = page.Locator("text=Mis Comprobantes");
+                    //    await servicioMisComprobantes.ScrollIntoViewIfNeededAsync();
+
+                    //    // ARCA abre los servicios en pestañas nuevas. Capturamos la nueva pestaña al hacer clic:
+                    //    var waitForTargetTask = context.WaitForPageAsync();
+                    //    await servicioMisComprobantes.ClickAsync();
+                    //    var nuevaPestana = await waitForTargetTask;
+
+                    //    // Esperar que la nueva pestaña cargue completamente
+                    //    await nuevaPestana.WaitForLoadStateAsync(LoadState.NetworkIdle);
+                    //    Console.WriteLine("Accedido al módulo Mis Comprobantes.");
+
+                    //    Console.WriteLine("3. Entrando a Comprobantes Recibidos...");
+                    //    // ID interno del botón Recibidos en el portal
+                    //    await nuevaPestana.ClickAsync("#btnRecibidos");
+                    //    await nuevaPestana.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
+
+                    //    Console.WriteLine("4. Parametrizando el rango de fechas...");
+                    //    // Llenar campos de fechas
+                    //    await nuevaPestana.FillAsync("#fechaComprobanteFiltro", fechaDesde);
+                    //    // Presionar Enter o Tab suele activar el formateador interno de la web de ARCA
+                    //    await nuevaPestana.Keyboard.PressAsync("Tab");
+
+                    //    // En ocasiones ARCA requiere hacer clic o limpiar antes de rellenar el hasta:
+                    //    await nuevaPestana.FocusAsync("#fechaComprobanteHastaFiltro");
+                    //    await nuevaPestana.FillAsync("#fechaComprobanteHastaFiltro", fechaHasta);
+                    //    await nuevaPestana.Keyboard.PressAsync("Tab");
+
+                    //    Console.WriteLine("5. Ejecutando la búsqueda...");
+                    //    await nuevaPestana.ClickAsync("#btnBuscar");
+
+                    //    // Esperar a que la tabla o los botones de exportación aparezcan
+                    //    await nuevaPestana.WaitForSelectorAsync(".botones-exportar", new PageWaitForSelectorOptions { Timeout = 15000 });
+
+                    //    Console.WriteLine("6. Descargando reporte en formato CSV / Excel...");
+                    //    // Capturar el evento de descarga al hacer clic en el botón de Excel/CSV de la página
+                    //    var waitForDownloadTask = nuevaPestana.WaitForDownloadAsync();
+
+                    //    // Selector del botón "CSV" o "Excel" dentro de la botonera de ARCA
+                    //    await nuevaPestana.ClickAsync("button.dt-button.buttons-csv");
+
+                    //    var download = await waitForDownloadTask;
+
+                    //    // Guardar el archivo en el directorio local
+                    //    string rutaDestino = Path.Combine(Directory.GetCurrentDirectory(), $"comprobantes_recibidos_{cuit}.csv");
+                    //    await download.SaveAsAsync(rutaDestino);
+
+                    //    Console.WriteLine($"\n[ÉXITO] Archivo descargado correctamente en: {rutaDestino}");
+                    //}
+                    //catch (Exception ex)
+                    //{
+                    //    Console.WriteLine($"\n[ERROR] El proceso falló: {ex.Message}");
+                    //}
+                    //finally
+                    //{
+                    //    await context.CloseAsync();
+                    //    await browser.CloseAsync();
+                    //}
+                    break;
             }
         }
+
         public Encoding GetEncoding()
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);

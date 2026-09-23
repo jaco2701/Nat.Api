@@ -83,13 +83,13 @@ namespace Applet.Nat
             mioLoggerFactory = logger;
             app.UseSwagger();
             app.UseCors("AllowOrigin");
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Nat.Api v1"));
-            }
-            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Nat.Api V1"); });
+            //if (env.IsDevelopment())
+            //{
+            //    app.UseDeveloperExceptionPage();
+            //    app.UseSwagger();
+            //    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Nat.Api v1"));
+            //}
+            //app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Nat.Api V1"); });
 
             app.UseHttpsRedirection();
 
@@ -113,17 +113,17 @@ namespace Applet.Nat
             if (operation.Parameters == null)
                 operation.Parameters = new List<OpenApiParameter>();
 
-            operation.Parameters.Add(new OpenApiParameter
-            {
-                Name = "aplicacionorigen",
-                In = ParameterLocation.Header,
-                Required = true,
-                Schema = new OpenApiSchema
-                {
-                    Type = "string",
-                    Default = new OpenApiString("swagger")
-                }
-            });
+            //operation.Parameters.Add(new OpenApiParameter
+            //{
+            //    Name = "aplicacionorigen",
+            //    In = ParameterLocation.Header,
+            //    Required = true,
+            //    Schema = new OpenApiSchema
+            //    {
+            //        Type = "string",
+            //        Default = new OpenApiString("swagger")
+            //    }
+            //});
         }
     }
 
