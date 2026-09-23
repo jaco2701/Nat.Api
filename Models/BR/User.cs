@@ -1,5 +1,7 @@
+using Applet.Misc.EncDec;
 using Applet.Nat.Api.DC;
 using Applet.Nat.Api.Static;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Nat.API.Properties;
 namespace Applet.Nat.Api.Br.Models
@@ -12,7 +14,7 @@ namespace Applet.Nat.Api.Br.Models
         {
             mioToken = vioToken;
             mioContext = vioContext;
-            UserModel lioUserModel = mioContext.Users.Find(vivnumUser);
+            UserModel? lioUserModel = mioContext.Users.Find(vivnumUser);
             if (lioUserModel == null)
                 throw new Exception(Resources.lioE_NoCreds);
             ioDcModel = lioUserModel;
@@ -22,7 +24,7 @@ namespace Applet.Nat.Api.Br.Models
         {
             mioToken = vioToken;
             mioContext = vioContext;
-            UserModel lioUserModel;
+            UserModel? lioUserModel;
             if (MailHelper.IsValidEmail(vivstrUser))
                 lioUserModel = mioContext.Users.FirstOrDefault(x => x.ivstrUserEmail == vivstrUser);
             else
@@ -39,7 +41,7 @@ namespace Applet.Nat.Api.Br.Models
             ioDcModel = vioUserModel;
             FillCuits();
         }
-        public List<UserCuitModel> coCuitsModels { get; set; }
+        public List<UserCuitModel>? coCuitsModels { get; set; }
         #endregion
         #region PUBLIC PROPS
         public UserModel ioDcModel { get; set; }
@@ -48,10 +50,11 @@ namespace Applet.Nat.Api.Br.Models
         public eTask ieTask { get; set; }
         public short[] cvnroActions
         {
-            get {
+            get
+            {
                 if (mioContext == null || ioDcModel == null)
-                    return new short[0];    
-                return mioContext.RoleActions.Where(x => x.ivnroRole == ioDcModel.ivnroRole).Select(x => x.ivnroAction).ToArray(); 
+                    return new short[0];
+                return mioContext.RoleActions.Where(x => x.ivnroRole == ioDcModel.ivnroRole).Select(x => x.ivnroAction).ToArray();
             }
         }
         #endregion
@@ -76,7 +79,7 @@ namespace Applet.Nat.Api.Br.Models
                     }
                 case eTask.Save:
                     {
-                        UserModel lioDbUserModel = mioContext.Users.Find(ioDcModel.ivnumUser);
+                        UserModel? lioDbUserModel = mioContext?.Users.Find(ioDcModel.ivnumUser);
                         if (lioDbUserModel != null)
                         {
                             lioDbUserModel.ivstrUserName = ioDcModel.ivstrUserName;
@@ -84,31 +87,37 @@ namespace Applet.Nat.Api.Br.Models
                             lioDbUserModel.ivblnEnable = ioDcModel.ivblnEnable;
                             lioDbUserModel.ivnrologonFails = ioDcModel.ivnrologonFails;
                             lioDbUserModel.ivnroRole = ioDcModel.ivnroRole;
-                            mioContext.Users.Update(lioDbUserModel);
+                            mioContext?.Users.Update(lioDbUserModel);
                         }
                         else
                         {
                             if (ioDcModel.ivnumUser == 0)
                                 ioDcModel.ivnumUser = NN();
-                            mioContext.Users.Add(ioDcModel);
+                            mioContext?.Users.Add(ioDcModel);
                         }
-                        mioContext.SaveChanges();
+                        mioContext?.SaveChanges();
                         if (coCuitsModels != null && coCuitsModels.Count > 0)
                         {
-                            mioContext.UserCuits.RemoveRange(mioContext.UserCuits.Where(x => x.ivnumUser == ioDcModel.ivnumUser));
+                            mioContext?.UserCuits.RemoveRange(mioContext?.UserCuits.Where(x => x.ivnumUser == ioDcModel.ivnumUser));
                             foreach (UserCuitModel lioCuitModel in coCuitsModels)
                             {
                                 lioCuitModel.ivnumUser = ioDcModel.ivnumUser;
-                                mioContext.UserCuits.Add(lioCuitModel);
+                                mioContext?.UserCuits.Add(lioCuitModel);
                             }
-                            mioContext.SaveChanges();
+                            mioContext?.SaveChanges();
                         }
                         break;
                     }
                 case eTask.Auth:
                     {
-                        string livstrQry = $"SELECT * FROM users WHERE numuser={ioDcModel.ivnumUser} AND PWDCOMPARE('{ivstrPass}',struserPass) = 1";
-                        int livnum = mioContext.Users.FromSqlRaw(livstrQry).Count();
+                        int livnum = 0;
+                        if (!string.IsNullOrEmpty(ioDcModel.ivstrUserPwd))
+                            livnum = Chain.Decrypt(ioDcModel.ivstrUserPwd) == ivstrPass ? 1 : 0;
+                        else
+                        {   // login anterior se validado con la contraseña encriptada en BD, ahora se valida con la contraseña encriptada en struserPwd
+                            string livstrQry = $"SELECT * FROM users WHERE numuser={ioDcModel.ivnumUser} AND PWDCOMPARE('{ivstrPass}',struserPass) = 1";
+                            livnum = mioContext.Users.FromSqlRaw(livstrQry).Count();
+                        }
                         if (livnum == 0)
                         {
                             ioDcModel.ivnrologonFails++;
@@ -126,6 +135,8 @@ namespace Applet.Nat.Api.Br.Models
                         ioDcModel.ivblnEnable = true;
                         ioDcModel.ivnrologonFails = 0;
                         mioContext.Users.Update(ioDcModel);
+                        if (string.IsNullOrEmpty(ioDcModel.ivstrUserPwd))
+                            ioDcModel.ivstrUserPwd = Chain.Encrypt(ivstrPass ?? string.Empty);
                         mioContext.SaveChanges();
                         break;
                     }
@@ -154,7 +165,7 @@ namespace Applet.Nat.Api.Br.Models
             Cuit lioCuit;
             foreach (UserCuitModel lioO in coCuitsModels)
             {
-                lioCuit = new Cuit(lioO.ivlngCuit, mioContext, null);
+                lioCuit = new Cuit(lioO.ivlngCuit, mioContext);
                 lioO.ivstrRS = lioCuit.ioDcModel.ivstrCuitRS;
                 lioO.ivstrEncoding = lioCuit.ioCnfg?.coParameters.FirstOrDefault(x => x.ivstrId == "Encoding")?.ivstrValue ?? string.Empty;
             }

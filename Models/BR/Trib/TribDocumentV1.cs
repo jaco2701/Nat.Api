@@ -45,18 +45,22 @@ namespace Applet.Nat.Api.Br.Models
         public List<DocumentOpcional> coOpcionales { get; set; }
         public List<DocumentComprador> coCompradores { get; set; }
         public bool? ivblnTaxInLines { get; set; }
+        public bool ivblnCalcNN { get; set; } = false;
+        public long ivlngCbte { get; set; }
         #endregion
         #region PRIVATE PROPS
         private NatContext mioContext { get; set; }
         private DocumentModel mioDcModel { get; set; }
+        private string mivstrAuthResponse { get; set; }
+        private short mivnroNextStatus { get; set; }
+
         #endregion
         #region PUBLICS METHODS
         public void SetData(DocumentUser vioDocumentUser)
         {
             string livstrApiDtmFormat = ListHelper.GetValue("Format", "ApiDtm", mioContext);
-            vioDocumentUser.FormatAmounts();
             ivnroConcepto = vioDocumentUser.ivnroConcepto ?? 0;
-            ivdblImporteNoGravado = vioDocumentUser.ivdblImporteNoGravado ??0;
+            ivdblImporteNoGravado = vioDocumentUser.ivdblImporteNoGravado ?? 0;
             ivdblImporteGravado = vioDocumentUser.ivdblImporteGravado ?? 0;
             ivdblImporteExento = vioDocumentUser.ivdblImporteExento ?? 0;
             ivdblImporteIva = vioDocumentUser.ivdblImporteIva ?? 0;
@@ -96,7 +100,7 @@ namespace Applet.Nat.Api.Br.Models
                 }
             }
             short livnro;
-       
+
             if (vioDocumentUser.coOpcionales != null && vioDocumentUser.coOpcionales.Count > 0)
             {
                 coOpcionales = new List<DocumentOpcional>();
@@ -134,7 +138,7 @@ namespace Applet.Nat.Api.Br.Models
                     coIvas.Add(
                          new DocumentIva
                          {
-                             ivdblBaseImponible = lioO.ivdblBaseImponible ??0,
+                             ivdblBaseImponible = lioO.ivdblBaseImponible ?? 0,
                              ivdblImporte = lioO.ivdblImporte ?? 0,
                              ivnroTipo = lioO.ivnroTipo
                          });
@@ -161,8 +165,10 @@ namespace Applet.Nat.Api.Br.Models
         }
         public async Task<short> Auth()
         {
-            short livnroNextStatus = 40;
-            DocumentTracking lioDocumentTracking = new DocumentTracking(mioContext, mioDcModel.ivlngDoc);
+            mivnroNextStatus = 40;
+            DocumentTracking? lioDocumentTracking = null;
+            if (mioDcModel.ivlngDoc > 0)
+                lioDocumentTracking = new DocumentTracking(mioContext, mioDcModel.ivlngDoc);
             AfipService lioAfipService = new AfipService { ivstrName = ivstrDocWs, ioContext = mioContext };
             ServicePointManager.SecurityProtocol = (SecurityProtocolType)int.Parse(ListHelper.GetValue("FORMAT", "TLS", mioContext));
             AfipLoginResponse lioAfipLoginResponse = await lioAfipService.GetAfipLogin();
@@ -192,34 +198,34 @@ namespace Applet.Nat.Api.Br.Models
                         await Task.Delay(2000);
                         continue;
                     }
-                    lioDocumentTracking.addTrack(
-                       livnroNextStatus,
-                       JsonConvert.SerializeObject(
-                           new
-                           {
-                               Request = new
-                               {
-                                   lioAutRequest
-                               },
-                               Response = ExceptionToResponse(lioE)
-                           }
-                       )
-                   );
+                    mivstrAuthResponse = JsonConvert.SerializeObject(
+                        new
+                        {
+                            Request = new
+                            {
+                                lioAutRequest
+                            },
+                            Response = ExceptionToResponse(lioE)
+                        }
+                    );
+                    lioDocumentTracking?.addTrack(mivnroNextStatus, mivstrAuthResponse);
                     LogHelper.write(lioE);
-                    return livnroNextStatus;
+                    return mivnroNextStatus;
                 }
             }
             if (lioFECompUltimoAutorizadoResponse == null || lioFECompUltimoAutorizadoResponse.Body == null || lioFECompUltimoAutorizadoResponse.Body.FECompUltimoAutorizadoResult == null)
                 throw new Exception($"{Resources.lioE_HeaderAuth}:{Resources.lioE_AfipRespNo}");
-            //EL DOCUMENTO ES MAYOR AL ULTIMO AUTORIZADO ==> EsperaPredecesor
-            if (lioFECompUltimoAutorizadoResponse.Body.FECompUltimoAutorizadoResult.CbteNro + 1 < this.mioDcModel.ivlngCbte)
+            if (ivblnCalcNN)
+                mioDcModel.ivlngCbte = lioFECompUltimoAutorizadoResponse.Body.FECompUltimoAutorizadoResult.CbteNro + 1;
+            else
             {
-                livnroNextStatus = 35;
-                if (this.mioDcModel.ivnroStatus != 35)
+                if (lioFECompUltimoAutorizadoResponse.Body.FECompUltimoAutorizadoResult.CbteNro + 1 < mioDcModel.ivlngCbte)
                 {
-                    lioDocumentTracking.addTrack(
-                        livnroNextStatus,
-                        JsonConvert.SerializeObject(
+                    //EL DOCUMENTO ES MAYOR AL ULTIMO AUTORIZADO ==> EsperaPredecesor
+                    mivnroNextStatus = 35;
+                    if (this.mioDcModel.ivnroStatus != 35)
+                    {
+                        mivstrAuthResponse = JsonConvert.SerializeObject(
                             new
                             {
                                 Request = new
@@ -230,59 +236,55 @@ namespace Applet.Nat.Api.Br.Models
                                 },
                                 Response = lioFECompUltimoAutorizadoResponse
                             }
-                        )
-                    );
-                }
-                return livnroNextStatus;
-            }
-            //EL DOCUMENTO ES MENOR AL ULTIMO AUTORIZADO  ==> CONSULTAR CAE
-            if (lioFECompUltimoAutorizadoResponse.Body.FECompUltimoAutorizadoResult.CbteNro + 1 > this.mioDcModel.ivlngCbte)
-            {
-                FECompConsultaReq lioFECompConsultaReq = new FECompConsultaReq
-                {
-                    CbteNro = this.mioDcModel.ivlngCbte,
-                    CbteTipo = this.mioDcModel.ivnroTipo,
-                    PtoVta = this.mioDcModel.ivnumPvta
-                };
-                FECompConsultarResponse lioFECompConsultarResponse = null;
-                while (true)
-                {
-                    livnroIntento++;
-                    try
-                    {
-                        lioFECompConsultarResponse = await lioService.FECompConsultarAsync(lioAutRequest, lioFECompConsultaReq);
-                        break;
+                        );
+                        lioDocumentTracking?.addTrack(mivnroNextStatus, mivstrAuthResponse);
                     }
-                    catch (Exception lioE)
+                    return mivnroNextStatus;
+                }
+                //EL DOCUMENTO ES MENOR AL ULTIMO AUTORIZADO  ==> CONSULTAR CAE
+                if (lioFECompUltimoAutorizadoResponse.Body.FECompUltimoAutorizadoResult.CbteNro + 1 > this.mioDcModel.ivlngCbte)
+                {
+                    FECompConsultaReq lioFECompConsultaReq = new FECompConsultaReq
                     {
-                        if (lioE.Message.Contains("The SSL connection could not be established") && livnroIntento < 3)
+                        CbteNro = this.mioDcModel.ivlngCbte,
+                        CbteTipo = this.mioDcModel.ivnroTipo,
+                        PtoVta = this.mioDcModel.ivnumPvta
+                    };
+                    FECompConsultarResponse lioFECompConsultarResponse = null;
+                    while (true)
+                    {
+                        livnroIntento++;
+                        try
                         {
-                            await Task.Delay(2000);
-                            continue;
+                            lioFECompConsultarResponse = await lioService.FECompConsultarAsync(lioAutRequest, lioFECompConsultaReq);
+                            break;
                         }
-                        lioDocumentTracking.addTrack(
-                           livnroNextStatus,
-                           JsonConvert.SerializeObject(
-                               new
-                               {
-                                   Request = new
-                                   {
-                                       lioAutRequest,
-                                       lioFECompConsultaReq
-                                   },
-                                   Response = ExceptionToResponse(lioE)
-                               }
-                           )
-                       );
-                        LogHelper.write(lioE);
-                        return livnroNextStatus;
+                        catch (Exception lioE)
+                        {
+                            if (lioE.Message.Contains("The SSL connection could not be established") && livnroIntento < 3)
+                            {
+                                await Task.Delay(2000);
+                                continue;
+                            }
+                            mivstrAuthResponse = JsonConvert.SerializeObject(
+                                new
+                                {
+                                    Request = new
+                                    {
+                                        lioAutRequest,
+                                        lioFECompConsultaReq
+                                    },
+                                    Response = ExceptionToResponse(lioE)
+                                }
+                            );
+                            lioDocumentTracking?.addTrack(mivnroNextStatus, mivstrAuthResponse);
+                            LogHelper.write(lioE);
+                            return mivnroNextStatus;
+                        }
                     }
-                }
-                if (lioFECompConsultarResponse.Body.FECompConsultarResult.ResultGet != null && !string.IsNullOrEmpty(lioFECompConsultarResponse.Body.FECompConsultarResult.ResultGet.CodAutorizacion))
-                    livnroNextStatus = 50;
-                lioDocumentTracking.addTrack(
-                    livnroNextStatus,
-                    JsonConvert.SerializeObject(
+                    if (lioFECompConsultarResponse.Body.FECompConsultarResult.ResultGet != null && !string.IsNullOrEmpty(lioFECompConsultarResponse.Body.FECompConsultarResult.ResultGet.CodAutorizacion))
+                        mivnroNextStatus = 50;
+                    mivstrAuthResponse = JsonConvert.SerializeObject(
                         new
                         {
                             Request = new
@@ -292,10 +294,12 @@ namespace Applet.Nat.Api.Br.Models
                             },
                             Response = lioFECompConsultarResponse
                         }
-                    )
-                );
-                return livnroNextStatus;
+                    );
+                    lioDocumentTracking?.addTrack(mivnroNextStatus, mivstrAuthResponse);
+                    return mivnroNextStatus;
+                }
             }
+            ivlngCbte = mioDcModel.ivlngCbte;
             //EL DOCUMENTO ES EL SIGUIENTE  ==> AUTORIZAR
             FECAECabRequest lioCAECabRequest = new FECAECabRequest
             {
@@ -336,7 +340,7 @@ namespace Applet.Nat.Api.Br.Models
                 lioCAEDetRequest.FchVtoPago = this.ivdtmVtopago?.ToString(lioAfipService.ivstrDateformat);
             //
             int livnum = 0;
-            if (ioPeriodoAsociado != null && ioPeriodoAsociado?.ivdtmDesde!= null && ioPeriodoAsociado?.ivdtmHasta != null)
+            if (ioPeriodoAsociado != null && ioPeriodoAsociado?.ivdtmDesde != null && ioPeriodoAsociado?.ivdtmHasta != null)
             {
                 lioCAEDetRequest.PeriodoAsoc = new Periodo();
                 lioCAEDetRequest.PeriodoAsoc.FchDesde = ioPeriodoAsociado?.ivdtmDesde?.ToString(lioAfipService.ivstrDateformat);
@@ -432,21 +436,18 @@ namespace Applet.Nat.Api.Br.Models
                         await Task.Delay(2000);
                         continue;
                     }
-                    lioDocumentTracking.addTrack(
-                       livnroNextStatus,
-                       JsonConvert.SerializeObject(
-                           new
-                           {
-                               Request = new
-                               {
-                                   lioAutRequest,
-                                   lioFECAERequest
-                               },
-                               Response = ExceptionToResponse(lioE) 
-                           }
-                       )
+                    mivstrAuthResponse = JsonConvert.SerializeObject(
+                        new
+                        {
+                            Request = new
+                            {
+                                lioAutRequest,
+                                lioFECAERequest
+                            },
+                            Response = ExceptionToResponse(lioE)
+                        }
                     );
-                    LogHelper.write(lioE);
+                    lioDocumentTracking?.addTrack(mivnroNextStatus, mivstrAuthResponse); LogHelper.write(lioE);
                     return 40;
                 }
             }
@@ -455,25 +456,29 @@ namespace Applet.Nat.Api.Br.Models
                 {
                     if (!string.IsNullOrEmpty(lioDetResp.CAE))
                     {
-                        livnroNextStatus = 50;
+                        mivnroNextStatus = 50;
                         break;
                     }
                 }
-            lioDocumentTracking.addTrack(
-                livnroNextStatus,
-                JsonConvert.SerializeObject(
-                    new
+            mivstrAuthResponse = JsonConvert.SerializeObject(
+                new
+                {
+                    Request = new
                     {
-                        Request = new
-                        {
-                            lioAutRequest,
-                            lioFECAERequest
-                        },
-                        Response = lioFECAESolicitarResponse
-                    }
-                )
+                        lioAutRequest,
+                        lioFECAERequest
+                    },
+                    Response = lioFECAESolicitarResponse
+                }
             );
-            return livnroNextStatus;
+            if (ivblnCalcNN && mivnroNextStatus == 50) // si autonumera y lo autoriza se crea el documento
+            {
+                Document lioDocument = new Document(mioDcModel, mioContext);
+                lioDocument.Save();
+                lioDocumentTracking = new DocumentTracking(mioContext, lioDocument.ioDcModel.ivlngDoc);
+            }
+            lioDocumentTracking?.addTrack(mivnroNextStatus, mivstrAuthResponse);
+            return mivnroNextStatus;
         }
         public void SetContext(NatContext vioContext)
         {
@@ -653,15 +658,18 @@ namespace Applet.Nat.Api.Br.Models
             short[] lcvnroStatusRTA = new short[] { 20, 35, 40, 50 };
             DocumentTrackingModel[] lcoTracks = mioContext.DocumentTrackings.OrderByDescending(x => x.ivdtmTrack).Where(x => x.ivlngDoc == mioDcModel.ivlngDoc).ToArray();
             if (lcoTracks == null || lcoTracks.Length == 0 || !lcoTracks.Any(x => lcvnroStatusRTA.Contains(x.ivnroStatus)))
-                throw new Exception($"{Resources.lioE_CAENoSts}: ivlngDoc {mioDcModel.ivlngDoc}");
+                if (!string.IsNullOrEmpty(mivstrAuthResponse))
+                    lcoTracks = new DocumentTrackingModel[] { new DocumentTrackingModel { ivdtmTrack = DateTime.Now, ivnumTrack = 0, ivnroStatus = mivnroNextStatus, ivlngDoc = 0, ivstrData = mivstrAuthResponse } };
+                else
+                    throw new Exception($"{Resources.lioE_CAENoSts}: ivlngDoc {mioDcModel.ivlngDoc}");
             DocumentTrackingModel lioTrack = lcoTracks.FirstOrDefault(x => lcvnroStatusRTA.Contains(x.ivnroStatus));
             if (lioTrack == null || string.IsNullOrEmpty(lioTrack.ivstrData))
                 throw new Exception($"{Resources.lioE_CAERespErr}: ivlngDoc {mioDcModel.ivlngDoc}");
             dynamic lioTrackData = JsonConvert.DeserializeObject(lioTrack.ivstrData);
             UxAuth lioUxAuth;
             string livstr;
-            FECompUltimoAutorizadoResponse lioFECompUltimoAutorizadoResponse= JsonConvert.DeserializeObject<FECompUltimoAutorizadoResponse>(lioTrackData?.Response?.ToString());
-            if (lioFECompUltimoAutorizadoResponse != null && lioFECompUltimoAutorizadoResponse.Body != null && lioFECompUltimoAutorizadoResponse?.Body?.FECompUltimoAutorizadoResult != null && lioFECompUltimoAutorizadoResponse?.Body?.FECompUltimoAutorizadoResult.CbteNro>0)
+            FECompUltimoAutorizadoResponse lioFECompUltimoAutorizadoResponse = JsonConvert.DeserializeObject<FECompUltimoAutorizadoResponse>(lioTrackData?.Response?.ToString());
+            if (lioFECompUltimoAutorizadoResponse != null && lioFECompUltimoAutorizadoResponse.Body != null && lioFECompUltimoAutorizadoResponse?.Body?.FECompUltimoAutorizadoResult != null && lioFECompUltimoAutorizadoResponse?.Body?.FECompUltimoAutorizadoResult.CbteNro > 0)
                 return new UxAuth
                 {
                     ivdtmNode = lioTrack.ivdtmTrack,
@@ -672,17 +680,17 @@ namespace Applet.Nat.Api.Br.Models
                     ivtrStatusDesc = "Rechazado",
                     ivstrErrors = $"No Correlativo, Ultimo Autorizado: {lioFECompUltimoAutorizadoResponse.Body.FECompUltimoAutorizadoResult.CbteNro}",
                     ivstrObs = string.Empty
-                }; 
+                };
             FECAESolicitarResponse lioFECAESolicitarResponse = JsonConvert.DeserializeObject<FECAESolicitarResponse>(lioTrackData?.Response?.ToString());
             if (lioFECAESolicitarResponse != null && lioFECAESolicitarResponse.Body != null && lioFECAESolicitarResponse.Body.FECAESolicitarResult != null)
             {
                 lioUxAuth = new UxAuth();
                 lioUxAuth.ivdtmNode = lioTrack.ivdtmTrack;
                 lioUxAuth.ivnumtrack = lioTrack.ivnumTrack;
-                lioUxAuth.ivstrAuthCode = lioFECAESolicitarResponse.Body.FECAESolicitarResult.FeDetResp[0].CAE;
-                lioUxAuth.ivdtmAuthVenc = lioFECAESolicitarResponse.Body.FECAESolicitarResult.FeDetResp[0].CAEFchVto;
+                lioUxAuth.ivstrAuthCode = lioFECAESolicitarResponse.Body.FECAESolicitarResult.FeDetResp?[0].CAE;
+                lioUxAuth.ivdtmAuthVenc = lioFECAESolicitarResponse.Body.FECAESolicitarResult.FeDetResp?[0].CAEFchVto;
                 lioUxAuth.ivstrAuthType = "CAE";
-                lioUxAuth.ivtrStatusDesc = string.IsNullOrEmpty(lioFECAESolicitarResponse.Body.FECAESolicitarResult.FeDetResp[0].CAE) ? "Rechazado" : "Autorizado";
+                lioUxAuth.ivtrStatusDesc = string.IsNullOrEmpty(lioFECAESolicitarResponse.Body.FECAESolicitarResult.FeDetResp?[0].CAE) ? "Rechazado" : "Autorizado";
                 livstr = string.Empty;
                 if (lioFECAESolicitarResponse.Body.FECAESolicitarResult.Errors != null)
                     livstr = string.Join(", ", lioFECAESolicitarResponse.Body.FECAESolicitarResult.Errors.Select(x => $"{x.Code}:{x.Msg}"));

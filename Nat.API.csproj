@@ -33,7 +33,7 @@
     <PackageReference Include="System.ServiceModel.Primitives" Version="4.10.3" />
     <PackageReference Include="System.ServiceModel.Security" Version="4.10.*" />
     <PackageReference Include="ZXing.Net" Version="0.16.11" />
-    <PackageReference Include="ZXing.Net.Bindings.SkiaSharp" Version="0.16.22" />
+    <PackageReference Include="ZXing.Net.Bindings.Windows.Compatibility" Version="0.16.12" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
@@ -52,6 +52,9 @@
     <Folder Include="store\" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Applet.Misc.EncDec">
+      <HintPath>..\..\Applet.Misc\Applet.Misc.EncDec\bin\Debug\net8.0\Applet.Misc.EncDec.dll</HintPath>
+    </Reference>
     <Reference Include="EPPlus.Core">
       <HintPath>.\LocalDll\EPPlus.Core.dll</HintPath>
     </Reference>

@@ -32,7 +32,7 @@ namespace Applet.Nat.Api.Middleware
             catch (Exception lioE)
             {
                 LogHelper.write(lioE);
-                if (lioE is Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException)
+                if (lioE is Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException || lioE is Microsoft.IdentityModel.Tokens.SecurityTokenArgumentException)
                     context.Response.StatusCode = 527;
                 else
                     throw lioE;

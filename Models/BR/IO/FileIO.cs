@@ -61,7 +61,14 @@ namespace Nat.API.Models.BR
                         if (lcoUDocumentsUploadResponse.Count == 0)
                             continue;
                         if (lcoUDocumentsUploadResponse[0].ivstrDescStatus != "OK")
-                            File.WriteAllText(Path.ChangeExtension(lioO.Item2, ".log"), lcoUDocumentsUploadResponse[0].ivstrDescStatus);
+                        {
+                            StringBuilder lioSB= new StringBuilder();
+                            lioSB.AppendLine("**********ERRORES:");
+                            lioSB.AppendLine(lcoUDocumentsUploadResponse[0].ivstrDescStatus);
+                            lioSB.AppendLine("**********DATOS DEL DOCUMENTO:");
+                            lioSB.AppendLine(File.ReadAllText(lioO.Item2));
+                            File.WriteAllText(Path.ChangeExtension(lioO.Item2, ".log"), lioSB.ToString());
+                        }
                         File.Delete(lioO.Item2);
                     }
                 }

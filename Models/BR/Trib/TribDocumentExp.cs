@@ -47,17 +47,19 @@ namespace Applet.Nat.Api.Br.Models
         List<DocumentItem> coItems { get; set; }
         public long ivCuitAutorizante { get { return mioDcModel.ivlngCuitEmisor; } }
         public string ivstrSR { get; set; } = "S";
+        public bool ivblnCalcNN { get; set; } = false;
+        public long ivlngCbte { get; set; }
         #endregion
         #region PRIVATE PROPS
         private NatContext mioContext { get; set; }
         private DocumentModel mioDcModel { get; set; }
-
+        private string mivstrAuthResponse { get; set; }
+        private short mivnroNextStatus { get; set; }
         #endregion
         #region PUBLICS METHODS
         public void SetData(DocumentUser vioDocumentUser)
         {
             string livstrApiDtmFormat = ListHelper.GetValue("Format", "ApiDtm", mioContext);
-            vioDocumentUser.FormatAmounts();
             ivnroTipoExpo = vioDocumentUser.ivnroTipoExpo ?? 0;
             ivstrPermisoExistente = vioDocumentUser.ivstrPermisoExistente ?? string.Empty;
             ivnroDestinoCmp = vioDocumentUser.ivnroDestinoCmp ?? 0;
@@ -195,7 +197,7 @@ namespace Applet.Nat.Api.Br.Models
         }
         public async Task<short> Auth()
         {
-            short livnroNextStatus = 40; ;
+            mivnroNextStatus = 40; ;
             DocumentTracking lioDocumentTracking = new DocumentTracking(mioContext, mioDcModel.ivlngDoc);
             AfipService lioAfipService = new AfipService { ivstrName = ivstrDocWs, ioContext = mioContext };
             ServicePointManager.SecurityProtocol = (SecurityProtocolType)int.Parse(ListHelper.GetValue("FORMAT", "TLS", mioContext));
@@ -227,33 +229,7 @@ namespace Applet.Nat.Api.Br.Models
                         await Task.Delay(2000);
                         continue;
                     }
-                    lioDocumentTracking.addTrack(
-                       livnroNextStatus,
-                       JsonConvert.SerializeObject(
-                           new
-                           {
-                               Request = new
-                               {
-                                   lioAutRequest,
-                                   lioClsFEX_LastCMP
-                               },
-                               Response = ExceptionToResponse(lioE)
-                           }
-                       )
-                    );
-                    LogHelper.write(lioE);
-                    return livnroNextStatus;
-                }
-            }
-            if (lioFEXResponseLast_CMP.FEXResult_LastCMP == null)
-                throw new Exception($"{Resources.lioE_HeaderAuth}:{Resources.lioE_AfipRespNo}:{JsonConvert.SerializeObject(lioFEXResponseLast_CMP)}");
-            //EL DOCUMENTO ES MAYOR AL ULTIMO AUTORIZADO ==> EsperaPredecesor
-            if (lioFEXResponseLast_CMP.FEXResult_LastCMP.Cbte_nro + 1 < this.mioDcModel?.ivlngCbte)
-            {
-                livnroNextStatus = 35;
-                lioDocumentTracking.addTrack(
-                    livnroNextStatus,
-                    JsonConvert.SerializeObject(
+                    mivstrAuthResponse = JsonConvert.SerializeObject(
                         new
                         {
                             Request = new
@@ -261,73 +237,99 @@ namespace Applet.Nat.Api.Br.Models
                                 lioAutRequest,
                                 lioClsFEX_LastCMP
                             },
-                            Response = lioFEXResponseLast_CMP
+                            Response = ExceptionToResponse(lioE)
                         }
-                    )
-                );
-                return livnroNextStatus;
-            }
-            //EL DOCUMENTO ES MENOR AL ULTIMO AUTORIZADO  ==> CONSULTAR CAE
-            if (lioFEXResponseLast_CMP.FEXResult_LastCMP.Cbte_nro + 1 > this.mioDcModel.ivlngCbte)
-            {
-                ClsFEXGetCMP lioClsFEXGetCMP = new ClsFEXGetCMP
-                {
-                    Cbte_nro = this.mioDcModel.ivlngCbte,
-                    Cbte_tipo = this.mioDcModel.ivnroTipo,
-                    Punto_vta = this.mioDcModel.ivnumPvta
-                };
-                FEXGetCMPResponse lioFEXGetCMPResponse = null;
-                while (true)
-                {
-                    livnroIntento++;
-                    try
-                    {
-                        lioFEXGetCMPResponse = await lioService.FEXGetCMPAsync(lioAutRequest, lioClsFEXGetCMP);
-                        break;
-                    }
-                    catch (Exception lioE)
-                    {
-                        if (lioE.Message.Contains("The SSL connection could not be established") && livnroIntento < 3)
-                        {
-                            await Task.Delay(2000);
-                            continue;
-                        }
-                        lioDocumentTracking.addTrack(
-                           livnroNextStatus,
-                           JsonConvert.SerializeObject(
-                               new
-                               {
-                                   Request = new
-                                   {
-                                       lioAutRequest,
-                                       lioClsFEXGetCMP
-                                   },
-                                   Response = ExceptionToResponse(lioE)
-                               }
-                           )
-                        );
-                        LogHelper.write(lioE);
-                        return livnroNextStatus;
-                    }
+                    );
+                    lioDocumentTracking.addTrack(mivnroNextStatus, mivstrAuthResponse);
+                    LogHelper.write(lioE);
+                    return mivnroNextStatus;
                 }
-                if (lioFEXGetCMPResponse?.FEXResultGet != null && !string.IsNullOrEmpty(lioFEXGetCMPResponse.FEXResultGet.Cae))
-                    livnroNextStatus = 50;
-                lioDocumentTracking.addTrack(
-                   livnroNextStatus,
-                   JsonConvert.SerializeObject(
-                       new
-                       {
-                           Request = new
-                           {
-                               lioAutRequest,
-                               lioClsFEXGetCMP
-                           },
-                           Response = lioFEXGetCMPResponse
-                       }
-                   )
-                );
-                return livnroNextStatus;
             }
+            if (lioFEXResponseLast_CMP.FEXResult_LastCMP == null)
+                throw new Exception($"{Resources.lioE_HeaderAuth}:{Resources.lioE_AfipRespNo}:{JsonConvert.SerializeObject(lioFEXResponseLast_CMP)}");
+            if (ivblnCalcNN)
+                mioDcModel.ivlngCbte = lioFEXResponseLast_CMP.FEXResult_LastCMP.Cbte_nro + 1;
+            else
+            {      //EL DOCUMENTO ES MAYOR AL ULTIMO AUTORIZADO ==> EsperaPredecesor
+                if (lioFEXResponseLast_CMP.FEXResult_LastCMP.Cbte_nro + 1 < this.mioDcModel?.ivlngCbte)
+                {
+                    mivnroNextStatus = 35;
+                    if (this.mioDcModel.ivnroStatus != 35)
+                    {
+                        mivstrAuthResponse = JsonConvert.SerializeObject(
+                            new
+                            {
+                                Request = new
+                                {
+                                    lioAutRequest,
+                                    lioClsFEX_LastCMP
+                                },
+                                Response = lioFEXResponseLast_CMP
+                            }
+                        );
+                        lioDocumentTracking.addTrack(mivnroNextStatus, mivstrAuthResponse);
+                    }
+                    return mivnroNextStatus;
+                }
+                //EL DOCUMENTO ES MENOR AL ULTIMO AUTORIZADO  ==> CONSULTAR CAE
+                if (lioFEXResponseLast_CMP.FEXResult_LastCMP.Cbte_nro + 1 > this.mioDcModel.ivlngCbte)
+                {
+                    ClsFEXGetCMP lioClsFEXGetCMP = new ClsFEXGetCMP
+                    {
+                        Cbte_nro = this.mioDcModel.ivlngCbte,
+                        Cbte_tipo = this.mioDcModel.ivnroTipo,
+                        Punto_vta = this.mioDcModel.ivnumPvta
+                    };
+                    FEXGetCMPResponse lioFEXGetCMPResponse = null;
+                    while (true)
+                    {
+                        livnroIntento++;
+                        try
+                        {
+                            lioFEXGetCMPResponse = await lioService.FEXGetCMPAsync(lioAutRequest, lioClsFEXGetCMP);
+                            break;
+                        }
+                        catch (Exception lioE)
+                        {
+                            if (lioE.Message.Contains("The SSL connection could not be established") && livnroIntento < 3)
+                            {
+                                await Task.Delay(2000);
+                                continue;
+                            }
+                            mivstrAuthResponse = JsonConvert.SerializeObject(
+                                new
+                                {
+                                    Request = new
+                                    {
+                                        lioAutRequest,
+                                        lioClsFEXGetCMP
+                                    },
+                                    Response = ExceptionToResponse(lioE)
+                                }
+                            );
+                            lioDocumentTracking.addTrack(mivnroNextStatus, mivstrAuthResponse);
+                            LogHelper.write(lioE);
+                            return mivnroNextStatus;
+                        }
+                    }
+                    if (lioFEXGetCMPResponse?.FEXResultGet != null && !string.IsNullOrEmpty(lioFEXGetCMPResponse.FEXResultGet.Cae))
+                        mivnroNextStatus = 50;
+                    mivstrAuthResponse = JsonConvert.SerializeObject(
+                        new
+                        {
+                            Request = new
+                            {
+                                lioAutRequest,
+                                lioClsFEXGetCMP
+                            },
+                            Response = lioFEXGetCMPResponse
+                        }
+                    );
+                    lioDocumentTracking.addTrack(mivnroNextStatus, mivstrAuthResponse);
+                    return mivnroNextStatus;
+                }
+            }
+            ivlngCbte = mioDcModel.ivlngCbte;
             //EL DOCUMENTO ES EL SIGUIENTE  ==> AUTORIZAR
             ClsFEXRequest lioClsFEXRequest = new ClsFEXRequest
             {
@@ -435,41 +437,43 @@ namespace Applet.Nat.Api.Br.Models
                         await Task.Delay(2000);
                         continue;
                     }
-                    lioDocumentTracking.addTrack(
-                       livnroNextStatus,
-                       JsonConvert.SerializeObject(
-                           new
-                           {
-                               Request = new
-                               {
-                                   lioAutRequest,
-                                   lioClsFEXRequest
-                               },
-                               Response = ExceptionToResponse(lioE)
-                           }
-                       )
-                   );
+                    mivstrAuthResponse = JsonConvert.SerializeObject(
+                        new
+                        {
+                            Request = new
+                            {
+                                lioAutRequest,
+                                lioClsFEXRequest
+                            },
+                            Response = ExceptionToResponse(lioE)
+                        }
+                    );
+                    lioDocumentTracking.addTrack(mivnroNextStatus, mivstrAuthResponse);
                     LogHelper.write(lioE);
                     return 40;
                 }
             }
             if (lioFEXResponseAuthorize.FEXResultAuth != null && !string.IsNullOrEmpty(lioFEXResponseAuthorize.FEXResultAuth.Cae))
-                livnroNextStatus = 50;
-            lioDocumentTracking.addTrack(
-                livnroNextStatus,
-                JsonConvert.SerializeObject(
-                    new
+                mivnroNextStatus = 50;
+            mivstrAuthResponse = JsonConvert.SerializeObject(
+                new
+                {
+                    Request = new
                     {
-                        Request = new
-                        {
-                            lioAutRequest,
-                            lioClsFEXRequest
-                        },
-                        Response = lioFEXResponseAuthorize
-                    }
-                )
+                        lioAutRequest,
+                        lioClsFEXRequest
+                    },
+                    Response = lioFEXResponseAuthorize
+                }
             );
-            return livnroNextStatus;
+            if (ivblnCalcNN && mivnroNextStatus == 50) // si autonumera y lo autoriza se crea el documento
+            {
+                Document lioDocument = new Document(mioDcModel, mioContext);
+                lioDocument.Save();
+                lioDocumentTracking = new DocumentTracking(mioContext, lioDocument.ioDcModel.ivlngDoc);
+            }
+            lioDocumentTracking?.addTrack(mivnroNextStatus, mivstrAuthResponse);
+            return mivnroNextStatus;
         }
         public void SetContext(NatContext vioContext)
         {
@@ -481,7 +485,10 @@ namespace Applet.Nat.Api.Br.Models
             short[] lcvnroStatusRTA = new short[] { 20, 35, 40, 50 };
             DocumentTrackingModel[] lcoTracks = mioContext.DocumentTrackings.OrderByDescending(x => x.ivdtmTrack).Where(x => x.ivlngDoc == mioDcModel.ivlngDoc).ToArray();
             if (lcoTracks == null || lcoTracks.Length == 0 || !lcoTracks.Any(x => lcvnroStatusRTA.Contains(x.ivnroStatus)))
-                throw new Exception($"{Resources.lioE_CAENoSts}: ivlngDoc {mioDcModel.ivlngDoc}");
+                if (!string.IsNullOrEmpty(mivstrAuthResponse))
+                    lcoTracks = new DocumentTrackingModel[] { new DocumentTrackingModel { ivdtmTrack = DateTime.Now, ivnumTrack = 0, ivnroStatus = mivnroNextStatus, ivlngDoc = 0, ivstrData = mivstrAuthResponse } };
+                else
+                    throw new Exception($"{Resources.lioE_CAENoSts}: ivlngDoc {mioDcModel.ivlngDoc}");
             DocumentTrackingModel lioTrack = lcoTracks.FirstOrDefault(x => lcvnroStatusRTA.Contains(x.ivnroStatus));
             if (lioTrack == null || string.IsNullOrEmpty(lioTrack.ivstrData))
                 throw new Exception($"{Resources.lioE_CAERespErr}: ivlngDoc {mioDcModel.ivlngDoc}");

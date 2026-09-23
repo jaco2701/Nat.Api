@@ -15,6 +15,7 @@ namespace Applet.Nat.Api.Br.Models
         {
             mivlngCuit = vivlngCuit;
             mioContext = vioContext;
+            ivstrKey = string.Empty;
         }
         #endregion
         public string? ivstrRaw { get; set; }
@@ -104,9 +105,7 @@ namespace Applet.Nat.Api.Br.Models
                                 livstrPropertyValue = cvstrInDocumentLines[livnumLine].Substring(livnumOffset - 1, livnumLen).Trim();
                             else
                                 livstrPropertyValue = cvstrInDocumentLines[livnumLine].Substring(livnumOffset - 1).Trim();
-                            livstrPropertyValue = Format.Property(lioMapperItem.ivstrProperty, livstrPropertyValue);
-                            if (string.IsNullOrEmpty(livstrPropertyValue) && (!string.IsNullOrEmpty(lioMapperItem.ivstrDefault)))
-                                livstrPropertyValue = lioMapperItem.ivstrDefault;
+                            livstrPropertyValue = lioMapperItem.FormatPropertyValue(livstrPropertyValue);
                             switch (lioMapperItem.ivstrProperty)
                             {
                                 case "ivnroTipoDoc":
@@ -135,7 +134,7 @@ namespace Applet.Nat.Api.Br.Models
                                     break;
                                 case "ivdtmEmision":
                                 case "ivstrFechaEmision":
-                                    if (!GetDateFromProp(lioMapperItem, livstrPropertyValue, out livdtm))
+                                    if (!DateTime.TryParse(livstrPropertyValue, out livdtm))
                                     {
                                         lioSbErrors.AppendLine($"Fecha de Comprobante INVALIDA ({livstrXmlDtmFormat})");
                                         continue;
@@ -147,7 +146,7 @@ namespace Applet.Nat.Api.Br.Models
                                     break;
                                 case "ivdtmVtopago":
                                 case "ivstrFechaVtopago":
-                                    if (!GetDateFromProp(lioMapperItem, livstrPropertyValue, out livdtm))
+                                    if (!DateTime.TryParse(livstrPropertyValue, out livdtm))
                                     {
                                         lioSbErrors.AppendLine($"FECHA de Vencimiento de Pago INVALIDA ({livstrXmlDtmFormat})");
                                         continue;
@@ -158,7 +157,7 @@ namespace Applet.Nat.Api.Br.Models
                                 case "ivstrFechaServdesde":
                                     if (!string.IsNullOrEmpty(livstrPropertyValue))
                                     {
-                                        if (!GetDateFromProp(lioMapperItem, livstrPropertyValue, out livdtm))
+                                        if (!DateTime.TryParse(livstrPropertyValue, out livdtm))
                                         {
                                             lioSbErrors.AppendLine($"FECHA de Inicio de Servicios INVALIDA ({livstrXmlDtmFormat})");
                                             continue;
@@ -170,7 +169,7 @@ namespace Applet.Nat.Api.Br.Models
                                 case "ivstrFechaServhasta":
                                     if (!string.IsNullOrEmpty(livstrPropertyValue))
                                     {
-                                        if (!GetDateFromProp(lioMapperItem, livstrPropertyValue, out livdtm))
+                                        if (!DateTime.TryParse(livstrPropertyValue, out livdtm))
                                         {
                                             lioSbErrors.AppendLine($"FECHA de Finalizacion de Servicios INVALIDA ({livstrXmlDtmFormat})");
                                             continue;
@@ -468,8 +467,8 @@ namespace Applet.Nat.Api.Br.Models
                                         break;
                                 }
                                 if (lioMapperItem.ivstrProperty.StartsWith("coOpcionales.ivstrId"))
-                                lioDocumentUser.coOpcionales[livnro].ivstrId = livstrPropertyValue;
-                                else 
+                                    lioDocumentUser.coOpcionales[livnro].ivstrId = livstrPropertyValue;
+                                else
                                     lioDocumentUser.coOpcionales[livnro].ivstrValor = livstrPropertyValue;
                             }
                         }
@@ -510,7 +509,7 @@ namespace Applet.Nat.Api.Br.Models
                                             livstrPropertyValue = lioMapperItemR.ivstrformat;
                                         else
                                             livstrPropertyValue = livstrLine.Substring(livnumFrom - 1, livnumOffset).Trim();
-                                        livstrPropertyValue = Format.Property(lioMapperItemR.ivstrProperty, livstrPropertyValue);
+                                        livstrPropertyValue = lioMapperItemR.FormatPropertyValue(livstrPropertyValue);
                                         switch (lioMapperItemR.ivstrProperty)
                                         {
                                             case "coAsociados.ivnroCbtetipo":
@@ -552,7 +551,7 @@ namespace Applet.Nat.Api.Br.Models
                                             case "coAsociados.ivdtmFechaEmision":
                                             case "coAsociados.ivstrFechaEmision":
                                                 livdtm = DateTime.MinValue;
-                                                if (!GetDateFromProp(lioMapperItemR, livstrPropertyValue, out livdtm))
+                                                if (!DateTime.TryParse(livstrPropertyValue, out livdtm))
                                                 {
                                                     lioSbErrors.AppendLine($"Linea {livnumLine + 1}: Fecha de Comprobante asociado INVALIDA");
                                                     livblnOK = false;
@@ -602,7 +601,7 @@ namespace Applet.Nat.Api.Br.Models
                                             livstrPropertyValue = lioMapperItemR.ivstrformat;
                                         else
                                             livstrPropertyValue = livstrLine.Substring(livnumFrom - 1, livnumOffset).Trim();
-                                        livstrPropertyValue = Format.Property(lioMapperItemR.ivstrProperty, livstrPropertyValue);
+                                        livstrPropertyValue = lioMapperItemR.FormatPropertyValue(livstrPropertyValue);
                                         switch (lioMapperItemR.ivstrProperty)
                                         {
                                             case "coOtrosTributos.ivnroId":
@@ -694,7 +693,7 @@ namespace Applet.Nat.Api.Br.Models
                                             livstrPropertyValue = lioMapperItemR.ivstrformat;
                                         else
                                             livstrPropertyValue = livstrLine.Substring(livnumFrom - 1, livnumOffset).Trim();
-                                        livstrPropertyValue = Format.Property(lioMapperItemR.ivstrProperty, livstrPropertyValue);
+                                        livstrPropertyValue = lioMapperItemR.FormatPropertyValue(livstrPropertyValue);
                                         switch (lioMapperItemR.ivstrProperty)
                                         {
                                             case "coIvas.ivnroTipo":
@@ -768,7 +767,7 @@ namespace Applet.Nat.Api.Br.Models
                                             livstrPropertyValue = lioMapperItemR.ivstrformat;
                                         else
                                             livstrPropertyValue = livstrLine.Substring(livnumFrom - 1, livnumOffset).Trim();
-                                        livstrPropertyValue = Format.Property(lioMapperItemR.ivstrProperty, livstrPropertyValue);
+                                        livstrPropertyValue = lioMapperItemR.FormatPropertyValue(livstrPropertyValue);
                                         switch (lioMapperItemR.ivstrProperty)
                                         {
                                             case "coAdicionales.ivstrId":
@@ -831,7 +830,7 @@ namespace Applet.Nat.Api.Br.Models
                                             livstrPropertyValue = lioMapperItemR.ivstrformat;
                                         else
                                             livstrPropertyValue = livstrLine.Substring(livnumFrom - 1, livnumOffset).Trim();
-                                        livstrPropertyValue = Format.Property(lioMapperItemR.ivstrProperty, livstrPropertyValue);
+                                        livstrPropertyValue = lioMapperItemR.FormatPropertyValue(livstrPropertyValue);
                                         switch (lioMapperItemR.ivstrProperty)
                                         {
                                             case "coCompradores.ivnroDocTipo":
@@ -903,8 +902,7 @@ namespace Applet.Nat.Api.Br.Models
                                             livstrPropertyValue = lioMapperItemR.ivstrformat;
                                         else
                                             livstrPropertyValue = livstrLine.Substring(livnumFrom - 1, livnumOffset).Trim();
-                                        if (string.IsNullOrEmpty(livstrPropertyValue) && !(lioMapperItemR.ivblnRequired ?? false)) continue;
-                                        livstrPropertyValue = Format.Property(lioMapperItemR.ivstrProperty, livstrPropertyValue);
+                                        livstrPropertyValue = lioMapperItemR.FormatPropertyValue(livstrPropertyValue);
                                         switch (lioMapperItemR.ivstrProperty)
                                         {
                                             case "coItems.ivstrId":
@@ -1035,7 +1033,7 @@ namespace Applet.Nat.Api.Br.Models
                                             livstrPropertyValue = lioMapperItemR.ivstrformat;
                                         else
                                             livstrPropertyValue = livstrLine.Substring(livnumFrom - 1, livnumOffset).Trim();
-                                        livstrPropertyValue = Format.Property(lioMapperItemR.ivstrProperty, livstrPropertyValue);
+                                        livstrPropertyValue = lioMapperItemR.FormatPropertyValue(livstrPropertyValue);
                                         switch (lioMapperItemR.ivstrProperty)
                                         {
                                             case "coItemsCT.ivnroTipo":
@@ -1128,7 +1126,7 @@ namespace Applet.Nat.Api.Br.Models
                                     livstrPropertyValue = lioMapperItem.ivstrformat;
                                 else
                                     livstrPropertyValue = livstrLine.Substring(livnumOffset, livnumLen).Trim();
-                                livstrPropertyValue = Format.Property(lioMapperItem.ivstrProperty, livstrPropertyValue);
+                                livstrPropertyValue = lioMapperItem.FormatPropertyValue(livstrPropertyValue);
                                 livnumOffset += livnumLen;
                                 switch (lioMapperItem.ivstrProperty)
                                 {
@@ -1185,7 +1183,7 @@ namespace Applet.Nat.Api.Br.Models
                                         lioDocumentUser.coAsociados[livnumColumn - 1].ivlngCbteCUIT = livlng;
                                         break;
                                     case "coAsociados.ivstrFechaEmision":
-                                        if (!GetDateFromProp(lioMapperItem, livstrPropertyValue, out livdtm))
+                                        if (!DateTime.TryParse(livstrPropertyValue, out livdtm))
                                         {
                                             lioSbErrors.AppendLine($"Linea {livnumLine + 1}: Fecha de Comprobante Asociado INVALIDA");
                                             livblnOK = false;
@@ -1582,6 +1580,7 @@ namespace Applet.Nat.Api.Br.Models
                 LogHelper.writeinfo(lioDocumentUser.ivstrKey, true);
                 LogHelper.write(lioE);
                 lioDocumentUser.ivstrLoadErrors = lioE.Message;
+                lioDocumentUser.FormatAmounts();
                 return [lioDocumentUser];
             }
         }
@@ -1642,6 +1641,8 @@ namespace Applet.Nat.Api.Br.Models
                     // se para en la linea relativa
                     livnumLine += livnumInicio;
                     if (cvstrInDocumentLines[livnumLine].Length < livnumOffset) continue;
+                    if (cvstrInDocumentLines[livnumLine].Length < livnumOffset - 1 + livnumLen)
+                        livnumLen = cvstrInDocumentLines[livnumLine].Length - livnumOffset + 1;
                     if (lioMapperItem.ivstrCoord.Contains("FIX"))
                         livstrPropertyValue = lioMapperItem.ivstrformat;
                     else
@@ -1651,9 +1652,8 @@ namespace Applet.Nat.Api.Br.Models
                         else
                             livstrPropertyValue = cvstrInDocumentLines[livnumLine].Substring(livnumOffset - 1).Trim();
                     }
-                    if (string.IsNullOrEmpty(livstrPropertyValue))
-                        continue;
-                    livstrPropertyValue = Format.Property(lioMapperItem.ivstrProperty, livstrPropertyValue);
+                    livstrPropertyValue = lioMapperItem.FormatPropertyValue(livstrPropertyValue??string.Empty);
+                    if (string.IsNullOrEmpty(livstrPropertyValue)) continue;
                     foreach (ServiceMapperItemXPath lioServiceMapperItemXPath in lioMapperItem.coXPaths)
                     {
                         lioXmlNode = lioXmlToPrinter.SelectSingleNode(lioServiceMapperItemXPath.ivstrData.Replace("{N}", "1"), lioNsMngr);
@@ -1662,7 +1662,7 @@ namespace Applet.Nat.Api.Br.Models
                             lioSbErrors.AppendLine($"Propiedad {lioMapperItem.ivstrProperty} xpath {lioServiceMapperItemXPath.ivstrData} {Resources.lioE_ObjectNoM}");
                             continue;
                         }
-                        lioXmlNode.InnerText = FormatPropertyValue(lioMapperItem, livstrPropertyValue);
+                        lioXmlNode.InnerText = livstrPropertyValue;
                         if (lioXmlNode.InnerText == null)
                         {
                             lioSbErrors.AppendLine($"Error en conversion {lioMapperItem.ivstrProperty}");
@@ -1707,11 +1707,7 @@ namespace Applet.Nat.Api.Br.Models
                             //recupera el valor de la propiedad
                             livstrPropertyValue = livstr.Substring(livnumInicio - 1, livnumEfectiveOffset).Trim();
                         }
-                        if (string.IsNullOrEmpty(livstrPropertyValue))
-                            livstrPropertyValue = string.Empty;
-                        if (string.IsNullOrEmpty(livstrPropertyValue))
-                            livstrPropertyValue = string.Empty;
-                        livstrPropertyValue = Format.Property(lioMapperItem.ivstrProperty, livstrPropertyValue);
+                        livstrPropertyValue = lioMapperItem.FormatPropertyValue(livstrPropertyValue);
                         //recupera xpaths a cargar
                         foreach (ServiceMapperItemXPath lioServiceMapperItemXPath in lioMapperItem.coXPaths)
                         {
@@ -1762,7 +1758,7 @@ namespace Applet.Nat.Api.Br.Models
                                 lioSbErrors.AppendLine($"{lioMapperItem.ivstrProperty} xpath {livstrXPath} {Resources.lioE_ObjectNoM}");
                                 continue;
                             }
-                            lioXmlNode.InnerText = FormatPropertyValue(lioMapperItem, livstrPropertyValue);
+                            lioXmlNode.InnerText = livstrPropertyValue;
                             if (lioXmlNode.InnerText == null)
                             {
                                 lioSbErrors.AppendLine($"Error en conversion {lioMapperItem.ivstrProperty}");
@@ -1800,7 +1796,7 @@ namespace Applet.Nat.Api.Br.Models
                         else
                             livstrPropertyValue = livstr.Substring(livnumOffset, livnumLen).Trim();
 
-                        livstrPropertyValue = Format.Property(lioMapperItem.ivstrProperty, livstrPropertyValue);
+                        livstrPropertyValue = lioMapperItem.FormatPropertyValue(livstrPropertyValue);
                         foreach (ServiceMapperItemXPath lioServiceMapperItemXPath in lioMapperItem.coXPaths)
                         {
                             if (!string.IsNullOrEmpty(lioServiceMapperItemXPath.ivstrParent))
@@ -1849,7 +1845,7 @@ namespace Applet.Nat.Api.Br.Models
                                 lioSbErrors.AppendLine($"{lioMapperItem.ivstrProperty} xpath {livstrXPath} {Resources.lioE_ObjectNoM} ");
                                 continue;
                             }
-                            lioXmlNode.InnerText = FormatPropertyValue(lioMapperItem, livstrPropertyValue);
+                            lioXmlNode.InnerText = livstrPropertyValue;
                             if (lioXmlNode.InnerText == null)
                             {
                                 lioSbErrors.AppendLine($"Error en conversion {lioMapperItem.ivstrProperty}");
@@ -1900,55 +1896,6 @@ namespace Applet.Nat.Api.Br.Models
                 return false;
             return true;
         }
-        private string FormatPropertyValue(ServiceMapperItem vioMapperItem, string vivstrPropertyValue)
-        {
-            if (vioMapperItem.ivstrCoord.Contains("FIX"))
-                return vivstrPropertyValue;
-
-            if (string.IsNullOrEmpty(vivstrPropertyValue))
-            {
-                if (vioMapperItem.ivblnIsNumeric)
-                    return "0";
-                return vivstrPropertyValue;
-            }
-            if (vioMapperItem.ivstrProperty.Contains("dbl"))
-            {
-                if (vivstrPropertyValue.Contains("-"))
-                    vivstrPropertyValue = "-" + vivstrPropertyValue.Replace("-", string.Empty);
-                Double livval;
-                if (!Double.TryParse(vivstrPropertyValue, out livval))
-                    return null;
-                return livval.ToString();
-            }
-            if (string.IsNullOrEmpty(vioMapperItem.ivstrformat))
-                return vivstrPropertyValue;
-            if (vioMapperItem.ivstrformat.Contains("{"))
-                return string.Format(vioMapperItem.ivstrformat, vivstrPropertyValue);
-            if (vioMapperItem.ivstrProperty.Contains("dtm"))
-            {
-                if (vioMapperItem.ivstrformat.Contains("=>"))
-                {
-                    if (!DateTime.TryParseExact(vivstrPropertyValue, vioMapperItem.ivstrformat.Split("=>")[0], null, DateTimeStyles.None, out DateTime livdtm))
-                        return null;
-                    return livdtm.ToString(vioMapperItem.ivstrformat.Split("=>")[1], null);
-                }
-                return DateTime.Parse(vivstrPropertyValue).ToString(vioMapperItem.ivstrformat, null);
-
-            }
-            return null;
-        }
-        private bool GetDateFromProp(ServiceMapperItem vioMapperItem, string vivstrPropertyValue, out DateTime vivdtm)
-        {
-            string livstrFormat;
-            if (string.IsNullOrEmpty(vioMapperItem.ivstrformat))
-                return DateTime.TryParse(vivstrPropertyValue, out vivdtm);
-            if (vioMapperItem.ivstrformat.Contains("=>"))
-                livstrFormat = vioMapperItem.ivstrformat.Split("=>")[0];
-            else
-                livstrFormat = vioMapperItem.ivstrformat;
-            return DateTime.TryParseExact(vivstrPropertyValue, livstrFormat, null, DateTimeStyles.None, out vivdtm);
-        }
-
         #endregion
         #region PRIVATE PROPS
         private long mivlngCuit;

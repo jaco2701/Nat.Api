@@ -29,17 +29,20 @@ namespace Applet.Nat.Api.Br.Models
         public short ivnroTipoReceptor { get; set; }
         public long ivCuitAutorizante { get { return mioDcModel.ivlngCuitReceptor; } }
         public string ivstrSR { get; set; } = "R";
+        public bool ivblnCalcNN { get; set; } = false;
+        public long ivlngCbte { get; set; }
         #endregion
         #region PRIVATE PROPS
         private NatContext mioContext { get; set; }
         private DocumentModel mioDcModel { get; set; }
+        private string mivstrAuthResponse { get; set; }
+        private short mivnroNextStatus { get; set; }
 
         #endregion
         #region PUBLICS METHODS
         public void SetData(DocumentUser vioDocumentUser)
         {
             string livstrApiDtmFormat = ListHelper.GetValue("Format", "ApiDtm", mioContext);
-            vioDocumentUser.FormatAmounts();
             ivstrCbteModo = vioDocumentUser.ivstrCbteModo ?? string.Empty;
             ivnroTipoReceptor = vioDocumentUser.ivnroTipoDocReceptor ?? 0;
         }
@@ -53,7 +56,7 @@ namespace Applet.Nat.Api.Br.Models
             AfipService lioAfipService = new AfipService { ivstrName = ivstrDocWs, ioContext = mioContext };
             ServicePointManager.SecurityProtocol = (SecurityProtocolType)int.Parse(ListHelper.GetValue("FORMAT", "TLS", mioContext));
             AfipLoginResponse lioAfipLoginResponse = await lioAfipService.GetAfipLogin();
-            short livnroNextStatus = 50;
+            mivnroNextStatus = 50;
             CmpAuthRequest lioAuthRequest = new CmpAuthRequest
             {
                 Cuit = ivCuitAutorizante,
@@ -94,43 +97,39 @@ namespace Applet.Nat.Api.Br.Models
                         await Task.Delay(2000);
                         continue;
                     }
-                    lioDocumentTracking.addTrack(
-                       40,
-                       JsonConvert.SerializeObject(
-                           new
-                           {
-                               Request = new
-                               {
-                                   lioAuthRequest,
-                                   lioCmpDatos
-                               },
-                               Response = ExceptionToResponse(lioE)
-                           }
-                       )
+                    mivstrAuthResponse = JsonConvert.SerializeObject(
+                        new
+                        {
+                            Request = new
+                            {
+                                lioAuthRequest,
+                                lioCmpDatos
+                            },
+                            Response = ExceptionToResponse(lioE)
+                        }
                     );
+                    lioDocumentTracking.addTrack(mivnroNextStatus, mivstrAuthResponse);
                     LogHelper.write(lioE);
-                    return livnroNextStatus;
+                    return mivnroNextStatus;
                 }
             }
             if (lioCmpResponse.Body.ComprobanteConstatarResult != null && lioCmpResponse.Body.ComprobanteConstatarResult.Resultado == "A")
-                livnroNextStatus = 50;
+                mivnroNextStatus = 50;
             else
-                livnroNextStatus = 40;
-            lioDocumentTracking.addTrack(
-                livnroNextStatus,
-                JsonConvert.SerializeObject(
-                    new
+                mivnroNextStatus = 40;
+            mivstrAuthResponse = JsonConvert.SerializeObject(
+                new
+                {
+                    Request = new
                     {
-                        Request = new
-                        {
-                            lioAuthRequest,
-                            lioCmpDatos
-                        },
-                        Response = lioCmpResponse
-                    }
-                )
+                        lioAuthRequest,
+                        lioCmpDatos
+                    },
+                    Response = lioCmpResponse
+                }
             );
-            return livnroNextStatus;
+            lioDocumentTracking.addTrack(mivnroNextStatus, mivstrAuthResponse);
+            return mivnroNextStatus;
         }
         public void SetContext(NatContext vioContext)
         {
@@ -142,7 +141,10 @@ namespace Applet.Nat.Api.Br.Models
             short[] lcvnroStatusRTA = new short[] { 20, 35, 40, 50 };
             DocumentTrackingModel[] lcoTracks = mioContext.DocumentTrackings.OrderByDescending(x => x.ivdtmTrack).Where(x => x.ivlngDoc == mioDcModel.ivlngDoc).ToArray();
             if (lcoTracks == null || lcoTracks.Length == 0 || !lcoTracks.Any(x => lcvnroStatusRTA.Contains(x.ivnroStatus)))
-                throw new Exception($"{Resources.lioE_CAENoSts}: ivlngDoc {mioDcModel.ivlngDoc}");
+                if (!string.IsNullOrEmpty(mivstrAuthResponse))
+                    lcoTracks = new DocumentTrackingModel[] { new DocumentTrackingModel { ivdtmTrack = DateTime.Now, ivnumTrack = 0, ivnroStatus = mivnroNextStatus, ivlngDoc = 0, ivstrData = mivstrAuthResponse } };
+                else
+                    throw new Exception($"{Resources.lioE_CAENoSts}: ivlngDoc {mioDcModel.ivlngDoc}");
             DocumentTrackingModel lioTrack = lcoTracks.FirstOrDefault(x => lcvnroStatusRTA.Contains(x.ivnroStatus));
             if (lioTrack == null || string.IsNullOrEmpty(lioTrack.ivstrData))
                 throw new Exception($"{Resources.lioE_CAERespErr}: ivlngDoc {mioDcModel.ivlngDoc}");
@@ -184,7 +186,7 @@ namespace Applet.Nat.Api.Br.Models
                 livstrError += Resources.lioE_Nro_No + Environment.NewLine;
             if (mioDcModel.ivnumPvta == 0)
                 livstrError += Resources.lioE_Pventa_No + Environment.NewLine;
-            if (ivnroTipoReceptor== 0)
+            if (ivnroTipoReceptor == 0)
                 livstrError += $"Tipo Documento Receptor {Resources.lioE_ObjectNoM}" + Environment.NewLine;
             if (String.IsNullOrEmpty(ivstrCbteModo))
                 livstrError += $"Modo {Resources.lioE_ObjectNoM}" + Environment.NewLine;

@@ -238,6 +238,45 @@ namespace Applet.Nat.Api.Br.Models
                         }
                     }
                     #endregion
+                    #region PAGOS
+                    livstr = lioServiceMapper.coItems.FirstOrDefault(x => x.ivstrProperty == "coPagos")?.coXPaths[0].ivstrData;
+                    if (!string.IsNullOrEmpty(livstr))
+                    {
+                        UxDocumentPago lioUxDocumentPago;
+                        lioXmlNodeList = lioXmlDocument.SelectNodes(livstr);
+                        lioDocumentUser.coPagos = new List<UxDocumentPago>();
+                        livnumIdx = 1;
+
+                        foreach (XmlNode lioXmlNode in lioXmlNodeList)
+                        {
+                            lioXmlNodeDocument = new XmlDocument();
+                            lioXmlNodeDocument.LoadXml(lioXmlNode.OuterXml);
+                            lioUxDocumentPago = new UxDocumentPago();
+                            livblnLoadChild = false;
+                            foreach (ServiceMapperItem lioServiceMapperItem in lioServiceMapper.coItems.Where(x => x.ivstrProperty.StartsWith("coPagos.")))
+                            {
+                                try
+                                {
+                                    lioObj = GetItemValue(lioServiceMapperItem, lioXmlNodeDocument, livnumIdx.ToString());
+                                    if (lioObj != null)
+                                    {
+                                        typeof(UxDocumentPago).GetProperty(lioServiceMapperItem.ivstrProperty.Split(".").Last())?.SetValue(lioUxDocumentPago, lioObj);
+                                        livblnLoadChild = true;
+                                    }
+                                }
+                                catch (Exception lioE)
+                                {
+                                    lioSbErrors.AppendLine($"Prop: {lioServiceMapperItem.ivstrProperty}: {lioE.Message}");
+                                }
+                            }
+                            if (livblnLoadChild)
+                            {
+                                lioDocumentUser.coPagos.Add(lioUxDocumentPago);
+                            }
+                            livnumIdx++;
+                        }
+                    }
+                    #endregion
                     #region Opcionales
                     UxDocumentOpcional lioUxDocumentOpcional;
                     livstr = lioServiceMapper.coItems.FirstOrDefault(x => x.ivstrProperty == "coAdicionales")?.coXPaths[0].ivstrData;
@@ -496,6 +535,7 @@ namespace Applet.Nat.Api.Br.Models
                         LogHelper.writeinfo(lioSbErrors.ToString(), true);
                     }
                     #endregion
+                    lioDocumentUser.FormatAmounts();
                     lcoDocumentsUser.Add(lioDocumentUser);
                 }
                 catch (Exception lioE)

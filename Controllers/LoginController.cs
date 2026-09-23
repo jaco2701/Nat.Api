@@ -1,8 +1,10 @@
-﻿using Applet.Nat.Api.Br;
+﻿using Applet.Misc.EncDec;
+using Applet.Nat.Api.Br;
 using Applet.Nat.Api.Br.Models;
 using Applet.Nat.Api.DC;
 using Applet.Nat.Api.Models;
 using Applet.Nat.Api.Static;
+using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.SqlServer.Server;
@@ -63,18 +65,60 @@ namespace Applet.Nat.Api.Controllers
                 return ResponseHelper.Get(-1, lioE);
             }
         }
+        [HttpGet("client")]
+        public async Task<ActionResult> Authorize()
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(HttpContext.Request.Headers.Authorization.ToString()))
+                    throw new Exception(Resources.lioE_NoCreds);
+                string[] lcvstrCreds = HttpsHeaderHelper.GetCredencials(AuthenticationHeaderValue.Parse(Request.Headers["Authorization"].ToString() ?? string.Empty));
+                if (lcvstrCreds.Length != 3)
+                    throw new Exception("invalid_request");
+                ClientModel? lioClientModel = mioContext.Clients.Find(lcvstrCreds[1]);
+                if (lioClientModel == null)
+                    throw new Exception("invalid_client");
+                if (!mioContext.Users.Any(x => x.ivnumUser == lioClientModel.ivnumUser && (x.ivblnEnable ?? false)))
+                    throw new Exception(Resources.lioE_TokenNo);
+                if (Chain.Decrypt(lioClientModel.ivstrClientSecret ?? string.Empty) != lcvstrCreds[2])
+                    throw new Exception("invalid_client_secret");
+                lioClientModel.ivstrToken = Auth.Get(lioClientModel.ivnumUser ?? 0, mioContext, lcvstrCreds[1]);
+                mioContext.Clients.Update(lioClientModel);
+                mioContext.SaveChanges();
+                return Ok(
+                    new Oauth2Response
+                    {
+                        AccessToken = lioClientModel.ivstrToken,
+                        ExpiresIn = int.Parse(ListHelper.GetValue("Expire", "Token", mioContext)) * 3600,
+                        IdToken = "nat"
+                    }
+                );
+            }
+            catch (Exception lioE)
+            {
+                return BadRequest(
+                    new Oauth2Response
+                    {
+                        Error = lioE.Message
+                    }
+                );
 
+            }
+
+        }
         [HttpPost("OidcState")]
         public async Task<Response> OidcState([FromBody] OidcRequest vioOidcRequest)
         {
             try
             {
-                Oauth2Response lioOauth2Response = null;
-                IdentityProviderModel lioIdentityProviderModel = null;
+                IdentityProviderModel? lioIdentityProviderModel = null;
+                User lioUser;
+                if (vioOidcRequest.ivnroType == null)
+                    throw new Exception($"{Resources.lioE_NoCreds} Request Type");
                 switch ((eOidcRequestType)vioOidcRequest.ivnroType)
                 {
                     case eOidcRequestType.GetAuthUrl:
-                        if (vioOidcRequest.ivnumIdentityProvider == 0)
+                        if (vioOidcRequest.ivnumIdentityProvider == null)
                             throw new Exception($"{Resources.lioE_NoCreds} IdentityProvider");
                         lioIdentityProviderModel = mioContext.IdentityProviders.Find(vioOidcRequest.ivnumIdentityProvider);
                         if (lioIdentityProviderModel == null)
@@ -111,18 +155,17 @@ namespace Applet.Nat.Api.Controllers
                         LogHelper.writeinfo($"RedirectUrl: {livstrRedirectUrl}", ListHelper.Verbose(mioContext));
                         return ResponseHelper.Get(livstrRedirectUrl);
                     case eOidcRequestType.GetExchangeParams:
-                        {
-                            if (string.IsNullOrEmpty(vioOidcRequest.ivstrState))
-                                throw new Exception($"{Resources.lioE_NoCreds} STATE");
-                            OidcStateModel lioO = mioContext.OidcStates.FirstOrDefault(x => x.ivstrState == vioOidcRequest.ivstrState);
-                            if (lioO == null)
-                                throw new Exception($"{Resources.lioE_NoCreds} IdentityProvider");
-                            if (lioO?.ivnumIdentityProvider == null || lioO.ivnumIdentityProvider == 0)
-                                throw new Exception($"{Resources.lioE_NoCreds} IdentityProvider");
-                            lioIdentityProviderModel = mioContext.IdentityProviders.Find(lioO.ivnumIdentityProvider);
-                            if (lioIdentityProviderModel == null)
-                                throw new Exception($"{Resources.lioE_NoCreds} IdentityProviderModel");
-                            return ResponseHelper.Get(new Dictionary<string, string>
+                        if (string.IsNullOrEmpty(vioOidcRequest.ivstrState))
+                            throw new Exception($"{Resources.lioE_NoCreds} STATE");
+                        OidcStateModel? lioOidcStateModel = mioContext.OidcStates.FirstOrDefault(x => x.ivstrState == vioOidcRequest.ivstrState);
+                        if (lioOidcStateModel == null)
+                            throw new Exception($"{Resources.lioE_NoCreds} IdentityProvider");
+                        if (vioOidcRequest.ivnumIdentityProvider == null)
+                            throw new Exception($"{Resources.lioE_NoCreds} IdentityProvider");
+                        lioIdentityProviderModel = mioContext.IdentityProviders.Find(lioOidcStateModel.ivnumIdentityProvider);
+                        if (lioIdentityProviderModel == null)
+                            throw new Exception($"{Resources.lioE_NoCreds} IdentityProviderModel");
+                        return ResponseHelper.Get(new Dictionary<string, string>
                             {
                                 { "IdentityProviders",lioIdentityProviderModel.ivnumIdentityProvider.ToString() },
                                 { "UrlToken",lioIdentityProviderModel.ivstrIdentityProviderUrlToken },
@@ -130,26 +173,24 @@ namespace Applet.Nat.Api.Controllers
                                 { "grant_type", "authorization_code" },
                                 { "code", string.Empty },
                                 { "redirect_uri",  ListHelper.GetValue("FORMAT", "OidcUrl", mioContext) },
-                                { "code_verifier",  lioO.ivstrCodeVerifier }
+                                { "code_verifier",  lioOidcStateModel.ivstrCodeVerifier }
                             });
-                        }
                     case eOidcRequestType.GetUser:
-                        {
-                            JwtSecurityTokenHandler lioJwtSecurityTokenHandler = new JwtSecurityTokenHandler();
-                            JwtSecurityToken jsonToken = lioJwtSecurityTokenHandler.ReadToken(vioOidcRequest.ivstrToken) as JwtSecurityToken;
-                            string livstrUserEmail = jsonToken?.Claims.FirstOrDefault(c => c.Type == "upn")?.Value;
-                            UserModel lioUserModel = mioContext.Users.FirstOrDefault(u => u.ivstrUserEmail == livstrUserEmail);
-                            if (lioUserModel == null)
-                                throw new Exception($"{Resources.lioE_NoCreds} User {livstrUserEmail}");
-                            User lioUser = new User(lioUserModel,mioContext);
-                            LogHelper.writeinfo($"User {lioUserModel.ivstrUserName} authenticated successfully.", ListHelper.Verbose(mioContext));
-                            return ResponseHelper.Get(
-                                new Login
-                                {
-                                    ioUser = new User(lioUserModel, mioContext),
-                                    ivstrToken = Auth.Get(lioUser.ioDcModel.ivnumUser, mioContext, "NatAuth"),
-                                });
-                        }
+                        JwtSecurityTokenHandler lioJwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+                        JwtSecurityToken? lioJwtSecurityToken = lioJwtSecurityTokenHandler.ReadToken(vioOidcRequest.ivstrToken??string.Empty) as JwtSecurityToken;
+                        string livstrUserEmail = lioJwtSecurityToken?.Claims.FirstOrDefault(c => c.Type == "upn")?.Value?? string.Empty;
+                        UserModel? lioUserModel = mioContext.Users.FirstOrDefault(u => u.ivstrUserEmail == livstrUserEmail);
+                        if (lioUserModel == null)
+                            throw new Exception($"{Resources.lioE_NoCreds} User {livstrUserEmail}");
+                        lioUser = new User(lioUserModel, mioContext);
+                        LogHelper.writeinfo($"User {lioUserModel.ivstrUserName} authenticated successfully.", ListHelper.Verbose(mioContext));
+                        return ResponseHelper.Get(
+                            new Login
+                            {
+                                ioUser = new User(lioUserModel, mioContext),
+                                ivstrToken = Auth.Get(lioUser.ioDcModel.ivnumUser, mioContext, "NatAuth"),
+                            });
+           
                     default:
                         throw new Exception(Resources.lioE_NoCreds);
                 }

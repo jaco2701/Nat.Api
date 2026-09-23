@@ -91,12 +91,12 @@ namespace Applet.Nat.Api.Br.Models
                     if (lcoDocumentsToUpdate.Count > 0)
                         await DocO(lcoDocumentsToUpdate.ToArray());
                     //Documentos con errores de carga
-                    UxDocumentIntegracion lioUxDocumentIntegracion;
+                    UxDocumentIntegracion? lioUxDocumentIntegracion;
                     string livsrtDFFAttributes;
-                    foreach (DocumentUploadResponse lioDocumentUploadResponse in lcoUDocumentsUploadResponse.Where(x => x.ivnroStatus != 1))
+                    foreach (DocumentUploadResponse lioDocumentUploadResponse in lcoUDocumentsUploadResponse.Where(x => x.ivnroStatus != 1 && !string.IsNullOrEmpty(x.ivstrIntegracion)))
                     {
                         lioUxDocumentIntegracion = JsonConvert.DeserializeObject<UxDocumentIntegracion>(lioDocumentUploadResponse.ivstrIntegracion);
-                        livsrtDFFAttributes = $"{{\"{lioUxDocumentIntegracion.ivstrEfdStatusAtt}\" : \"ERROR\",\"{lioUxDocumentIntegracion.ivstrEfdMessageAtt}\" : \"{lioUxDocumentIntegracion.ivstrEfdMessage}\"}}";
+                        livsrtDFFAttributes = $"{{\"{lioUxDocumentIntegracion?.ivstrEfdStatusAtt}\" : \"ERROR\",\"{lioUxDocumentIntegracion?.ivstrEfdMessageAtt}\" : \"{lioUxDocumentIntegracion?.ivstrEfdMessage}\"}}";
                         try
                         {
                             await UpdateOracleStatus(livsrtDFFAttributes, lioUxDocumentIntegracion);

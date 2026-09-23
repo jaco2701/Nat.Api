@@ -43,16 +43,19 @@ namespace Applet.Nat.Api.Br.Models
         public List<DocumentIva> coIvas { get; set; }
         public List<DocumentAdicional> coAdicionales { get; set; }
         public bool? ivblnTaxInLines { get; set; }
+        public bool ivblnCalcNN { get; set; } = false;
+        public long ivlngCbte { get; set; }
         #endregion
         #region PRIVATE PROPS
         private NatContext mioContext { get; set; }
         private DocumentModel mioDcModel { get; set; }
+        private string mivstrAuthResponse { get; set; }
+        private short mivnroNextStatus { get; set; }
         #endregion
         #region PUBLICS METHODS
         public void SetData(DocumentUser vioDocumentUser)
         {
             string livstrApiDtmFormat = ListHelper.GetValue("Format", "ApiDtm", mioContext);
-            vioDocumentUser.FormatAmounts();
             ivdblImporteNoGravado = vioDocumentUser.ivdblImporteNoGravado ?? 0;
             ivdblImporteGravado = vioDocumentUser.ivdblImporteGravado ?? 0;
             ivdblImporteExento = vioDocumentUser.ivdblImporteExento ?? 0;
@@ -121,7 +124,7 @@ namespace Applet.Nat.Api.Br.Models
         }
         public async Task<short> Auth()
         {
-            short livnroNextStatus = 40;
+            mivnroNextStatus = 40;
             DocumentTracking lioDocumentTracking = new DocumentTracking(mioContext, mioDcModel.ivlngDoc);
             AfipService lioAfipService = new AfipService { ivstrName = ivstrDocWs, ioContext = mioContext };
             ServicePointManager.SecurityProtocol = (SecurityProtocolType)int.Parse(ListHelper.GetValue("FORMAT", "TLS", mioContext));
@@ -152,21 +155,19 @@ namespace Applet.Nat.Api.Br.Models
                         await Task.Delay(2000);
                         continue;
                     }
-                    lioDocumentTracking.addTrack(
-                       livnroNextStatus,
-                       JsonConvert.SerializeObject(
-                           new
-                           {
-                               Request = new
-                               {
-                                   lioAutRequest
-                               },
-                               Response = ExceptionToResponse(lioE)
-                           }
-                       )
-                   );
+                    mivstrAuthResponse = JsonConvert.SerializeObject(
+                        new
+                        {
+                            Request = new
+                            {
+                                lioAutRequest
+                            },
+                            Response = ExceptionToResponse(lioE)
+                        }
+                    );
+                    lioDocumentTracking.addTrack(mivnroNextStatus, mivstrAuthResponse);
                     LogHelper.write(lioE);
-                    return livnroNextStatus;
+                    return mivnroNextStatus;
                 }
             }
             if (lioconsultarUltimoComprobanteAutorizadoResponse == null || lioconsultarUltimoComprobanteAutorizadoResponse.consultarUltimoComprobanteAutorizadoReturn == null)
@@ -174,26 +175,24 @@ namespace Applet.Nat.Api.Br.Models
             //EL DOCUMENTO ES MAYOR AL ULTIMO AUTORIZADO ==> EsperaPredecesor
             if (lioconsultarUltimoComprobanteAutorizadoResponse.consultarUltimoComprobanteAutorizadoReturn.numeroComprobante + 1 < this.mioDcModel.ivlngCbte)
             {
-                livnroNextStatus = 35;
+                mivnroNextStatus = 35;
                 if (this.mioDcModel.ivnroStatus != 35)
                 {
-                    lioDocumentTracking.addTrack(
-                        livnroNextStatus,
-                        JsonConvert.SerializeObject(
-                            new
+                    mivstrAuthResponse = JsonConvert.SerializeObject(
+                        new
+                        {
+                            Request = new
                             {
-                                Request = new
-                                {
-                                    AutRequest = lioAutRequest,
-                                    numPvta = mioDcModel.ivnumPvta,
-                                    nroTipo = mioDcModel.ivnroTipo
-                                },
-                                Response = lioconsultarUltimoComprobanteAutorizadoResponse
-                            }
-                        )
+                                AutRequest = lioAutRequest,
+                                numPvta = mioDcModel.ivnumPvta,
+                                nroTipo = mioDcModel.ivnroTipo
+                            },
+                            Response = lioconsultarUltimoComprobanteAutorizadoResponse
+                        }
                     );
+                    lioDocumentTracking.addTrack(mivnroNextStatus, mivstrAuthResponse);
                 }
-                return livnroNextStatus;
+                return mivnroNextStatus;
             }
             //EL DOCUMENTO ES MENOR AL ULTIMO AUTORIZADO  ==> CONSULTAR CAE
             if (lioconsultarUltimoComprobanteAutorizadoResponse.consultarUltimoComprobanteAutorizadoReturn.numeroComprobante + 1 > this.mioDcModel.ivlngCbte)
@@ -214,45 +213,42 @@ namespace Applet.Nat.Api.Br.Models
                             await Task.Delay(2000);
                             continue;
                         }
-                        lioDocumentTracking.addTrack(
-                           livnroNextStatus,
-                           JsonConvert.SerializeObject(
-                               new
-                               {
-                                   Request = new
-                                   {
-                                       lioAutRequest,
-                                       mioDcModel.ivnroTipo,
-                                       mioDcModel.ivnumPvta,
-                                       mioDcModel.ivlngCbte
-                                   },
-                                   Response = ExceptionToResponse(lioE)
-                               }
-                           )
-                       );
+                        mivstrAuthResponse = JsonConvert.SerializeObject(
+                            new
+                            {
+                                Request = new
+                                {
+                                    lioAutRequest,
+                                    mioDcModel.ivnroTipo,
+                                    mioDcModel.ivnumPvta,
+                                    mioDcModel.ivlngCbte
+                                },
+                                Response = ExceptionToResponse(lioE)
+                            }
+                        );
+                        lioDocumentTracking.addTrack(mivnroNextStatus, mivstrAuthResponse);
                         LogHelper.write(lioE);
-                        return livnroNextStatus;
+                        return mivnroNextStatus;
                     }
                 }
                 if (lioConsultarResponse.consultarComprobanteReturn != null && lioConsultarResponse.consultarComprobanteReturn.comprobante != null && lioConsultarResponse.consultarComprobanteReturn.comprobante.codigoAutorizacion != 0)
-                    livnroNextStatus = 50;
-                lioDocumentTracking.addTrack(
-                    livnroNextStatus,
-                    JsonConvert.SerializeObject(
-                        new
+                    mivnroNextStatus = 50;
+                mivstrAuthResponse = JsonConvert.SerializeObject(
+                    new
+                    {
+                        Request = new
                         {
-                            Request = new
-                            {
-                                lioAutRequest,
-                                mioDcModel.ivnroTipo,
-                                mioDcModel.ivnumPvta,
-                                mioDcModel.ivlngCbte
-                            },
-                            Response = lioConsultarResponse
-                        }
-                    )
+                            lioAutRequest,
+                            mioDcModel.ivnroTipo,
+                            mioDcModel.ivnumPvta,
+                            mioDcModel.ivlngCbte
+                        },
+                        Response = lioConsultarResponse
+                    }
                 );
-                return livnroNextStatus;
+                lioDocumentTracking.addTrack(mivnroNextStatus, mivstrAuthResponse);
+
+                return mivnroNextStatus;
             }
             //EL DOCUMENTO ES EL SIGUIENTE  ==> AUTORIZAR
             ComprobanteType lioComprobanteType = new ComprobanteType
@@ -355,29 +351,25 @@ namespace Applet.Nat.Api.Br.Models
                         await Task.Delay(2000);
                         continue;
                     }
-                    lioDocumentTracking.addTrack(
-                       livnroNextStatus,
-                       JsonConvert.SerializeObject(
-                           new
-                           {
-                               Request = new
-                               {
-                                   lioAutRequest,
-                                   lioComprobanteType
-                               },
-                               Response = ExceptionToResponse(lioE)
-                           }
-                       )
+                    mivstrAuthResponse = JsonConvert.SerializeObject(
+                        new
+                        {
+                            Request = new
+                            {
+                                lioAutRequest,
+                                lioComprobanteType
+                            },
+                            Response = ExceptionToResponse(lioE)
+                        }
                     );
+                    lioDocumentTracking.addTrack(mivnroNextStatus, mivstrAuthResponse);
                     LogHelper.write(lioE);
                     return 40;
                 }
             }
             if (lioautorizarComprobanteResponse.autorizarComprobanteReturn != null && lioautorizarComprobanteResponse.autorizarComprobanteReturn.comprobanteResponse != null && lioautorizarComprobanteResponse.autorizarComprobanteReturn.comprobanteResponse.CAE != 0)
-                livnroNextStatus = 50;
-            lioDocumentTracking.addTrack(
-                livnroNextStatus,
-                JsonConvert.SerializeObject(
+                mivnroNextStatus = 50;
+            mivstrAuthResponse = JsonConvert.SerializeObject(
                     new
                     {
                         Request = new
@@ -387,9 +379,9 @@ namespace Applet.Nat.Api.Br.Models
                         },
                         Response = lioautorizarComprobanteResponse
                     }
-                )
-            );
-            return livnroNextStatus;
+              );
+            lioDocumentTracking.addTrack(mivnroNextStatus, mivstrAuthResponse);
+            return mivnroNextStatus;
         }
         public void SetContext(NatContext vioContext)
         {
@@ -527,7 +519,10 @@ namespace Applet.Nat.Api.Br.Models
             short[] lcvnroStatusRTA = new short[] { 20, 35, 40, 50 };
             DocumentTrackingModel[] lcoTracks = mioContext.DocumentTrackings.OrderByDescending(x => x.ivdtmTrack).Where(x => x.ivlngDoc == mioDcModel.ivlngDoc).ToArray();
             if (lcoTracks == null || lcoTracks.Length == 0 || !lcoTracks.Any(x => lcvnroStatusRTA.Contains(x.ivnroStatus)))
-                throw new Exception($"{Resources.lioE_CAENoSts}: ivlngDoc {mioDcModel.ivlngDoc}");
+                if (!string.IsNullOrEmpty(mivstrAuthResponse))
+                    lcoTracks = new DocumentTrackingModel[] { new DocumentTrackingModel { ivdtmTrack = DateTime.Now, ivnumTrack = 0, ivnroStatus = mivnroNextStatus, ivlngDoc = 0, ivstrData = mivstrAuthResponse } };
+                else
+                    throw new Exception($"{Resources.lioE_CAENoSts}: ivlngDoc {mioDcModel.ivlngDoc}");
             DocumentTrackingModel lioTrack = lcoTracks.FirstOrDefault(x => lcvnroStatusRTA.Contains(x.ivnroStatus));
             if (lioTrack == null || string.IsNullOrEmpty(lioTrack.ivstrData))
                 throw new Exception($"{Resources.lioE_CAERespErr}: ivlngDoc {mioDcModel.ivlngDoc}");

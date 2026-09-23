@@ -18,7 +18,7 @@ namespace Applet.Nat.Api.Br.Models
                 lioExpression = FilterItemToFunc(lioFilterItem, lioParameterExpression, lioExpression);
             return lioExpression.Compile();
         }
-        private Expression<Func<T, bool>> FilterItemToFunc<T>(FilterItem vioFilterItem, ParameterExpression vioParameterExpression, Expression<Func<T, bool>> vioPrevExpression = null)
+        private Expression<Func<T, bool>> FilterItemToFunc<T>(FilterItem vioFilterItem, ParameterExpression vioParameterExpression, Expression<Func<T, bool>> vioPrevExpression)
         {
             Expression<Func<T, bool>> func = null;
             PropertyInfo? lioTProperty = typeof(T).GetProperty(vioFilterItem.ivstrPropName);

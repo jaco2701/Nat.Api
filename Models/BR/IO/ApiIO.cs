@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Components.Server.Circuits;
 using Microsoft.Extensions.Configuration;
 using Nat.API.Properties;
 using Newtonsoft.Json;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Text.Unicode;
 
